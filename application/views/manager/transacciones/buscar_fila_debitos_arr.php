@@ -102,9 +102,11 @@
                     echo '<td>' . $debitos[$x]['deb_domicilio'] . '</td>';
                     echo '<td>' . $debitos[$x]['deb_fecha'] . '</td>';
                     echo '<td>';
-
-//            echo '<a href="javascript:;" class="glyphicon glyphicon-edit" onclick="load_edit(\'' . site_url('manager/load_edit_clientes/' . $credito->pago_id) . '\')"></a> | ';
-                    echo '<a style="margin: 0 auto 0 22px;" href="javascript:;" id="' . $debitos[$x]['trans'] . '" class="glyphicon glyphicon-trash" onclick="del_transact(this)"></a>  ';
+                    
+                    echo '<a href="javascript:;" id="' . $debitos[$x]['trans'] . '" class="glyphicon glyphicon-trash" onclick="del_transact(this)"></a>  ';
+                    if ($debitos[$x]['deb_concepto'] == 'Rendicion') {
+                        echo ' | <a href="javascript:;" class="glyphicon glyphicon-print" onclick="request_post(\'' . site_url('manager/imprimir_rendicion/' . $debitos[$x]['trans']) . '\')"></a>';
+                    }
                     echo '</tr>';
                 }
             } else {

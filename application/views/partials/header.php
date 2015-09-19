@@ -27,6 +27,8 @@
 <!--                            <li class="<?= isset($uri) && $uri == 'creditos' ? 'active' : '' ?>"><a href="<?= site_url('manager/caja_general') ?>">Caja Diaria General</a></li>                                   -->
                             <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/reporte_prop') ?>">Informe Cta. Cte. Propietario</a></li>
                             <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/por_cobrar') ?>">Informe General Ctas. Propietarios</a></li>              
+                            <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/rendiciones_pendientes') ?>">Informe Rendiciones Pendientes</a></li>              
+                            <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/porcentaje_rendiciones') ?>">Informe Porcentaje Rendiciones</a></li>              
                             <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/prestamos') ?>">Informe Prestamos a Propietarios</a></li> 
                             <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/reporte_historial') ?>">Informe Historial de Pagos Inquilino</a></li>              
                             <li class="<?= isset($uri) && $uri == 'debitos' ? 'active' : '' ?>"><a href="<?= site_url('manager/reporte_morosos') ?>">Informe Inquilinos Morosos</a></li>             

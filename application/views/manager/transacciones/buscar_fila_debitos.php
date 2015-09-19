@@ -102,7 +102,10 @@
                     echo '<td>' . $debito->deb_domicilio . '</td>';
                     echo '<td>' . $debito->deb_fecha . '</td>';
                     echo '<td>';
-                    echo '<a style="margin: 0 auto 0 22px;" href="javascript:;" id="' . $debito->trans . '" class="glyphicon glyphicon-trash" onclick="del_transact(this)"></a>  ';
+                    echo '<a href="javascript:;" id="' . $debito->trans . '" class="glyphicon glyphicon-trash" onclick="del_transact(this)"></a>  ';
+                    if ($debito->deb_concepto == 'Rendicion') {
+                        echo ' | <a href="javascript:;" class="glyphicon glyphicon-print" onclick="request_post(\'' . site_url('manager/imprimir_rendicion/' . $debito->trans) . '\')"></a>';
+                    }
                     echo '</tr>';
                 }
             } else {
@@ -118,7 +121,7 @@
 <script>  
     
     var valor_debitos = 0;
-       function validar_rendicion(){
+    function validar_rendicion(){
         var rendiciones = 0;
         for(var i = 1; i<=x ;i++){
             if($('#concepto'+i).val() == 'Rendicion'){

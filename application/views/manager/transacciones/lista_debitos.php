@@ -16,7 +16,6 @@
         <th>Cta. Cte. Debitada</th>
         <th>Concepto</th>
         <th>Monto</th>
-
         <th>Domicilio Inmueble</th>
         <th>Fecha</th>
         <th>Acciones</th>
@@ -28,14 +27,15 @@
             echo '<td>' . $debito->deb_cc . '</td>';
             echo '<td>' . $debito->deb_concepto . ' (' . $debito->deb_mes . ')</td>';
             echo '<td>$ ' . $debito->deb_monto . '</td>';
-
             echo '<td>' . $debito->deb_domicilio . '</td>';
             echo '<td>' . $debito->deb_fecha . '</td>';
 
             echo '<td>';
-
-//            echo '<a href="javascript:;" class="glyphicon glyphicon-edit" onclick="load_edit(\'' . site_url('manager/load_edit_clientes/' . $debito->pago_id) . '\')"></a> | ';
-            echo '<a style="margin: 0 auto 0 22px;" href="javascript:;" id="' . $debito->trans . '" class="glyphicon glyphicon-trash" onclick="del_transact(this)"></a>  ';
+            
+            echo '<a style="" href="javascript:;" id="' . $debito->trans . '" class="glyphicon glyphicon-trash" onclick="del_transact(this)"></a>  ';
+            if($debito->deb_concepto == 'Rendicion'){
+                echo ' | <a href="javascript:;" class="glyphicon glyphicon-print" onclick="request_post(\'' . site_url('manager/imprimir_rendicion/' . $debito->trans) . '\')"></a>';
+            }
             echo '</tr>';
         }
     } else {

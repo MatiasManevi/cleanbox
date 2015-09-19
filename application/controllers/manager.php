@@ -934,7 +934,7 @@ class Manager extends CI_Controller {
     function validate($id_tabla, $val_tabla, $tabla, $auto_tab_id, $input, $val) {
         $row = false;
         $val = urldecode($val);
-        $id = ereg_replace("[^0-9]", "", $auto_tab_id);
+        $id = preg_replace("/[^0-9]/", "", $auto_tab_id);
         $row = $this->basic->get_where($tabla, array($val_tabla => $val))->row_array();
         if ($row != false) {
             $response['id'] = $row[$id_tabla];
@@ -1577,6 +1577,11 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
+    function imprimir_rendicion($trans) {
+        $response['js'] = 'window.location.href="' . site_url('manager/show_rendicion') . '/' . $trans . '"';
+        echo json_encode($response);
+    }
+
     function show_recibo($trans) {
         $contrato = null;
         $do_recibo = false;
@@ -1694,6 +1699,147 @@ class Manager extends CI_Controller {
         } else {
             $this->data['content'] = $this->load->view('manager/transacciones/recibo_post', $this->data, TRUE);
         }
+        $this->load->view('default', $this->data);
+    }
+
+    function show_rendicion($trans) {
+        $this->load_similar_content('debitos');
+        $rendicion = $this->basic->get_where('debitos', array('trans' => $trans, 'deb_concepto' => 'Rendicion'))->row_array();
+        $cuenta = $rendicion['deb_cc'];
+        $fecha_v = explode('-', $rendicion['deb_fecha']);
+        $agregar = 0;
+        $agregar1 = 0;
+        $this->data['prop'] = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => $cuenta))->row_array();
+        $this->data['comentarios'] = $this->basic->get_where('comentarios', array('com_prop' => $cuenta, 'com_mes' => $fecha_v[1], 'com_ano' => $fecha_v[2]));
+        $this->data['entrada_prin'] = 0;
+        $this->data['salida_prin'] = 0;
+        $this->data['salida_sec'] = 0;
+        $this->data['entrada_sec'] = 0;
+        $this->data['desde'] = '01-' . $fecha_v[1] . '-' . $fecha_v[2];
+        $this->data['hasta'] = $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2];
+        $desde = $this->data['desde'];
+        $hasta = $this->data['hasta'];
+        $this->data['cuenta'] = $cuenta;
+        $this->data['intereses_mora'] = array();
+        $this->data['alquileres'] = array();
+        $rendiciones = $this->basic->get_where('debitos', array('deb_cc' => $cuenta, 'deb_concepto' => 'Rendicion'));
+        $monto_rendicion_hoy = 0;
+        $this->data['monto_rendicion_domis'] = '';
+        $this->data['monto_rendicion_meses'] = '';
+        foreach ($rendiciones->result_array() as $row) {
+            $agregar1 = $this->comp_fecha($row['deb_fecha'], $desde, $hasta);
+            if ($agregar1 == '11') {
+                $monto_rendicion_hoy += $row['deb_monto'];
+                $this->data['monto_rendicion_domis'] .= $row['deb_domicilio'] . ', ';
+                $this->data['monto_rendicion_meses'] .= $row['deb_mes'] . ', ';
+            }
+        }
+        $this->data['monto_rendicion_hoy'] = round($monto_rendicion_hoy, 2);
+        $this->data['monto_rendicion_hoy_letra'] = $this->numtoletras(round($monto_rendicion_hoy, 2));
+        $this->data['servicios'] = $this->basic->get_all('servicios');
+        $this->data['contratos'] = $this->basic->get_where('contratos', array('con_prop' => $cuenta, 'con_enabled' => 1));
+        $this->data['conceptos'] = $this->basic->get_all('conceptos');
+        $creditos_prop = $this->basic->get_where('creditos', array('cred_cc' => $cuenta), 'cred_id', 'asc');
+        $debitos_prop = $this->basic->get_where('debitos', array('deb_cc' => $cuenta), 'deb_id', 'asc');
+        $conceptos = $this->basic->get_all('conceptos');
+        $ints = $this->basic->get_where('intereses_mora', array('int_cc' => $cuenta));
+        foreach ($ints->result_array() as $row) {
+            $agregar1 = $this->comp_fecha($row['int_fecha_pago'], $desde, $hasta);
+            if ($agregar1 == '11') {
+                array_push($this->data['intereses_mora'], $row);
+                $agregar1 = 0;
+            }
+        }
+        $this->data['varios'] = array();
+        /* Agrupo los creditos de alquiler y varios en diferentes arrays, lo mismo ocurre con los debitos */
+        foreach ($creditos_prop->result_array() as $row) {
+            foreach ($conceptos->result_array() as $con) {
+                if (strpos($row['cred_concepto'], $con['conc_desc']) !== FALSE && $con['conc_tipo'] == 'Entrada') {
+                    $cuenta = $con['conc_cc'];
+                    break;
+                }
+            }
+            $agregar = $this->comp_fecha($row['cred_fecha'], $desde, $hasta);
+            if ($agregar == '11') {
+                /* Pertenece a un credito del rango de fechas ingresados */
+                $arreglo = array(
+                    'id' => $row['cred_id'],
+                    'mes' => $row['cred_mes_alq'],
+                    'fecha' => $row['cred_fecha'],
+                    'concepto' => $row['cred_concepto'],
+                    'monto' => $row['cred_monto'],
+                    'depositante' => $row['cred_depositante'],
+                    'operacion' => 'credito',
+                    'domicilio' => $row['cred_domicilio'],
+                    'mes' => $row['cred_mes_alq'],
+                    'trans' => $row['trans'],
+                    'mostrar' => 1
+                );
+                if (isset($cuenta)) {
+                    if ($cuenta == 'cc_saldo') {
+                        $this->data['entrada_prin'] += $arreglo['monto'];
+                        array_push($this->data['alquileres'], $arreglo);
+                    } else {
+                        $this->data['entrada_sec'] += $arreglo['monto'];
+                        array_push($this->data['varios'], $arreglo);
+                    }
+                }
+                $agregar = 0;
+            }
+        }
+        $gestion_cobro = 0;
+        foreach ($debitos_prop->result_array() as $row) {
+            $agregar = $this->comp_fecha($row['deb_fecha'], $desde, $hasta);
+            foreach ($conceptos->result_array() as $con) {
+                if (strpos($row['deb_concepto'], $con['conc_desc']) !== FALSE && $con['conc_tipo'] == 'Salida') {
+                    $cuenta = $con['conc_cc'];
+                    break;
+                }
+            }
+            if ($agregar == '11') {
+                if (strpos($row['deb_concepto'], "Gestion de Cobro") !== false) {
+                    $gestion_cobro += $row['deb_monto'];
+                } else {
+                    $arreglo = array(
+                        'id' => $row['deb_id'],
+                        'fecha' => $row['deb_fecha'],
+                        'concepto' => $row['deb_concepto'],
+                        'mes' => $row['deb_mes'],
+                        'monto' => $row['deb_monto'],
+                        'domicilio' => $row['deb_domicilio'],
+                        'trans' => $row['trans'],
+                        'operacion' => 'debito',
+                        'mostrar' => 1
+                    );
+                    if (isset($cuenta)) {
+                        if ($cuenta == 'cc_saldo') {
+                            $this->data['salida_prin'] += $arreglo['monto'];
+                            array_push($this->data['alquileres'], $arreglo);
+                        } else {
+                            $this->data['salida_sec'] += $arreglo['monto'];
+                            array_push($this->data['varios'], $arreglo);
+                        }
+                    }
+                }
+                $agregar = 0;
+            }
+        }
+        $arreglo = array(
+            'id' => '',
+            'fecha' => '',
+            'concepto' => 'Gestion de Cobro',
+            'mes' => '',
+            'monto' => $gestion_cobro,
+            'domicilio' => '',
+            'trans' => '999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999',
+            'operacion' => 'debito',
+            'mostrar' => 1
+        );
+        $this->data['salida_prin'] += $arreglo['monto'];
+        array_push($this->data['alquileres'], $arreglo);
+        $this->data['alquileres'] = $this->msort($this->data['alquileres'], 'trans');
+        $this->data['varios'] = $this->msort($this->data['varios'], 'trans');
+        $this->data['content'] = $this->load->view('manager/reportes/informe_prop', $this->data, TRUE);
         $this->load->view('default', $this->data);
     }
 
@@ -2255,7 +2401,7 @@ class Manager extends CI_Controller {
                     'cred_concepto' => $this->input->post('concepto' . $x),
                     'cred_monto' => $this->input->post('monto' . $x),
                     'cred_fecha' => Date('d-m-Y'),
-                    'cred_interes' => ereg_replace("[^0-9]", "", $this->input->post('interes' . $x)),
+                    'cred_interes' => preg_replace("/[^0-9]/", "", $this->input->post('interes' . $x)),
                     'cred_domicilio' => $this->input->post('domicilio' . $x),
                     'trans' => $trans,
                     'cred_tipo_pago' => $this->input->post('cred_tipo_pago'),
@@ -2879,6 +3025,24 @@ class Manager extends CI_Controller {
      * Funciones que inician la creacion de los reportes
      */
 
+    function rendiciones_pendientes() {
+        $this->eliminar_vacios();
+        $this->data['head'] = $this->load->view('partials/head', '', TRUE);
+        $this->data['header'] = $this->load->view('partials/header', $this->data, TRUE);
+        $this->data['footer'] = $this->load->view('partials/footer', $this->data, TRUE);
+        $this->data['content'] = $this->load->view('manager/reportes/pendientes', $this->data, TRUE);
+        $this->load->view('default', $this->data);
+    }
+
+    function porcentaje_rendiciones() {
+        $this->eliminar_vacios();
+        $this->data['head'] = $this->load->view('partials/head', '', TRUE);
+        $this->data['header'] = $this->load->view('partials/header', $this->data, TRUE);
+        $this->data['footer'] = $this->load->view('partials/footer', $this->data, TRUE);
+        $this->data['content'] = $this->load->view('manager/reportes/porcentaje', $this->data, TRUE);
+        $this->load->view('default', $this->data);
+    }
+
     function por_cobrar() {
         $this->eliminar_vacios();
         $this->data['head'] = $this->load->view('partials/head', '', TRUE);
@@ -3382,6 +3546,81 @@ class Manager extends CI_Controller {
             $this->data['alquileres'] = $this->msort($this->data['alquileres'], 'trans');
             $this->data['varios'] = $this->msort($this->data['varios'], 'trans');
             $response['html'] = $this->load->view('manager/reportes/informe_prop', $this->data, TRUE);
+            echo json_encode($response);
+        } else {
+            $response['texto'] = 'Datos Faltantes';
+            $response['js'] = "$('#com_display').html(R.texto);$('#com_display').removeClass('alert alert-success');$('#com_display').addClass('alert alert-danger');$('#com_display').css('display','block');$('#com_display').fadeOut(3500, 'linear');";
+            echo json_encode($response);
+        }
+    }
+
+    function informar_porcentaje($desde = false, $hasta = false) {
+        if ($desde != false && $hasta != false) {
+            $this->data['desde'] = $desde;
+            $this->data['hasta'] = $hasta;
+            $activos = array();
+            $cuentas = $this->basic->get_all('cuentas_corrientes');
+            $contratos = $this->basic->get_where('contratos', array('con_enabled' => 1));
+            foreach ($cuentas->result_array() as $row) {
+                foreach ($contratos->result_array() as $con) {
+                    if ($row['cc_prop'] == $con['con_prop']) {
+                        if (!in_array($row, $activos)) {
+                            array_push($activos, $row);
+                        }
+                    }
+                }
+            }
+            $this->data['props_activos'] = count($activos);
+            $this->data['encabezado'] = 'Porcentaje de rendiciones entre las fechas ' . $desde . ' y ' . $hasta;
+            $rendidos = array();
+            foreach ($cuentas->result_array() as $row) {
+                if ($row['cc_prop'] != 'INMOBILIARIA' && $row['cc_prop'] != 'CAJA FUERTE') {
+                    $rendiciones = $this->basic->get_where('debitos', array('deb_cc' => $row['cc_prop'], 'deb_concepto' => 'Rendicion'));
+                    foreach ($rendiciones->result_array() as $rend) {
+                        if ($this->comp_fecha($rend['deb_fecha'], $desde, $hasta) == '11') {
+                            if (!in_array($row, $rendidos)) {
+                                array_push($rendidos, $row);
+                            }
+                        }
+                    }
+                }
+            }
+            $this->data['props_rendidos'] = count($rendidos);
+            $response['html'] = $this->load->view('manager/reportes/informe_porcentaje', $this->data, TRUE);
+            echo json_encode($response);
+        } else {
+            $response['texto'] = 'Datos Faltantes';
+            $response['js'] = "$('#com_display').html(R.texto);$('#com_display').removeClass('alert alert-success');$('#com_display').addClass('alert alert-danger');$('#com_display').css('display','block');$('#com_display').fadeOut(3500, 'linear');";
+            echo json_encode($response);
+        }
+    }
+
+    function informar_pendientes($desde = false, $hasta = false) {
+        if ($desde != false && $hasta != false) {
+            $this->data['desde'] = $desde;
+            $this->data['hasta'] = $hasta;
+            $cuentas = $this->basic->get_all('cuentas_corrientes');
+            $this->data['encabezado'] = 'Informe de rendiciones pendientes entre las fechas ' . $desde . ' y ' . $hasta;
+            $this->data['pendientes'] = array();
+            foreach ($cuentas->result_array() as $row) {
+                $retiro = false;
+                if ($row['cc_prop'] != 'INMOBILIARIA' && $row['cc_prop'] != 'CAJA FUERTE') {
+                    $rendiciones = $this->basic->get_where('debitos', array('deb_cc' => $row['cc_prop'], 'deb_concepto' => 'Rendicion'));
+                    foreach ($rendiciones->result_array() as $rend) {
+                        if ($this->comp_fecha($rend['deb_fecha'], $desde, $hasta) == '11') {
+                            $retiro = true;
+                        }
+                    }
+                }
+                if (!$retiro) {
+                    if ($row['cc_prop'] != 'INMOBILIARIA' && $row['cc_prop'] != 'CAJA FUERTE') {
+                        if (($row['cc_saldo'] + $row['cc_varios']) > 0) {
+                            array_push($this->data['pendientes'], $row);
+                        }
+                    }
+                }
+            }
+            $response['html'] = $this->load->view('manager/reportes/informe_pendientes', $this->data, TRUE);
             echo json_encode($response);
         } else {
             $response['texto'] = 'Datos Faltantes';
@@ -4327,7 +4566,7 @@ class Manager extends CI_Controller {
 
     function buscar_concepto($table, $tipo = false, $tableo = false, $inq = false, $prop = false, $needle = false, $id_input = false) {
         $response['periodos'] = '';
-        $x_input = ereg_replace("[^0-9]", "", $id_input);
+        $x_input = preg_replace("/[^0-9]/", "", $id_input);
         $contrato = null;
         $inq = urldecode($inq);
         $response['entro'] = 0;

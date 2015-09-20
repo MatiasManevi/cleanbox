@@ -3721,7 +3721,6 @@ class Manager extends CI_Controller {
                     array_push($this->data['transferencias'], $row);
                 }
             }
-//            $this->data['transferencias'] = $this->msort($this->data['transferencias'], 'transf_id');
             $this->data['comienza_banco'] = 0;
             $dia_hasta = $fecha_v[0] - 1;
             $mes_hasta = $fecha_v[1];
@@ -3737,7 +3736,6 @@ class Manager extends CI_Controller {
             }
             $creditos_bancarios = $this->basic->get_where('creditos', array('cred_tipo_trans' => 'Bancaria'));
             $debitos_bancarios = $this->basic->get_where('debitos', array('deb_tipo_trans' => 'Bancaria'));
-            $creditos_todos = $this->basic->get_where('creditos', array());
             foreach ($creditos_bancarios->result_array() as $row) {
                 $agregar = $this->comp_fecha($row['cred_fecha'], '00-00-0000', $dia_hasta . '-' . $mes_hasta . '-' . $ano_hasta);
                 if ($agregar == '11') {
@@ -3746,7 +3744,6 @@ class Manager extends CI_Controller {
                     }
                 }
             }
-            $debitos_todos = $this->basic->get_where('debitos', array());
             foreach ($debitos_bancarios->result_array() as $row) {
                 $agregar = $this->comp_fecha($row['deb_fecha'], '00-00-0000', $dia_hasta . '-' . $mes_hasta . '-' . $ano_hasta);
                 if ($agregar == '11') {
@@ -3783,12 +3780,6 @@ class Manager extends CI_Controller {
                             $bancario_hasta_ayer += $row['cred_monto'];
                         }
                     }
-                    $agregar = $this->comp_fecha($row['cred_fecha'], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2]);
-                    if ($agregar == '11') {
-                        if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses') {
-                            $bancario_hoy += $row['cred_monto'];
-                        }
-                    }
                 }
                 foreach ($debitos_bancarios->result_array() as $row) {
                     $agregar = $this->comp_fecha($row['deb_fecha'], '01-' . $fecha_v[1] . '-' . $fecha_v[2], $fecha_v[0] - 1 . '-' . $fecha_v[1] . '-' . $fecha_v[2]);
@@ -3797,28 +3788,21 @@ class Manager extends CI_Controller {
                             $bancario_hasta_ayer -= $row['deb_monto'];
                         }
                     }
-                    $agregar = $this->comp_fecha($row['deb_fecha'], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2]);
-                    if ($agregar == '11') {
-                        if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses') {
-                            $bancario_hoy -= $row['deb_monto'];
-                        }
-                    }
                 }
             }
-            $com_todo_MES = 0;
-            foreach ($creditos_todos->result_array() as $row) {
-                $agregar = $this->comp_fecha($row['cred_fecha'], '01-' . Date('m') . '-' . Date('Y'), $fecha_v[0] . '-' . $mes_hasta . '-' . $ano_hasta);
+            foreach ($creditos_bancarios->result_array() as $row) {
+                $agregar = $this->comp_fecha($row['cred_fecha'], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2]);
                 if ($agregar == '11') {
                     if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses') {
-                        $com_todo_MES += $row['cred_monto'];
+                        $bancario_hoy += $row['cred_monto'];
                     }
                 }
             }
-            foreach ($debitos_todos->result_array() as $row) {
-                $agregar = $this->comp_fecha($row['deb_fecha'], '01-' . Date('m') . '-' . Date('Y'), $fecha_v[0] . '-' . $mes_hasta . '-' . $ano_hasta);
+            foreach ($debitos_bancarios->result_array() as $row) {
+                $agregar = $this->comp_fecha($row['deb_fecha'], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2], $fecha_v[0] . '-' . $fecha_v[1] . '-' . $fecha_v[2]);
                 if ($agregar == '11') {
                     if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses') {
-                        $com_todo_MES -= $row['deb_monto'];
+                        $bancario_hoy -= $row['deb_monto'];
                     }
                 }
             }
@@ -3832,11 +3816,11 @@ class Manager extends CI_Controller {
             $this->data['fecha'] = $fecha;
             $this->data['entradas'] = 0;
             $this->data['salidas'] = 0;
-            $a = 0;
+            $saldo_nuevo = 0;
             foreach ($creditos->result_array() as $row) {
                 if (isset($row)) {
                     if ($row['cred_tipo_trans'] == 'Caja') {
-                        $a += $row['cred_monto'];
+                        $saldo_nuevo += $row['cred_monto'];
                     }
                     if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses') {
                         $arreglo = array(
@@ -3860,7 +3844,7 @@ class Manager extends CI_Controller {
             foreach ($debitos->result_array() as $row) {
                 if (isset($row)) {
                     if ($row['deb_tipo_trans'] == 'Caja') {
-                        $a -= $row['deb_monto'];
+                        $saldo_nuevo -= $row['deb_monto'];
                     }
                     if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses') {
                         $arreglo = array(
@@ -3880,13 +3864,8 @@ class Manager extends CI_Controller {
                     }
                 }
             }
-
             $this->data['mes'] = $this->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
-//            print_r('banco $ ' . $COM_BANC_MES);            
-//            print_r(' caja total al dia $ ' . $com_todo_MES);
-//            print_r(' mensual cred $ ' . $this->data['mes']['men_creditos']);
-//            print_r(' mensual deb $ ' . $this->data['mes']['men_debitos']);
-            $this->data['sal_nue'] = $a;
+            $this->data['sal_nue'] = $saldo_nuevo;
             $this->data['movimientos'] = $this->msort($this->data['movimientos'], 'trans');
             $response['html'] = $this->load->view('manager/reportes/informe_caja_detallada', $this->data, TRUE);
             echo json_encode($response);
@@ -3940,15 +3919,12 @@ class Manager extends CI_Controller {
         foreach ($creditos->result_array() as $cred) {
             if ($cred['cred_concepto'] === $concepto) {
                 $agr_cred = $this->comp_fecha($cred['cred_fecha'], '00-00-0000', Date('d-m-Y'));
-//                if ($agr_cred == '11') {
                 array_push($cred_filt, $cred);
                 $tiene_creds = true;
-//                }
             }
         }
         if ($tiene_creds) {
             //obtengo el ultimo pago
-//            $cred_filt = $this->msort($cred_filt, 'cred_id');
             $ult_mes = 0;
             $ult_ano = 0;
             $ult_id = 0;
@@ -3960,19 +3936,12 @@ class Manager extends CI_Controller {
                 $ano_last = trim($ano_last);
                 $mes_last_nro = $this->get_nro_mes($mes_last);
 
-                if ($contrato['con_id'] == 167) {
-//                    print_r(' '.$mes_last_nro.' > ' . $ult_mes);
-//                    print_r(' '.$ano_last.' > ' . $ult_ano);
-//                    print_r(' ' . $ult_id);
-                }
-
                 if ($ano_last >= $ult_ano && $mes_last_nro >= $ult_mes) {
                     $ult_mes = $mes_last_nro;
                     $ult_ano = $ano_last;
                     $ult_id = $cred_filt[$i]['cred_id'];
                 }
             }
-//            $last_payment = end($cred_filt);
             $last_payment = $this->basic->get_where('creditos', array('cred_id' => $ult_id))->row_array();
         }
         return $last_payment;
@@ -4010,9 +3979,6 @@ class Manager extends CI_Controller {
                         if ($con['con_usado'] == 1) {
                             $ultimo_pago = $this->get_last_payment($con, $serv['serv_concepto']);
                             $deuda = $this->get_deudas_serv($ultimo_pago, $con);
-//                            echo '<pre>';
-//                            print_r($deuda);
-//                            echo '</pre>';
                             if (count($deuda) > 0) {
                                 if ($ultimo_pago != false) {
                                     for ($i = 0; $i < count($deuda); $i++) {
@@ -4050,23 +4016,9 @@ class Manager extends CI_Controller {
                 if ($con['con_usado'] == 1) {
                     $ultimo_pago = $this->get_last_payment($con, $con['con_tipo']);
                     $deuda = $this->get_deudas($ultimo_pago, $con);
-//                    if ($con['con_id'] == '217') {
-//                        echo '<pre>';
-//                        print_r($ultimo_pago);
-//                        echo '</pre>';
-//
-//                        echo '<pre>';
-//                        print_r($deuda);
-//                        echo '</pre>';
-//                    }
                     if (count($deuda) > 0) {
                         if ($ultimo_pago != false) {
                             for ($i = 0; $i < count($deuda); $i++) {
-//                               if ($con['con_id'] == '217') {
-//                                            echo '<pre>';
-//                                            print_r($deuda[$i]);
-//                                            echo '</pre>';
-//                                        }
                                 $deuda_fecha = '01-' . $this->get_nro_mes($deuda[$i]['mes']) . '-' . $deuda[$i]['ano'];
                                 $mes_last = preg_replace("/[^A-Za-z (),.]/", "", $ultimo_pago['cred_mes_alq']);
                                 $mes_last = trim($mes_last);
@@ -4080,25 +4032,13 @@ class Manager extends CI_Controller {
                                     $ano_last = $ano_last[2];
                                     $fecha_last_pay = '01-' . $mes_last_nro . '-' . $ano_last;
                                 }
-//                                if ($con['con_id'] == '217') {
-//                                    print_r('last ' . $fecha_last_pay . ' ');
-//                                    print_r('deuda ' . $deuda_fecha . ' ');
-//                                }
                                 $fecha_last_pay = strtotime($fecha_last_pay);
                                 $deuda_fecha = strtotime($deuda_fecha);
                                 if ($fecha_last_pay <= $deuda_fecha) {
-
-//                                    if ($con['con_id'] == '217')
-//                                        print_r('aefd');
                                     if ($fecha_last_pay == $deuda_fecha && $deuda[$i]['saldo_cuenta'] == 0) {
                                         $deuda[$i] = array();
                                     }
                                     if (!empty($deuda[$i])) {
-//                                        if ($con['con_id'] == '217') {
-//                                            echo '<pre>';
-//                                            print_r($deuda[$i]);
-//                                            echo '</pre>';
-//                                        }
                                         array_push($deudas_inquilinos[$inquilino['client_name']], $deuda[$i]);
                                     }
                                 } else {
@@ -4106,19 +4046,6 @@ class Manager extends CI_Controller {
                                 }
                             }
                         } else {
-//                            print_r('jeje');
-//                        echo '<pre>';
-//                        print_r($ultimo_pago);
-//                        echo '</pre>';
-//                        echo '<pre>';
-//                        print_r($con);
-//                        echo '</pre>';
-//                        
-//                            
-//                            echo '<pre>';
-//                        print_r($deuda);
-//                        echo '</pre>';
-//                            print_r('jeje');
                             for ($i = 0; $i < count($deuda); $i++) {
                                 array_push($deudas_inquilinos[$inquilino['client_name']], $deuda[$i]);
                             }
@@ -4126,12 +4053,6 @@ class Manager extends CI_Controller {
                     }
                 }
             }
-//            echo'<pre>';print_r($deudas_inquilinos['MONICA VIVIANA SANTA CRUZ']);echo'</pre>';
-//            echo'<pre>';print_r($deudas_inquilinos['BETTINA ELIZABETH ACOSTA']);echo'</pre>';
-//            echo'<pre>';print_r($deudas_inquilinos['JORGE ALBERTO CABRERA']);echo'</pre>';
-//            echo'<pre>';print_r($deudas_inquilinos['DENIS EZEQUIEL DOS SANTOS']);echo'</pre>';
-//            echo'<pre>';print_r($deudas_inquilinos['LETICIA BELEN IBARRA']);echo'</pre>';
-//            echo'<pre>';print_r($deudas_inquilinos['ANA ABIGAIL MARIN']);echo'</pre>';
             $this->data['deudas_inquilinos'] = $deudas_inquilinos;
             $this->data['deudas_inquilinos_serv'] = $deudas_inquilinos_serv;
             $this->data['fecha'] = $fecha;
@@ -4180,17 +4101,7 @@ class Manager extends CI_Controller {
             $monto = $this->calcular_monto($mes_debido, $periodos);
             // Obtengo la cantidad de dias de mora
             $dias_de_mora = $this->calcular_dias_mora($mes_debido, $fecha_informe);
-//            print_r($dias_de_mora);
             if ($dias_de_mora > $contrato['con_tolerancia']) {
-//                if ($dia_informe <= $contrato['con_tolerancia']) {
-//                    // Unicamente si la fecha en la que se solicita el contrato sobrepasa la tolerancia 
-//                    // tambien se calculan los intereses para tal mes
-//                    if ($deuda['saldo_cuenta'] == 0) {
-//                        $dias_de_mora = $dias_de_mora - $dia_informe;
-//                    } else {
-//                        $dias_de_mora = $dias_de_mora;
-//                    }
-//                }
                 if ($deuda['monto'] != 0) {
                     $intereses = ($deuda['monto'] * $contrato['con_punitorio'] * $dias_de_mora) - $intereses_pagados_acuenta;
                 } else {

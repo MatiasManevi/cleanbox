@@ -54,10 +54,10 @@
     font-family: 'futura';
     src: url('../../../fonts/futura_light-webfont.eot');
     src: url('../../../fonts/futura_light-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../../../fonts/futura_light-webfont.woff2') format('woff2'),
-         url('../../../fonts/futura_light-webfont.woff') format('woff'),
-         url('../../../fonts/futura_light-webfont.ttf') format('truetype'),
-         url('../../../fonts/futura_light-webfont.svg#futura_lightregular') format('svg');
+        url('../../../fonts/futura_light-webfont.woff2') format('woff2'),
+        url('../../../fonts/futura_light-webfont.woff') format('woff'),
+        url('../../../fonts/futura_light-webfont.ttf') format('truetype'),
+        url('../../../fonts/futura_light-webfont.svg#futura_lightregular') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -2449,4 +2449,36 @@ ul.nav ul li:last-child a { border: none; }
     float: left;
     margin: 0 auto;
     width: 100%;
+}
+.tit{
+    color: #999999;
+    padding-left: 22px;
+    font-weight: 700;
+    font-family: inherit;
+    width: 256px;
+    border-bottom: 1px solid white;
+    margin-left: -6px;
+    font-size: 15px;
+}
+span.area{
+    border-radius: 6px;
+    background: grey;
+    color: white;
+    margin-right: 12px;
+    padding: 6px;
+}
+#areas{
+    margin-top: 18px;
+    width: 100%;
+    float: left;
+}
+a._close{
+    color: white;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: bold;
+}
+a._close:hover{
+    text-decoration: none;
+    color:white;
 }

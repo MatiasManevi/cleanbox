@@ -27,7 +27,37 @@ class Manager extends CI_Controller {
         $this->data['menu'] = $this->load->view('partials/header', $this->data, TRUE);
         $this->cargar_vista_caja();
         $this->vencer_contratos();
+//        $this->arreglarmeses();
         $this->load->view('manager/man_view', $this->data);
+    }
+
+    function arreglarmeses() {
+        $creditos = $this->basic->get_all('creditos');
+        foreach ($creditos->result_array() as $row) {
+            $vector_fecha = explode('-', $row['cred_fecha']);
+            if ($row['cred_mes_alq'] != '') {
+                if ($vector_fecha[2] == 2014) {
+                    $row['cred_mes_alq'] .= ' 2014';
+                }
+                if ($vector_fecha[2] == 2015) {
+                    $row['cred_mes_alq'] .= ' 2015';
+                }
+                $this->basic->save('creditos', 'cred_id', $row);
+            }
+        }
+        $debitos = $this->basic->get_all('debitos');
+        foreach ($debitos->result_array() as $row) {
+            $vector_fecha = explode('-', $row['deb_fecha']);
+            if ($row['deb_mes'] != '') {
+                if ($vector_fecha[2] == 2014) {
+                    $row['deb_mes'] .= ' 2014';
+                }
+                if ($vector_fecha[2] == 2015) {
+                    $row['deb_mes'] .= ' 2015';
+                }
+                $this->basic->save('debitos', 'deb_id', $row);
+            }
+        }
     }
 
     function eliminar_vacios() {
@@ -1105,6 +1135,86 @@ class Manager extends CI_Controller {
     }
 
     /* Fin Conceptos */
+
+    /* Proveedores */
+
+    function proveedores() {
+        $this->load_similar_content('proveedores');
+        $this->data['areas'] = array();
+        $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name', '');
+        $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+        $this->eliminar_vacios();
+        $this->data['content'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
+        $this->load->view('default', $this->data);
+    }
+
+    function load_edit_proveedores($id = false) {
+        $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name');
+        $this->data['areas'] = $this->basic->get_where('areas_proveedores', array('area_prov' => $id));
+        $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+        if ($id) {
+            $this->data['row'] = $this->basic->get_where('proveedores', array('prov_id' => $id))->row();
+            $this->data['id'] = $id;
+            $response['js'] = "$('add_op').css('display','none');$('.contenedor_centro').css('width','95%');";
+            $response['html'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
+        }
+        $response['js'] = "$('.contenedor_centro').css('width','95%');";
+        echo json_encode($response);
+    }
+
+    function del_proveedores($id) {
+        $proveedor = $this->basic->get_where('proveedores', array('prov_id' => $id));
+        if ($proveedor->num_rows > 0) {
+            $this->basic->del('proveedores', 'prov_id', $id);
+            $this->basic->del('areas_proveedores', 'area_prov', $id);
+            $response['html'] = t('Proveedor eliminado');
+            echo json_encode($response);
+        }
+    }
+
+    function save_proveedores() {
+        $areas = $this->input->post('areas');
+        $areas = trim($areas);
+        $areas = explode('-', $areas);
+        $this->form_validation->set_rules('prov_name', 'Nombre', "required|trim");
+        $this->form_validation->set_rules('prov_tel', 'Teléfono', "required|numeric");
+        if ($this->form_validation->run() == TRUE) {
+            if (!$this->input->post('prov_id'))
+                $this->input->post();
+            if ($this->form_validation->run() == TRUE) {
+                $proveedor = array(
+                    'prov_name' => strtoupper($this->input->post('prov_name')),
+                    'prov_tel' => $this->input->post('prov_tel'),
+                    'prov_domicilio' => $this->input->post('prov_domicilio'),
+                    'prov_email' => $this->input->post('prov_email'),
+                    'prov_nota' => $this->input->post('prov_nota'),
+                    'prov_id' => $this->input->post('prov_id')
+                );          
+                $prov_id = $this->basic->save('proveedores', 'prov_id', $proveedor);
+                $this->basic->del('areas_proveedores', 'area_prov', $prov_id);
+                for ($x = 0; $x <= count($areas); $x++) {
+                    if (isset($areas[$x])) {
+                        if (strlen($areas[$x]) > 0) {
+                            $area = array(
+                                'area_prov' => $prov_id,
+                                'area_area' => trim($areas[$x]),
+                            );
+                            $this->basic->save('areas_proveedores', 'area_id', $area);
+                        }
+                    }
+                }
+                $this->data['areas'] = array();
+                $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name');
+                $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+                $response['html'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
+            } else {
+                $response['html'] = validation_errors();
+                $response['js'] = '$("#com_display").css("display","block")';
+                $response['error'] = '1';
+            }
+            echo json_encode($response);
+        }
+    }
 
     /* Clientes */
 
@@ -4372,6 +4482,12 @@ class Manager extends CI_Controller {
                         $dats['value'] = $item['client_name'];
                         $r[] = $dats;
                     }
+                    if ($tabla == 'proveedores') {
+                        $dats['id'] = $item['prov_id'];
+                        $dats['label'] = $item['prov_name'];
+                        $dats['value'] = $item['prov_name'];
+                        $r[] = $dats;
+                    }
                     if ($tabla == 'contratos') {
                         $dats['id'] = $item['con_id'];
                         $dats['label'] = $item['con_prop'];
@@ -4434,6 +4550,11 @@ class Manager extends CI_Controller {
                 /* Obtiene una lista de los pagos, si es que $table es pagos */
                 $this->data[$table] = $this->basic->get_where($table, array('conc_id' => $needle));
             }
+            if ($table == 'proveedores') {
+                $this->data['areas'] = array();
+                /* Obtiene una lista de los pagos, si es que $table es pagos */
+                $this->data[$table] = $this->basic->get_where($table, array('prov_id' => $needle));
+            }
             if ($table == 'contratos') {
                 /* Obtiene una lista de los clientes, si es que $table es clientes */
                 $this->data[$table] = $this->basic->get_where($table, array('con_id' => $needle));
@@ -4477,7 +4598,7 @@ class Manager extends CI_Controller {
 
     function buscar_concepto($table, $tipo = false, $tableo = false, $inq = false, $prop = false, $needle = false, $id_input = false) {
         $response['periodos'] = '';
-        $x_input = preg_replace("/[^0-9]/", "", $id_input);
+        $x_input = ereg_replace("[^0-9]", "", $id_input);
         $contrato = null;
         $inq = urldecode($inq);
         $response['entro'] = 0;
@@ -4701,7 +4822,7 @@ class Manager extends CI_Controller {
                                         $meses = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
                                         $flag = true;
                                         $mes_alq = '';
-                                        if ($last_pay != false) {
+                                        if ($last_pay_serv != false) {
                                             reset($meses);
                                             $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay_serv['cred_mes_alq']);
                                             $ano_last = trim($ano_last);
@@ -4792,7 +4913,7 @@ class Manager extends CI_Controller {
                                                 name: "interes1",
                                                 type: "text",
                                                 autocomplete: "off",
-                                                readonly: true,
+                                                
                                                 style : "cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                                 "class": "form-control ui-autocomplete-input",
                                                 placeholder: "Dias de Interes"                 
@@ -4808,7 +4929,7 @@ class Manager extends CI_Controller {
                                                 type: "text",
                                                 autocomplete: "off",
                                                 value: "' . ($deudas_inquilino[$x]['intereses']) . '",                                  
-                                                readonly: true,
+                                                
                                                 style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                                 "class": "form-control ui-autocomplete-input",
                                                 placeholder: "Dias de Interes"                 
@@ -4816,13 +4937,13 @@ class Manager extends CI_Controller {
                                         }
                                         if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
                                             $row .= " jQuery('<input/>', {
-                                                        readonly: true,
+                                                       
                                                         id: 'iva_calculado'+" . $id_input_new . ",
                                                         name: 'iva_calculado'+" . $id_input_new . ",
                                                         type: 'text',
                                                         autocomplete: 'off',
                                                         value: '" . $deudas_inquilino[$x]['monto'] * 0.21 . "',
-                                                        readonly: true,
+                                                     
                                                         style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                         'class': 'form-control ui-autocomplete-input',
                                                         placeholder: 'IVA/Alquiler'                 
@@ -4891,7 +5012,7 @@ class Manager extends CI_Controller {
                                                 }).appendTo('#bloque'+" . $id_input_new . ");
 
                                                 jQuery('<input/>', {
-                                                        readonly: true,
+                                                      
                                                         id: 'interes'+" . $id_input_new . ",
                                                         name: 'interes'+" . $id_input_new . ",
                                                         type: 'text',       
@@ -4900,20 +5021,20 @@ class Manager extends CI_Controller {
                                                         onblur:'recalcular()',
                                                         autocomplete: 'off',
                                                         value: '" . $deudas_inquilino[$x]['dias_mora'] . " dias mora',
-                                                        readonly: true,
+                                                        
                                                         style : 'cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                         'class': 'form-control ui-autocomplete-input',
                                                         placeholder: 'Dias de Interes'                 
                                                 }).appendTo('#bloque'+" . $id_input_new . ");";
 
                                         $row .= "jQuery('<input/>', {
-                                                        readonly: true,
+                                                     
                                                         id: 'interes_calculado'+" . $id_input_new . ",
                                                         name: 'interes_calculado'+" . $id_input_new . ",
                                                         type: 'text',
                                                         autocomplete: 'off',
                                                         value: '" . ($deudas_inquilino[$x]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x]['monto']) . "',
-                                                        readonly: true,
+                                                      
                                                         style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                         'class': 'form-control ui-autocomplete-input',
                                                         placeholder: 'Monto Interes'                 
@@ -4921,13 +5042,13 @@ class Manager extends CI_Controller {
 
                                         if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
                                             $row .= " jQuery('<input/>', {
-                                                        readonly: true,
+                                                    
                                                         id: 'iva_calculado'+" . $id_input_new . ",
                                                         name: 'iva_calculado'+" . $id_input_new . ",
                                                         type: 'text',
                                                         autocomplete: 'off',
                                                         value: '" . $deudas_inquilino[$x]['monto'] * 0.21 . "',
-                                                        readonly: true,
+                                                    
                                                         style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                         'class': 'form-control ui-autocomplete-input',
                                                         placeholder: 'IVA/Alquiler'                 
@@ -4993,13 +5114,13 @@ class Manager extends CI_Controller {
                                 $row_unica .= "$('#mes1').autocomplete({source: meses});";
                                 if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
                                     $row_unica .= " jQuery('<input/>', {
-                                                        readonly: true,
+                                                   
                                                         id: 'iva_calculado1',
                                                         name: 'iva_calculado1',
                                                         type: 'text',
                                                         autocomplete: 'off',
                                                         value: '" . $monto * 0.21 . "',
-                                                        readonly: true,
+                                                      
                                                         style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                         'class': 'form-control ui-autocomplete-input',
                                                         placeholder: 'IVA/Alquiler'                 
@@ -5062,7 +5183,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "",                                  
-                                        readonly: true,
+                                     
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "Monto Interes"                 
@@ -5071,13 +5192,13 @@ class Manager extends CI_Controller {
                         if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
                             $row = " $('#concepto" . $id_input_new . "').attr('readonly','true');
                                 jQuery('<input/>', {
-                                    readonly: true,
+                                
                                     id: 'iva_calculado'+" . $id_input_new . ",
                                     name: 'iva_calculado'+" . $id_input_new . ",
                                     type: 'text',
                                     autocomplete: 'off',
                                     value: '',
-                                    readonly: true,
+                            
                                     style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                     'class': 'form-control ui-autocomplete-input',
                                     placeholder: 'IVA/Alquiler'                 
@@ -5098,13 +5219,13 @@ class Manager extends CI_Controller {
                                 $('#domicilio" . $id_input_new . "').attr('readonly','true');
                                 $('#concepto" . $id_input_new . "').attr('readonly','true');
                                         jQuery('<input/>', {
-                                            readonly: true,
+                                    
                                             id: 'iva_calculado'+" . $id_input_new . ",
                                             name: 'iva_calculado'+" . $id_input_new . ",
                                             type: 'text',
                                             autocomplete: 'off',
                                             value: '',
-                                            readonly: true,
+                                         
                                             style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                             'class': 'form-control ui-autocomplete-input',
                                             placeholder: 'IVA/Comision'                 
@@ -5119,13 +5240,13 @@ class Manager extends CI_Controller {
 //                                $('#concepto" . $id_input_new . "').attr('readonly','true');";
 //                        $row .= " $('#concepto" . $id_input_new . "').attr('readonly', 'true');
 //                                jQuery('<input/>', {
-//                                readonly: true,
+//                         
 //                                id: 'iva_calculado'+" . $id_input_new . ",
 //                                name: 'iva_calculado'+" . $id_input_new . ",
 //                                type: 'text',
 //                                autocomplete: 'off',
 //                                value: '',
-//                                readonly: true,
+//                           
 //                                style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
 //                                'class': 'form-control ui-autocomplete-input',
 //                                placeholder: 'IVA/Alquiler'
@@ -5141,7 +5262,6 @@ class Manager extends CI_Controller {
                     $total = $monto_todo + $monto_intereses;
                     $response['js'] .= '$("#total_todo").val("' . $total . '");';
                     $response['js'] .= '$("#montos").fadeOut().fadeIn(700);';
-                    $response['js'] .= 'recalcular();$("#monto1").blur();';
                     $this->data['porc'] = $contrato['con_porc'];
                     $this->data['iva'] = $contrato['con_iva'];
                     $this->data['iva_alq'] = $contrato['con_iva_alq'];
@@ -5162,6 +5282,7 @@ class Manager extends CI_Controller {
         } else {
             $this->data[$table] = $this->basic->get_all($table);
         }
+        $response['js'] .= '$("#monto1").focus();setTimeout(function(){$("#monto1").blur();},200);';
         $response['html'] = $this->load->view('manager/' . $table . '/buscar_fila_' . $table, $this->data, TRUE);
         echo json_encode($response);
     }
@@ -5207,7 +5328,7 @@ class Manager extends CI_Controller {
                                     onclick:"unlock(' . $id_input_new . ')",
                                     type: "text",
                                     autocomplete: "off",
-                                    readonly: true,
+                              
                                     style : "cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                     "class": "form-control ui-autocomplete-input",
                                     placeholder: "Dias de Interes"                 
@@ -5225,7 +5346,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "' . ($deudas_inquilino[$x][$y]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x][$y]['monto']) . '",                                  
-                                        readonly: true,
+                          
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "Dias de Interes"                 
@@ -5239,7 +5360,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "' . $deudas_inquilino[$x][$y]['monto'] * 0.21 . '",                                  
-                                        readonly: true,
+                                  
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "IVA/Alquiler"                 
@@ -5315,7 +5436,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "' . $deudas_inquilino[$x][$y]['monto'] * 0.21 . '",                                  
-                                        readonly: true,
+                                    
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "IVA/Alquiler"                 
@@ -5327,7 +5448,7 @@ class Manager extends CI_Controller {
                                 $row .= "
 
                                         jQuery('<input/>', {
-                                                readonly: true,
+                                             
                                                 id: 'interes'+" . $id_input_new . ",
                                                 name: 'interes'+" . $id_input_new . ",
                                                 type: 'text',
@@ -5336,20 +5457,20 @@ class Manager extends CI_Controller {
                                                 onclick:'unlock(" . $id_input_new . ")',
                                                 autocomplete: 'off',
                                                 value: '" . $deudas_inquilino[$x][$y]['dias_mora'] . " dias mora',
-                                                readonly: true,
+                                            
                                                 style : 'cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                 'class': 'form-control ui-autocomplete-input',
                                                 placeholder: 'Dias de Interes'                 
                                         }).appendTo('#bloque'+" . $id_input_new . ");
                                             
                                         jQuery('<input/>', {
-                                            readonly: true,
+                                      
                                             id: 'interes_calculado'+" . $id_input_new . ",
                                             name: 'interes_calculado'+" . $id_input_new . ",
                                             type: 'text',
                                             autocomplete: 'off',
                                             value: '" . ($deudas_inquilino[$x][$y]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x][$y]['monto']) . "',
-                                            readonly: true,
+                                      
                                             style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                             'class': 'form-control ui-autocomplete-input',
                                             placeholder: 'Dias de Interes'                 
@@ -5402,7 +5523,7 @@ class Manager extends CI_Controller {
                                     onclick:"unlock(1)",
                                     type: "text",
                                     autocomplete: "off",
-                                    readonly: true,
+                                   
                                     style : "cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                     "class": "form-control ui-autocomplete-input",
                                     placeholder: "Dias de Interes"                 
@@ -5419,7 +5540,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "' . ($deudas_inquilino[$x]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x]['monto']) . '",                                  
-                                        readonly: true,
+                                  
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "Dias de Interes"                 
@@ -5434,7 +5555,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "' . $deudas_inquilino[$x][$y]['monto'] * 0.21 . '",                                  
-                                        readonly: true,
+                                    
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "IVA/Alquiler"                 
@@ -5510,7 +5631,7 @@ class Manager extends CI_Controller {
                                         type: "text",
                                         autocomplete: "off",
                                         value: "' . $deudas_inquilino[$x]['monto'] * 0.21 . '",                                  
-                                        readonly: true,
+                                    
                                         style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
                                         "class": "form-control ui-autocomplete-input",
                                         placeholder: "IVA/Alquiler"                 
@@ -5518,7 +5639,7 @@ class Manager extends CI_Controller {
                     }
                     if ($deudas_inquilino[$x]['concepto'] == 'Expensas' && $deudas_inquilino[$x]['dias_mora'] != 0) {
                         $row .= "jQuery('<input/>', {
-                                                readonly: true,
+                                      
                                                 id: 'interes'+" . $id_input_new . ",
                                                 name: 'interes'+" . $id_input_new . ",
                                                 type: 'text',
@@ -5527,20 +5648,20 @@ class Manager extends CI_Controller {
                                                 onclick:'unlock(" . $id_input_new . ")',
                                                 autocomplete: 'off',
                                                 value: '" . $deudas_inquilino[$x]['dias_mora'] . " dias mora',
-                                                readonly: true,
+                                          
                                                 style : 'cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                                 'class': 'form-control ui-autocomplete-input',
                                                 placeholder: 'Dias de Interes'                 
                                         }).appendTo('#bloque'+" . $id_input_new . ");
                                             
                                         jQuery('<input/>', {
-                                            readonly: true,
+                                      
                                             id: 'interes_calculado'+" . $id_input_new . ",
                                             name: 'interes_calculado'+" . $id_input_new . ",
                                             type: 'text',
                                             autocomplete: 'off',
                                             value: '" . ($deudas_inquilino[$x]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x]['monto']) . "',
-                                            readonly: true,
+                                        
                                             style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
                                             'class': 'form-control ui-autocomplete-input',
                                             placeholder: 'Dias de Interes'                 

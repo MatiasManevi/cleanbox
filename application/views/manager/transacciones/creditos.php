@@ -395,6 +395,7 @@
                                 $(".periodos").addClass("alert alert-danger")
                             }else{
                                 $(".periodos").removeClass("alert alert-danger");
+                                $("#monto1").blur();
                                 $('#tableo').val(1);     
                             }                          
                         }else{
@@ -410,7 +411,7 @@
                     $("#monto"+x).focus();
                 },
                 complete:function(){
-//                    $("#monto1").blur()
+                    $("#monto1").blur();
                 }
             });
         } 

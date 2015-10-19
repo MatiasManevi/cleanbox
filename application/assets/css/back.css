@@ -2463,9 +2463,11 @@ ul.nav ul li:last-child a { border: none; }
 span.area{
     border-radius: 6px;
     background: grey;
+    float: left;
     color: white;
     margin-right: 12px;
     padding: 6px;
+    margin-top: 8px;
 }
 #areas{
     margin-top: 18px;

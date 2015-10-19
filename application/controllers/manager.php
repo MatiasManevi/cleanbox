@@ -1140,7 +1140,6 @@ class Manager extends CI_Controller {
 
     function proveedores() {
         $this->load_similar_content('proveedores');
-        $this->data['areas'] = array();
         $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name', '');
         $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
         $this->eliminar_vacios();
@@ -1173,8 +1172,7 @@ class Manager extends CI_Controller {
     }
 
     function save_proveedores() {
-        $areas = $this->input->post('areas');
-        $areas = trim($areas);
+        $areas = trim($this->input->post('areas'));
         $areas = explode('-', $areas);
         $this->form_validation->set_rules('prov_name', 'Nombre', "required|trim");
         $this->form_validation->set_rules('prov_tel', 'Teléfono', "required|numeric");
@@ -1189,7 +1187,7 @@ class Manager extends CI_Controller {
                     'prov_email' => $this->input->post('prov_email'),
                     'prov_nota' => $this->input->post('prov_nota'),
                     'prov_id' => $this->input->post('prov_id')
-                );          
+                );
                 $prov_id = $this->basic->save('proveedores', 'prov_id', $proveedor);
                 $this->basic->del('areas_proveedores', 'area_prov', $prov_id);
                 for ($x = 0; $x <= count($areas); $x++) {
@@ -1203,17 +1201,17 @@ class Manager extends CI_Controller {
                         }
                     }
                 }
-                $this->data['areas'] = array();
                 $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name');
                 $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+                $response['js'] = '';
                 $response['html'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
-            } else {
-                $response['html'] = validation_errors();
-                $response['js'] = '$("#com_display").css("display","block")';
-                $response['error'] = '1';
             }
-            echo json_encode($response);
+        } else {
+            $response['html'] = validation_errors();
+            $response['js'] = '$("#com_display").css("display","block")';
+            $response['error'] = '1';
         }
+        echo json_encode($response);
     }
 
     /* Clientes */
@@ -4551,7 +4549,6 @@ class Manager extends CI_Controller {
                 $this->data[$table] = $this->basic->get_where($table, array('conc_id' => $needle));
             }
             if ($table == 'proveedores') {
-                $this->data['areas'] = array();
                 /* Obtiene una lista de los pagos, si es que $table es pagos */
                 $this->data[$table] = $this->basic->get_where($table, array('prov_id' => $needle));
             }

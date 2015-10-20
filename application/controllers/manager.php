@@ -1136,6 +1136,108 @@ class Manager extends CI_Controller {
 
     /* Fin Conceptos */
 
+    /* Mantenimientos */
+
+    function choose_prov() {
+        $proveedores = $this->basic->get_where('proveedores', array(), 'prov_nota', 'desc');
+        $this->data['proveedores'] = array();
+        foreach ($proveedores->result_array() as $row) {
+            $row['prov_bussy'] = 0;
+            if ($this->isBussy($row['prov_name'])) {
+                $row['prov_bussy'] = 1;
+            }
+            $this->data['proveedores'][] = $row;
+        }
+        $response['html'] = $this->load->view('manager/mantenimientos/proveedores', $this->data, TRUE);
+        echo json_encode($response);
+    }
+
+    function isBussy($prov_name) {
+        $bussy = false;
+        $mantenimientos = $this->basic->get_all('mantenimientos');
+        foreach ($mantenimientos->result_array() as $row) {
+            if ($row['mant_prov'] == $prov_name) {
+                $bussy = true;
+                break;
+            }
+        }
+        return $bussy;
+    }
+
+    function mantenimientos() {
+        $this->load_similar_content('mantenimientos');
+        $this->data['mantenimientos'] = $this->basic->get_where('mantenimientos', array(), 'mant_id', 'desc');
+        $this->data['lista'] = $this->load->view('manager/mantenimientos/lista', $this->data, TRUE);
+        $this->eliminar_vacios();
+        $this->data['content'] = $this->load->view('manager/mantenimientos/mantenimientos', $this->data, TRUE);
+        $this->load->view('default', $this->data);
+    }
+
+    function load_edit_mantenimientos($id = false) {
+        $this->data['mantenimientos'] = $this->basic->get_where('mantenimientos', array(), 'mant_id', 'desc');
+        $this->data['lista'] = $this->load->view('manager/mantenimientos/lista', $this->data, TRUE);
+        if ($id) {
+            $this->data['row'] = $this->basic->get_where('mantenimientos', array('mant_id' => $id))->row();
+            $this->data['id'] = $id;
+            $response['js'] = "$('add_op').css('display','none');$('.contenedor_centro').css('width','95%');";
+            $response['html'] = $this->load->view('manager/mantenimientos/mantenimientos', $this->data, TRUE);
+        }
+        $response['js'] = "$('.contenedor_centro').css('width','95%');";
+        echo json_encode($response);
+    }
+
+    function del_mantenimientos($id) {
+        $proveedor = $this->basic->get_where('mantenimientos', array('mant_id' => $id));
+        if ($proveedor->num_rows > 0) {
+            $this->basic->del('mantenimientos', 'mant_id', $id);
+            $response['html'] = t('Mantenimientos eliminado');
+            echo json_encode($response);
+        }
+    }
+
+    function save_mantenimientos() {
+        $areas = trim($this->input->post('areas'));
+        $areas = explode('-', $areas);
+        $this->form_validation->set_rules('prov_name', 'Nombre', "required|trim");
+        $this->form_validation->set_rules('prov_tel', 'Teléfono', "required|numeric");
+        if ($this->form_validation->run() == TRUE) {
+            if (!$this->input->post('prov_id'))
+                $this->input->post();
+            if ($this->form_validation->run() == TRUE) {
+                $proveedor = array(
+                    'prov_name' => strtoupper($this->input->post('prov_name')),
+                    'prov_tel' => $this->input->post('prov_tel'),
+                    'prov_domicilio' => $this->input->post('prov_domicilio'),
+                    'prov_email' => $this->input->post('prov_email'),
+                    'prov_nota' => $this->input->post('prov_nota'),
+                    'prov_id' => $this->input->post('prov_id')
+                );
+                $prov_id = $this->basic->save('proveedores', 'prov_id', $proveedor);
+                $this->basic->del('areas_proveedores', 'area_prov', $prov_id);
+                for ($x = 0; $x <= count($areas); $x++) {
+                    if (isset($areas[$x])) {
+                        if (strlen($areas[$x]) > 0) {
+                            $area = array(
+                                'area_prov' => $prov_id,
+                                'area_area' => trim($areas[$x]),
+                            );
+                            $this->basic->save('areas_proveedores', 'area_id', $area);
+                        }
+                    }
+                }
+                $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name');
+                $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+                $response['js'] = '';
+                $response['html'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
+            }
+        } else {
+            $response['html'] = validation_errors();
+            $response['js'] = '$("#com_display").css("display","block")';
+            $response['error'] = '1';
+        }
+        echo json_encode($response);
+    }
+
     /* Proveedores */
 
     function proveedores() {
@@ -4467,6 +4569,9 @@ class Manager extends CI_Controller {
 
     //autocompletar
     function autocomplete($tabla, $tipo = false) {
+        if ($tabla == 'proveedores_pop') {
+            $tabla = 'proveedores';
+        }
         $buscar = $this->input->get('term');
         if ($buscar) {
             $r = array();
@@ -4548,9 +4653,17 @@ class Manager extends CI_Controller {
                 /* Obtiene una lista de los pagos, si es que $table es pagos */
                 $this->data[$table] = $this->basic->get_where($table, array('conc_id' => $needle));
             }
-            if ($table == 'proveedores') {
+            if ($table == 'proveedores' || $table == 'proveedores_pop') {
                 /* Obtiene una lista de los pagos, si es que $table es pagos */
-                $this->data[$table] = $this->basic->get_where($table, array('prov_id' => $needle));
+                $this->data['proveedores'] = $this->basic->get_where('proveedores', array('prov_id' => $needle));
+                if ($table == 'proveedores_pop') {
+                    $this->data['proveedores'] = array();
+                    $proveedores = $this->basic->get_where('proveedores', array('prov_id' => $needle));
+                    foreach ($proveedores->result_array() as $row) {
+                        $row['prov_bussy'] = $this->isBussy($row['prov_name']);
+                        $this->data['proveedores'][] = $row;
+                    }         
+                }
             }
             if ($table == 'contratos') {
                 /* Obtiene una lista de los clientes, si es que $table es clientes */
@@ -4565,7 +4678,11 @@ class Manager extends CI_Controller {
         } else {
             $this->data[$table] = $this->basic->get_all($table);
         }
-        $response['html'] = $this->load->view('manager/' . $table . '/buscar_fila_' . $table, $this->data, TRUE);
+        if ($table == 'proveedores_pop') {
+            $response['html'] = $this->load->view('manager/mantenimientos/buscar_fila_' . $table, $this->data, TRUE);
+        } else {
+            $response['html'] = $this->load->view('manager/' . $table . '/buscar_fila_' . $table, $this->data, TRUE);
+        }
         echo json_encode($response);
     }
 
@@ -4577,9 +4694,9 @@ class Manager extends CI_Controller {
                 $this->data['contratos_vigentes']++;
             }
         }
-        if ($tabla_pk) {
-            $this->data[$tabla] = $this->basic->get_where($tabla, array(), $order, '', '50');
-        }
+//        if ($tabla_pk) {
+//            $this->data[$tabla] = $this->basic->get_where($tabla, array(), $order, '', '50');
+//        }
         if ($tabla == 'clientes' || $tabla == 'cuentas_corrientes') {
             $this->data[$tabla] = $this->basic->get_where($tabla, array(), $order, '', '50');
         }
@@ -4587,6 +4704,15 @@ class Manager extends CI_Controller {
             $response['html'] = $this->load->view('manager/' . 'transacciones' . '/buscar_fila_' . $tabla, $this->data, TRUE);
         } else if ($tabla == 'debitos') {
             $response['html'] = $this->load->view('manager/' . 'transacciones' . '/buscar_fila_' . $tabla, $this->data, TRUE);
+        } else if ($tabla == 'proveedores_pop') {
+            /* Obtiene una lista de los pagos, si es que $table es pagos */
+            $this->data['proveedores'] = array();
+            $proveedores = $this->basic->get_all('proveedores');
+            foreach ($proveedores->result_array() as $row) {
+                $row['prov_bussy'] = $this->isBussy($row['prov_name']);
+                $this->data['proveedores'][] = $row;
+            }
+            $response['html'] = $this->load->view('manager/mantenimientos/buscar_fila_' . $tabla, $this->data, TRUE);
         } else {
             $response['html'] = $this->load->view('manager/' . $tabla . '/buscar_fila_' . $tabla, $this->data, TRUE);
         }

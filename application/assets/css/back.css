@@ -2331,9 +2331,7 @@ ul.nav ul li:last-child a { border: none; }
     width: auto;
 }
 .estado{
-
     margin-top: 15px;
-    ;
 }
 .estado div{
     float:left;
@@ -2483,4 +2481,21 @@ a._close{
 a._close:hover{
     text-decoration: none;
     color:white;
+}
+.desc_mant{
+    clear: both;
+    width: 400px;
+    float: left;
+    margin: 0px;
+    height: 126px;
+    margin-bottom: 12px;
+}
+#elegir{
+    text-decoration: none;
+}
+#elegir:hover{
+    text-decoration: none;
+}
+.list_prov{
+    overflow: hidden;
 }

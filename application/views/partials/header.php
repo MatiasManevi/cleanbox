@@ -20,7 +20,12 @@
                         </ul>
                     </li>
                     <li><a href="<?= site_url('manager/clientes') ?>">Clientes</a></li>              
-                    <li><a href="<?= site_url('manager/proveedores') ?>">Proveedores</a></li>              
+                    <li class="<?= isset($uri) && $uri == 'transacciones' ? 'active' : '' ?>"><a href="javascript:;">Mantenimiento</a>
+                        <ul>
+                            <li><a href="<?= site_url('manager/proveedores') ?>">Proveedores</a></li>              
+                            <li><a href="<?= site_url('manager/mantenimientos') ?>">Mantenimientos</a></li>              
+                        </ul>
+                    </li>
                     <li class="<?= isset($uri) && $uri == 'transacciones' ? 'active' : '' ?>"><a href="javascript:;">Transacciones</a>
                         <ul>
                             <li><a href="<?= site_url('manager/creditos') ?>">Creditos</a></li>                                   

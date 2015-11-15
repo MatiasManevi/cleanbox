@@ -78,7 +78,7 @@
 
 <script>
     function addArea(area){
-        if(area != 'Area'){
+        if(area != 'Area' && area != 'Seleccione un área'){
             var exists = false;
             var areas = $('#areas');
             $('.area').each(function(){

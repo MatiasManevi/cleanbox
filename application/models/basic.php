@@ -23,6 +23,9 @@ Class Basic extends CI_Model {
 
     function get_auto($nombre = false, $tabla = false, $tipo = false) {
         $this->db->select("*");
+        if ($tabla == 'proveedores_prop') {
+            $tabla = 'proveedores';
+        }
         $this->db->from($tabla);
         if ($tabla == 'cuentas_corrientes') {
             $this->db->like('cc_prop', $nombre, 'match');
@@ -44,6 +47,10 @@ Class Basic extends CI_Model {
         }
         if ($tabla == 'propiedades') {
             $this->db->like('prop_dom', $nombre, 'match');
+            //el parametro after produce where client_name like $nombre%
+        }
+        if ($tabla == 'proveedores') {
+            $this->db->like('prov_name', $nombre, 'match');
             //el parametro after produce where client_name like $nombre%
         }
         if ($tabla == 'contratos') {
@@ -73,7 +80,7 @@ Class Basic extends CI_Model {
             $this->db->limit($limit);
         return $this->db->get_where($table, $where_array);
     }
-
+    
     function del($table, $id_field, $id) {
         $this->db->delete($table, array($id_field => $id));
     }

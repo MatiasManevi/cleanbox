@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="<?= base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.css?<?= filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.css') ?>"/>
 <link rel="stylesheet" href="<?= base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css?<?= filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css') ?>"/>
 <link rel="stylesheet" href="<?= base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap.css?<?= filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap.css') ?>"/>
+<link rel="stylesheet" href="<?= base_url() ?>plugins/datetimepicker/jquery-ui-timepicker-addon.css"/>
 
 <!-- carga por internet-->
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
@@ -64,6 +65,7 @@
 <script type="text/javascript" src="<?= base_url() ?>plugins/fancybox/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="<?= base_url() ?>plugins/fancybox/jquery.easing-1.3.pack.js"></script>
 <script type="text/javascript" src="<?= base_url() ?>plugins/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+<script type="text/javascript" src="<?= base_url() ?>plugins/datetimepicker/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="<?= asset_url() ?>js/back_functions.js?<?= filemtime('application/assets/js/back_functions.js') ?>"></script>
 
 

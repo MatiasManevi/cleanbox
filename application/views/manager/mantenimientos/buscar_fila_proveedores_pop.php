@@ -28,7 +28,8 @@
             echo '<td>' . $proveedores[$x]['prov_domicilio'] . '</td>';
             echo '<td>' . $disp . '</td>';
             echo '<td>';
-            echo '<a id="elegir" href="javascript:;" class="glyphicon glyphicon-ok" onclick="chooseThis(' . $proveedores[$x]['prov_id'] . ')"></a>';
+            echo '<input type="hidden" id="name" value="' . $proveedores[$x]['prov_name'] . '">';
+            echo '<a id="elegir" href="javascript:;" class="glyphicon glyphicon-ok" onclick="chooseProv(this)" ></a>';
             echo '</tr>';
         }
     } else {
@@ -43,9 +44,17 @@
 </div> 
 
 <script>
+    function chooseProv(that){
+        var name = $(that).parents('tr').find('#name').val();
+        $('#mant_prov').val(name);
+        $('#back_fader').hide();
+        $('#popup').hide();
+    }
+    
     function refrescar(){
         request('<?= site_url() . 'refresh/' ?>proveedores_pop//prov_name','','.list_prov');
     }    
+    
     $(function(){
         $('#auto_personas1').autocomplete({
             source: "<?php echo site_url('manager/autocomplete') . '/proveedores' ?>",

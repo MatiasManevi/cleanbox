@@ -2484,8 +2484,9 @@ a._close:hover{
 }
 .desc_mant{
     clear: both;
-    width: 400px;
+    width: 100%;
     float: left;
+    resize: none;
     margin: 0px;
     height: 126px;
     margin-bottom: 12px;

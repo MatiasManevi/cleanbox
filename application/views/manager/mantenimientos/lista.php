@@ -39,6 +39,7 @@
             echo '<td>';
 
             echo '<a href="javascript:;" class="glyphicon glyphicon-edit" onclick="load_edit(\'' . site_url('manager/load_edit_mantenimientos/' . $row->mant_id) . '\')"></a> | ';
+            echo '<a href="javascript:;" class="glyphicon glyphicon-print" onclick="request_post(\'' . site_url('manager/reporte_mantenimiento/' . $row->mant_id) . '\')"></a> | ';
             echo '<a href="javascript:;" class="glyphicon glyphicon-trash" onclick="del(\'' . $row->mant_id . '\',\'' . site_url('manager/del_mantenimientos/' . $row->mant_id) . '\')"></a>  ';
             echo '</tr>';
         }

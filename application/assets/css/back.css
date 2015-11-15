@@ -2500,3 +2500,6 @@ a._close:hover{
 .list_prov{
     overflow: hidden;
 }
+.glyphicon {
+    text-decoration: none !important;
+}

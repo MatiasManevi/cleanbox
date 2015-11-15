@@ -1199,6 +1199,7 @@ class Manager extends CI_Controller {
         $this->form_validation->set_rules('mant_domicilio', 'Domicilio', "required|trim");
         $this->form_validation->set_rules('mant_prop', 'Propietario', "required");
         $this->form_validation->set_rules('mant_inq', 'Inquilino', "required");
+        $this->form_validation->set_rules('mant_desc', 'Descripcion detallada', "required");
         if ($this->form_validation->run() == TRUE) {
             if (!$this->input->post('mant_id'))
                 $this->input->post();
@@ -1786,6 +1787,11 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
+    function reporte_mantenimiento($mant) {
+        $response['js'] = 'window.location.href="' . site_url('manager/show_mantenimiento') . '/' . $mant . '"';
+        echo json_encode($response);
+    }
+
     function show_recibo($trans) {
         $contrato = null;
         $do_recibo = false;
@@ -2044,6 +2050,13 @@ class Manager extends CI_Controller {
         $this->data['alquileres'] = $this->msort($this->data['alquileres'], 'trans');
         $this->data['varios'] = $this->msort($this->data['varios'], 'trans');
         $this->data['content'] = $this->load->view('manager/reportes/informe_prop', $this->data, TRUE);
+        $this->load->view('default', $this->data);
+    }
+
+    function show_mantenimiento($mant) {
+        $this->load_similar_content('creditos');
+        $this->data['mantenimiento'] = $this->basic->get_where('mantenimientos', array('mant_id' => $mant))->row_array();
+        $this->data['content'] = $this->load->view('manager/reportes/informe_mantenimiento', $this->data, TRUE);
         $this->load->view('default', $this->data);
     }
 

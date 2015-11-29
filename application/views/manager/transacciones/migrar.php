@@ -57,6 +57,7 @@
                     <a style="text-decoration: none"class="glyphicon glyphicon-plus-sign"></a></span>
                 <input type="text" id="monto" name="monto" style="margin-right: 5px;font-size: 16px;width: 176px;float: left;" class="form-control ui-autocomplete-input" placeholder="Monto">
                 <input type="text" id="mes" name="mes" style="margin-right: 5px;font-size: 16px;width: 180px;float: left;" class="form-control ui-autocomplete-input" placeholder="Mes">
+                <input type="text" id="domicilio" name="domicilio" style="margin-right: 5px;font-size: 16px;width: 180px;float: left;" class="form-control ui-autocomplete-input" placeholder="Domicilio">
                 <div id="periodos" class="periodos"></div>
             </div>
             <div id="relleno">

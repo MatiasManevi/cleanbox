@@ -38,6 +38,18 @@
                 <select style="clear: both;float: left;margin-top: 5px;" id="areas_select" onchange="addArea($('#areas_select option:selected').html())">
                     <option value="Area" selected="selected">Seleccione un área</option>
                     <option value="Plomero">Plomero</option>
+                    <option value="Carpintero">Carpintero</option>
+                    <option value="Refrigeracion">Refrigeracion</option>
+                    <option value="Persianas">Persianas</option>
+                    <option value="Vidriero">Vidriero</option>
+                    <option value="Ascensores">Ascensores</option>
+                    <option value="Pintor">Pintor</option>
+                    <option value="Escribano">Escribano</option>
+                    <option value="Abogados">Abogados</option>
+                    <option value="Agrimensor">Agrimensor</option>
+                    <option value="Contador">Contador</option>
+                    <option value="Techistas">Techistas</option>
+                    <option value="Cerrajeros">Cerrajeros</option>
                     <option value="Electricista">Electricista</option>
                     <option value="Gasista">Gasista</option>
                     <option value="Albañil">Albañil</option>

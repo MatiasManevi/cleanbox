@@ -1488,6 +1488,33 @@ img.selected{
     top: 0;
     z-index: 9999;
 }
+#back_fader_mant{
+    background-color: rgba(255, 255, 255, 0.93);
+    display: none;
+    bottom: 0;
+    left: 0;
+    overflow-x: auto;
+    overflow-y: scroll;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 9999;
+}
+#popup_mant{
+    background: none repeat scroll 0 0 menu;
+    border: 2px solid #B5B5B5;
+    border-radius: 53px;
+    box-shadow: 0 0 20px 5px #A0A0A0;
+    display: none;
+    font-size: 13px;
+    margin: 127px auto;
+    height: auto;
+    padding: 20px 30px 61px;
+    position: static;
+    top: 110px !important;
+    width: 45%;
+    z-index: 10;
+}
 #popup1{
     background: none repeat scroll 0 0 menu;
     border: 2px solid #B5B5B5;

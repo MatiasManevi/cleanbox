@@ -10,9 +10,12 @@
             </div>
             <div class="contenedor_centro">
                 <?= isset($content) ? $content : ''; ?>
-
+                
+                
             </div>
+            
             <?= isset($caja) ? $caja : 'Error al cargar valores'; ?>
+            <?= isset($mantenimientos) ? $mantenimientos : ''; ?>
             <?= isset($codes) ? $codes : 'Error al cargar valores'; ?>
         </div>
     </body>

@@ -14,6 +14,7 @@
                 <ul class="nav navbar-nav">
                     <li class="<?= isset($uri) && $uri == 'transacciones' ? 'active' : '' ?>"><a href="javascript:;">Propietarios</a>
                         <ul>
+                            <li class="<?= isset($uri) && $uri == 'cuentas_corrientes' ? 'active' : '' ?>"><a href="<?= site_url('manager/cuentas') ?>">Cuentas Corrientes</a></li>                                  
                             <li class="<?= isset($uri) && $uri == 'contratos' ? 'active' : '' ?>"><a href="<?= site_url('manager/contratos') ?>">Contratos</a></li>                                  
                             <li class="<?= isset($uri) && $uri == 'propiedades' ? 'active' : '' ?>"><a href="<?= site_url('manager/propiedades') ?>">Propiedades</a></li>                                  
                             <li class="<?= isset($uri) && $uri == 'comentarios' ? 'active' : '' ?>"><a href="<?= site_url('manager/comentarios') ?>">Comentarios</a></li>  

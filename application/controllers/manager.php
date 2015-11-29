@@ -25,7 +25,7 @@ class Manager extends CI_Controller {
         $this->data['section'] = $this->basic->get_where('sections', array('sect_uri' => 'home'))->row();
         $this->data['head'] = $this->load->view('partials/head', '', TRUE);
         $this->data['menu'] = $this->load->view('partials/header', $this->data, TRUE);
-        $this->cargar_vista_caja();
+        $this->cargar_vista_inicio();
         $this->vencer_contratos();
 //        $this->arreglarmeses();
         $this->load->view('manager/man_view', $this->data);
@@ -182,7 +182,7 @@ class Manager extends CI_Controller {
         }
     }
 
-    function cargar_vista_caja() {
+    function cargar_vista_inicio() {
         /* Vista de contenido gral de caja y con que comenzo el dia */
         $caja_fuerte = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
         $this->data['caja_fuerte'] = $caja_fuerte['cc_saldo'];
@@ -190,8 +190,45 @@ class Manager extends CI_Controller {
         $this->data['mes'] = $this->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
         $this->data['mensual_progresivo'] = $this->data['mes']['men_creditos'] - $this->data['mes']['men_debitos'];
         $this->data['comments'] = $this->load->view('manager/comments', $this->data, TRUE);
+        $this->data['mantenciones'] = $this->getMantenimientos();
+        $this->data['mantenimientos'] = $this->load->view('manager/mantenimientos', $this->data, TRUE);
         $this->data['caja'] = $this->load->view('manager/caja_comienza', $this->data, TRUE);
         $this->data['codes'] = $this->load->view('manager/codes', $this->data, TRUE);
+    }
+
+    function getMantenimientos() {
+        $ordenados = array();
+        $desordenados = array();
+        $mants = $this->basic->get_where('mantenimientos', array('mant_status' => 2));
+        if (count($mants) > 0) {
+            foreach ($mants->result_array() as $row) {
+                $propasado = $this->comp_fecha_sup(date('d-m-Y'), $row['mant_date_deadline']);
+                if ($propasado == '1') {
+                    //se paso
+                    $deadline = 'Aun queda tiempo';
+                } else {
+                    //tiene tiempo
+                    $deadline = 'Se ha propoasado la fecha';
+                }
+                $proveedor = $this->basic->get_where('proveedores', array('prov_name' => $row['mant_prov']))->row_array();
+                $mant = array(
+                    'id' => $row['mant_id'],
+                    'domicilio' => $row['mant_domicilio'],
+                    'proveedor' => $row['mant_prov'],
+                    'proveedor_tel' => $proveedor['prov_tel'],
+                    'propietario' => $row['mant_prop'],
+                    'inquilino' => $row['mant_inq'],
+                    'prioridad' => $row['mant_prioridad'],
+                    'descripcion' => $row['mant_desc'],
+                    'deadline' => $deadline,
+                    'fecha_deadline' => strtotime($row['mant_date_deadline']),
+                );
+                $desordenados[] = $mant;
+            }
+            $ordenados = $this->msort($desordenados, 'fecha_deadline');
+//            var_dump($ordenados);die;
+        }
+        return $ordenados;
     }
 
     function crear_caja() {
@@ -1200,6 +1237,7 @@ class Manager extends CI_Controller {
         $this->form_validation->set_rules('mant_prop', 'Propietario', "required");
         $this->form_validation->set_rules('mant_inq', 'Inquilino', "required");
         $this->form_validation->set_rules('mant_desc', 'Descripcion detallada', "required");
+        $this->form_validation->set_rules('mant_date_deadline', 'Fecha de terminacion', "required");
         if ($this->form_validation->run() == TRUE) {
             if (!$this->input->post('mant_id'))
                 $this->input->post();
@@ -2152,6 +2190,7 @@ class Manager extends CI_Controller {
                 'cred_nro_cheque' => $this->input->post('nro_cheque'),
                 'cred_mes_alq' => $this->input->post('mes'),
                 'cred_concepto' => $this->input->post('concepto'),
+                'cred_domicilio' => $this->input->post('domicilio'),
                 'cred_monto' => $this->input->post('monto'),
                 'cred_tipo_trans' => $this->input->post('cred_tipo_trans'),
                 'cred_fecha' => Date('d-m-Y'),
@@ -2162,6 +2201,7 @@ class Manager extends CI_Controller {
                 'deb_tipo_trans' => 'Caja',
                 'deb_cc' => $this->input->post('origen'),
                 'deb_concepto' => $this->input->post('concepto'),
+                'deb_domicilio' => $this->input->post('domicilio'),
                 'deb_monto' => $this->input->post('monto'),
                 'deb_fecha' => Date('d-m-Y'),
                 'trans' => $trans

@@ -1,4 +1,4 @@
-<div class="comments">
+<div class="comments" style="width: 50%;">
     <div style="width:100%;margin-bottom: 10px;"class="porcentajes">
         <div class="porc_data">
             <label style="font-size: 15.2px;">Formulario para guardar comentarios sobre alquileres y demas, acerca de un Propietario en particular</label>
@@ -8,7 +8,7 @@
     <input id="auto_inm_id" name="auto_inm_id" type="hidden"/>
     <input onkeyup="validar_inm('prop_domi')" onblur="validar_inm('prop_domi')" id="prop_domi" type="text" name="com_dom" value="<?= (isset($row) && $row->com_dom ) ? $row->com_dom : '' ?>"class="form-control ui-autocomplete-input"  placeholder="Domicilio de propiedad" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="margin-top: 9px;clear: both;margin-bottom: 15px;margin-right: 5px;font-size: 16px;width: 400px;float: left;">    
     <textarea id="coment" placeholder="Comentarios"></textarea>
-    <button class="btn btn-primary" id="save_coment" style="float: left; line-height: 0;">Guardar</button>
+    <button class="btn btn-primary" id="save_coment" style="margin-top: 10px;float: left; line-height: 0;">Guardar</button>
     <div id="com_display"></div>
 </div>
 <script>

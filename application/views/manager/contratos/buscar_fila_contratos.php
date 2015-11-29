@@ -153,7 +153,7 @@
                     echo '<td>';
 
                     echo '<a href="javascript:;" class="glyphicon glyphicon-edit" onclick="load_edit(\'' . site_url('manager/load_edit_contratos/' . $con->con_id) . '\')"></a> | ';
-                    echo '<a href="javascript:;" class="glyphicon glyphicon-trash" onclick="del(\'' . $con->con_id . '\',\'' . site_url('manager/del_contratos/' . $con->con_id) . '\')"></a>  ';
+                    echo '<a href="javascript:;" class="glyphicon glyphicon-trash" onclick="modalDelete(' . $con->con_id . ')"></a>';
                     echo '</tr>';
                 }
             } else {
@@ -165,8 +165,26 @@
 </div>
 
 
-
+<div id="deleteContrato1" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Esta seguro de eliminar este contrato?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-default _delete" data-dismiss="modal">Eliminar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->   
 <script>
+    function modalDelete(id){
+        var url = '<?php echo site_url('manager/del_contratos/') ?>'+ '/' + id;
+        var action = 'del('+id+',"'+url+'")';
+        $('#deleteContrato1').find('._delete').attr('onclick',action);
+        $('#deleteContrato1').modal('show');
+    }
     $('#con_tolerancia').keypress(function(key) {
         if((key.charCode < 48 || key.charCode > 57) && key.charCode != 0 && key.charCode != 8 && key.charCode != 9) return false;
     });

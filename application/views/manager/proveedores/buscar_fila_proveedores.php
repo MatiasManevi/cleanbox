@@ -38,23 +38,36 @@
                 <select style="clear: both;float: left;margin-top: 5px;" id="areas_select" onchange="addArea($('#areas_select option:selected').html())">
                     <option value="Area" selected="selected">Seleccione un área</option>
                     <option value="Plomero">Plomero</option>
+                    <option value="Carpintero">Carpintero</option>
+                    <option value="Refrigeracion">Refrigeracion</option>
+                    <option value="Persianas">Persianas</option>
+                    <option value="Vidriero">Vidriero</option>
+                    <option value="Ascensores">Ascensores</option>
+                    <option value="Pintor">Pintor</option>
+                    <option value="Escribano">Escribano</option>
+                    <option value="Abogados">Abogados</option>
+                    <option value="Agrimensor">Agrimensor</option>
+                    <option value="Contador">Contador</option>
+                    <option value="Techistas">Techistas</option>
+                    <option value="Cerrajeros">Cerrajeros</option>
                     <option value="Electricista">Electricista</option>
                     <option value="Gasista">Gasista</option>
                     <option value="Albañil">Albañil</option>
                     <option value="Aire Acond.">Aire Acond.</option>
                 </select>
                 <div id="areas">
-                    <?php $added = ''; 
+                    <?php
+                    $added = '';
                     if (isset($areas) && count($areas) > 0) {
                         foreach ($areas->result() as $row) {
                             ?>
                             <span id="area_<?php echo $row->area_area ?>" class="area">
-                                <?php echo $row->area_area ?>
+        <?php echo $row->area_area ?>
                                 <a onclick="deleteArea('<?php echo $row->area_area ?>')" title="Eliminar" href="javascript:;" class="_close">X</a>
                             </span>
-                           <?php $added .= $row->area_area .'-' ?> 
+                            <?php $added .= $row->area_area . '-' ?> 
                         <?php } ?>
-                    <?php } ?>
+<?php } ?>
                 </div>
                 <input value="<?php echo $added ?>" type="hidden" name="areas" id="areas_added"/>
             </div> 
@@ -62,7 +75,7 @@
                 <span></span>
             </div>
             <button class="btn btn-primary" type="submit" id="buttons_cli" style="margin-bottom: 150px;clear: both;float: left;line-height: 0;margin-top: 100px;"><?= isset($row) ? 'Guardar' : 'Crear' ?></button>
-            
+
         </form>
 
     </div>

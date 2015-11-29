@@ -4,8 +4,20 @@
     <a style=" margin-top: 12px;"id="refresh" href="javascript:;" class="glyphicon glyphicon-refresh" onclick="refrescar()"></a>
 
 </div>
- <label style="margin-right: 5px; font-size: 16px; width: 403px; float: left;">Contratos Vigentes: <?= $contratos_vigentes ?></label>
-   
+<label style="margin-right: 5px; font-size: 16px; width: 403px; float: left;">Contratos Vigentes: <?= $contratos_vigentes ?></label>
+<div id="deleteContrato" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Esta seguro de eliminar este contrato?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-default _delete" data-dismiss="modal">Eliminar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->   
 <table class="table table-hover">
     <tr>    
         <th>Propietario</th>
@@ -31,7 +43,7 @@
             echo '<td>';
 
             echo '<a href="javascript:;" class="glyphicon glyphicon-edit" onclick="load_edit(\'' . site_url('manager/load_edit_contratos/' . $con->con_id) . '\')"></a> | ';
-            echo '<a href="javascript:;" class="glyphicon glyphicon-trash" onclick="del(\'' . $con->con_id . '\',\'' . site_url('manager/del_contratos/' . $con->con_id) . '\')"></a>  ';
+            echo '<a href="javascript:;" class="glyphicon glyphicon-trash" onclick="modalDelete(' . $con->con_id . ')"></a>';
             echo '</tr>';
         }
     } else {
@@ -40,6 +52,12 @@
     ?>
 
     <script>
+        function modalDelete(id){
+            var url = '<?php echo site_url('manager/del_contratos/') ?>'+ '/' + id;
+            var action = 'del('+id+',"'+url+'")';
+            $('#deleteContrato').find('._delete').attr('onclick',action);
+            $('#deleteContrato').modal('show');
+        }
         function refrescar(){
             request('<?= site_url() . 'refresh/' ?>contratos/con_id/con_prop','','.contenedor_centro');
         }

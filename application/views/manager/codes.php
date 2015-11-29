@@ -1,4 +1,4 @@
-<div style="margin-top:5px;"class="comments">
+<div style="margin-top:5px;position: absolute;top:497px"class="comments">
     <div style="width:100%;margin-bottom: 10px;"class="porcentajes">
         <label style="font-size: 15.2px;">Generador de Códigos</label>
         <input type="text" id="codigo" style="text-align: center;margin-right: 5px;font-size: 16px;width: 152px;" class="form-control ui-autocomplete-input" placeholder="Código Autorizador">

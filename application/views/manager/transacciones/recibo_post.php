@@ -100,6 +100,7 @@
                                 <div style="clear: both" class="item_locador">Punitorios......: $ <?= $creditos_recibo_alquiler[$x]['cred_interes_calculados'] ?></div>
                                 <div class="item_locador">Efectivo.......: $ <?= $creditos_recibo_alquiler[$x]['cred_forma'] == 'Efectivo' ? $creditos_recibo_alquiler[$x]['cred_interes_calculados'] + $creditos_recibo_alquiler[$x]['cred_monto'] + $creditos_recibo_alquiler[$x]['cred_iva_comi'] + $creditos_recibo_alquiler[$x]['cred_iva_alq'] : 0.00 ?></div>
                                 <? $adeuda = $neto - $monto_che - $monto_efe ?>
+                                
                                 <div style="float: right;margin-left: 164px;margin-right: 0;"class="item_locador">Adeuda.....: $ <?= $adeuda ?></div>
                                 <div style="clear:both" class="item_locador">I.V.A...........: $ <?= $creditos_recibo_alquiler[$x]['cred_concepto'] == 'Comision' ? $creditos_recibo_alquiler[$x]['cred_iva_comi'] : $creditos_recibo_alquiler[$x]['cred_iva_alq'] ?></div>
                                 <div style="widht:250px !important;" class="item_locador">Cheque..: $ <?= $creditos_recibo_alquiler[$x]['cred_forma'] == 'Efectivo' ? 0.00 : $creditos_recibo_alquiler[$x]['cred_interes_calculados'] + $creditos_recibo_alquiler[$x]['cred_iva_comi'] + $creditos_recibo_alquiler[$x]['cred_iva_alq'] + $creditos_recibo_alquiler[$x]['cred_monto'] . ' N° ' . $creditos_recibo_alquiler[$x]['cred_nro_cheque'] . ' ' . $creditos_recibo_alquiler[$x]['cred_banco'] ?></div>

@@ -435,7 +435,8 @@
             onkeyup:'validar('+x+')',
             style : 'margin-right: 5px;font-size: 16px;width: 403px;float: left;',
             'class': 'form-control ui-autocomplete-input',
-            placeholder: 'Concepto'                 
+            placeholder: 'Concepto',
+            'data-row-id': +x
         }).appendTo('#bloque'+x);
         //Llamo al autocomplete para este nuevo input!
         $('#concepto'+x).autocomplete(auto_opt);

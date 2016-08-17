@@ -1,7 +1,3 @@
-<div style="margin-top:20px;margin-bottom: 2px;" class="actions_container">
-    <input type="text" style="margin-right: 5px; font-size: 16px; width: 403px; float: left;" aria-haspopup="true" aria-autocomplete="list" role="textbox" autocomplete="off" placeholder="Buscar Proveedor" id="auto_personas1" class="form-control ui-autocomplete-input" name="cc_prop">
-    <a style=" margin-top: 8px;"id="refresh" href="javascript:;" class="glyphicon glyphicon-refresh" onclick="refrescar()"></a>
-</div>
 <table class="table table-hover">
     <tr>    
         <th>Nombre</th>
@@ -12,10 +8,10 @@
         <th>Acciones</th>
     </tr>
     <?
-    if ($proveedores->num_rows() > 0) {
-        foreach ($proveedores->result() as $row) {
+    if (count($proveedores) > 0) {
+        foreach ($proveedores as $row) {
             echo '<tr class="reg_' . $row->prov_id . '">';
-            echo '<td>' . $row->prov_name . '</td>';         
+            echo '<td>' . $row->prov_name . '</td>';
             echo '<td>' . $row->prov_tel . '</td>';
             echo '<td>' . $row->prov_email . '</td>';
             echo '<td>' . $row->prov_nota . '</td>';
@@ -33,8 +29,9 @@
 </table>
 
 <script>
+    
     function refrescar(){
-        request('<?= site_url() . 'refresh/' ?>proveedores/prov_id/prov_name','','.contenedor_centro');
+        request('<?= site_url() . 'refresh/' ?>proveedores/prov_id/prov_id','','#lista_proov');
     }    
     $(function(){
         $('#auto_personas1').autocomplete({
@@ -47,22 +44,7 @@
                     success:function(R){
                         eval(R.js);
                         if(R.html != ''){
-                            $('.contenedor_centro').html(R.html);
-                        }
-                    }
-                });
-            }
-        });
-        $("#auto_personas1").keydown(function(){
-            if ($("#auto_personas1").val().length == 1){
-                $.ajax({
-                    url : BASE_URL + "manager/buscar_fila/proveedores/",
-                    type:'POST',
-                    dataType: 'json',
-                    success:function(R){
-                        eval(R.js);
-                        if(R.html != ''){
-                            $('').html(R.html);
+                            $('#lista_proov').html(R.html);
                         }
                     }
                 });

@@ -16,7 +16,7 @@
         <th>Inquilino</th>    
         <th>Proveedor</th>
         <th>Prioridad</th>
-        <th>Fecha limite</th>
+        <th>Estado</th>
         <th>Acciones</th>
     </tr>
     <?php
@@ -29,13 +29,20 @@
             } else {
                 $prioridad = 'Baja';
             }
+            if ($row->mant_status == 1) {
+                $status = 'Creada';
+            } elseif ($row->mant_status == 2) {
+                $status = 'Asignada y en marcha';
+            } else {
+                $status = 'Terminada';
+            }
             echo '<tr class="reg_' . $row->mant_id . '">';
             echo '<td>' . $row->mant_domicilio . '</td>';
             echo '<td>' . $row->mant_prop . '</td>';
             echo '<td>' . $row->mant_inq . '</td>';
-            echo '<td>' . $row->mant_prov . '</td>';
+            echo '<td>' . $row->mant_prov_1.' '.$row->mant_prov_2.' '.$row->mant_prov_3 . '</td>';
             echo '<td>' . $prioridad . '</td>';
-            echo '<td>' . $row->mant_date_deadline . '</td>';
+            echo '<td>' . $status . '</td>';
             echo '<td>';
 
             echo '<a href="javascript:;" class="glyphicon glyphicon-edit" onclick="load_edit(\'' . site_url('manager/load_edit_mantenimientos/' . $row->mant_id) . '\')"></a> | ';

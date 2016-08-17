@@ -13,7 +13,7 @@
                 }
                 ?>
                 <div class="alert alert-<?php echo $class ?>">
-                    <a onclick="pop_description($(this))" data-proveedor_tel="<?php echo $value['proveedor_tel'] ?>" data-deadline="<?php echo $value['deadline'] ?>" data-deadline-date="<?php echo Date('d-m-Y', $value['fecha_deadline']) ?>" data-domicilio="<?php echo $value['domicilio'] ?>" data-prov="<?php echo $value['proveedor'] ?>" data-inq="<?php echo $value['inquilino'] ?>" data-prop="<?php echo $value['propietario'] ?>"data-desc="<?php echo $value['descripcion'] ?>" title="<?php echo $value['deadline'] ?>" style="cursor:pointer"ref="javascript:;" class="alert-link"><?php echo $value['domicilio'] . ' Fecha limite:' . Date('d-m-Y', $value['fecha_deadline']) . ' Encargado: ' . $value['proveedor'] ?></a>
+                    <a onclick="pop_description($(this))" data-proveedor_tel="<?php // echo $value['proveedor_tel'] ?>" data-deadline="<?php echo $value['deadline'] ?>" data-deadline-date="<?php echo Date('d-m-Y', $value['fecha_deadline']) ?>" data-domicilio="<?php echo $value['domicilio'] ?>" data-prov="<?php echo $value['proveedor'] ?>" data-inq="<?php echo $value['inquilino'] ?>" data-prop="<?php echo $value['propietario'] ?>"data-desc="<?php echo $value['descripcion'] ?>" title="<?php echo $value['deadline'] ?>" style="cursor:pointer"ref="javascript:;" class="alert-link"><?php echo $value['domicilio'] . ' Fecha limite:' . Date('d-m-Y', $value['fecha_deadline']) . ' Encargado: ' . $value['proveedor'] ?></a>
                 </div>
             <?php } ?>
         </div>
@@ -47,13 +47,13 @@
         var prop = $button.attr('data-prop');
         var prov = $button.attr('data-prov');
         var inq = $button.attr('data-inq');
-        var proveedor_tel = $button.attr('data-proveedor_tel');
+//        var proveedor_tel = $button.attr('data-proveedor_tel');
         var deadline_date = $button.attr('data-deadline-date');
         var deadline = $button.attr('data-deadline');
-        var tel = '- ';
-        if(proveedor_tel!=''){
-            tel = proveedor_tel;
-        }
+//        var tel = '- ';
+//        if(proveedor_tel!=''){
+//            tel = proveedor_tel;
+//        }
         $('#desc').find('.modal-body textarea').text('');
         $('#desc').find('._inq').text('');
         $('#desc').find('._prop').text('');
@@ -64,7 +64,7 @@
         $('#desc').find('.modal-body textarea').text('Descripcion: '+desc);
         $('#desc').find('._inq').text('Inquilino: '+inq);
         $('#desc').find('._prop').text('Propietario: '+prop);
-        $('#desc').find('._prov').text('Proveedor: '+prov+' Tel: '+tel);
+//        $('#desc').find('._prov').text('Proveedor: '+prov+' Tel: '+tel);
         $('#desc').find('._domicilio').text('Domicilio: '+domicilio);
         $('#desc').find('._deadline').text('Fecha Limite: '+deadline_date+' ..'+deadline);
     }

@@ -18,9 +18,9 @@ if (!defined('BASEPATH'))
   |
  */
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
-    $config['base_url'] = "http://localhost/cleanbox";
+    $config['base_url'] = "http://localhost/old_cleanbox";
 } elseif (strpos($_SERVER['SERVER_NAME'], 'pc-viviana') !== FALSE) {
-    $config['base_url'] = "http://pc-viviana/cleanbox";
+    $config['base_url'] = "http://pc-viviana/old_cleanbox";
 }//pc-viviana es en davinia la pc servidor
 
 /*

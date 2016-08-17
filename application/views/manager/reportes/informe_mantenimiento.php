@@ -31,7 +31,7 @@
                 </tr>
                 <tr>
                     <th class="centrar" style="line-height: 35px;">Proveedor</th>
-                    <td class="centrar" style="line-height: 35px;"><?= $mantenimiento['mant_prov'] ?></td>
+                    <td class="centrar" style="line-height: 35px;"><?= $mantenimiento['mant_prov_1']. ' ' .$mantenimiento['mant_prov_2'] . ' ' . $mantenimiento['mant_prov_3'] ?></td>
                 </tr>
                 <tr>
                     <th class="centrar" style="line-height: 35px;">Domicilio</th>

@@ -210,6 +210,9 @@ class Manager extends CI_Controller {
                     //tiene tiempo
                     $deadline = 'Se ha propoasado la fecha';
                 }
+                $proveedor1 = $this->basic->get_where('proveedores', array('prov_name' => $row['mant_prov_1']))->row_array();
+                $proveedor2 = $this->basic->get_where('proveedores', array('prov_name' => $row['mant_prov_2']))->row_array();
+                $proveedor3 = $this->basic->get_where('proveedores', array('prov_name' => $row['mant_prov_3']))->row_array();
                 $mant = array(
                     'id' => $row['mant_id'],
                     'domicilio' => $row['mant_domicilio'],
@@ -652,55 +655,25 @@ class Manager extends CI_Controller {
 
     function transferencias() {
         $this->load_similar_content('transferencias');
-        $this->data['transferencias'] = $this->basic->get_where('transferencias', array(), 'transf_id', 'desc', '150')->result();
+        $this->data['transferencias'] = $this->basic->get_where('transferencias', array(), 'transf_id', 'desc', '50');
         $this->data['lista'] = $this->load->view('manager/transferencias/lista', $this->data, TRUE);
         $this->data['content'] = $this->load->view('manager/transferencias/transferencias', $this->data, TRUE);
         $this->load->view('default', $this->data);
     }
 
-    function del_transferencia($id) {
-        $transferencia = $this->basic->get_where('transferencias', array('transf_id' => $id))->row_array();
-        if ($transferencia) {
-            $fecha_v = explode('-', $transferencia['transf_fecha']);
-            $caja_mensual = $this->basic->get_where('mensuales', array('men_mes' => $fecha_v[1], 'men_ano' => $fecha_v[2]))->row_array();
-            $caja_fuerte = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
-
-
-            if ($transferencia['transf_tipo'] == 'Debitado Caja Daria - Acreditado Caja Fuerte') {
-                // se debe debitar de la caja fuerte
-                // se dene acredotar a la caja diaria (mensual)
-                // para revertir la transferencia
-                $caja_fuerte['cc_saldo'] -= $transferencia['transf_monto'];
-                $caja_mensual['men_creditos'] += $transferencia['transf_monto'];
-            } else if ($transferencia['transf_tipo'] == 'Debitado Caja Fuerte - Acreditado Caja Diaria') {
-                // se debe debitar de la caja diaria (mensual)
-                // se dene acredotar a la caja fuerte
-                // para revertir la transferencia
-                $caja_fuerte['cc_saldo'] += $transferencia['transf_monto'];
-                $caja_mensual['men_creditos'] -= $transferencia['transf_monto'];
-            }
-
-            $this->basic->del('transferencias', 'transf_id', $id);
-            $this->basic->save('mensuales', 'men_id', $caja_mensual);
-            $this->basic->save('cuentas_corrientes', 'cc_id', $caja_fuerte);
-            $response['html'] = t('Transferencia eliminada');
-            echo json_encode($response);
-        }
-    }
-
     function filtrar_transf($desde, $hasta) {
-        $transferencias = $this->basic->get_all('transferencias')->result();
+        $comentarios = $this->basic->get_all('transferencias');
         $agregar = 0;
         $array = array();
-        foreach ($transferencias as $row) {
-            $agregar = $this->comp_fecha($row->transf_fecha, $desde, $hasta);
+        foreach ($comentarios->result_array() as $row) {
+            $agregar = $this->comp_fecha($row['transf_fecha'], $desde, $hasta);
             if ($agregar == '11') {
                 array_push($array, $row);
                 $agregar = 0;
             }
         }
         $this->data['transferencias'] = $array;
-        $response['html'] = $this->load->view('manager/transferencias/lista', $this->data, TRUE);
+        $response['html'] = $this->load->view('manager/transferencias/buscar_fila_transferencias_arr', $this->data, TRUE);
         echo json_encode($response);
     }
 
@@ -1070,10 +1043,12 @@ class Manager extends CI_Controller {
         $row = $this->basic->get_where($tabla, array($val_tabla => $val))->row_array();
         if ($row != false) {
             $response['id'] = $row[$id_tabla];
+            $response['control'] = '';
             if ($tabla == 'conceptos') {
                 $response['control'] = $row['conc_control'];
             }
             $response['js'] = "$('#" . $auto_tab_id . "').val(R.id);$('#" . $input . "').css('box-shadow','1px 0px 0px #00FF00 inset, 0 0 4px #00FF00');";
+            $response['js'] .= "$('#conc_control" . $id . "').val(R.control);";
         } else {
             $response['id'] = null;
             $response['js'] = "$('#" . $auto_tab_id . "').val(R.id);$('#" . $input . "').css('box-shadow','1px 0px 0px #FF0000  inset, 0 0 4px #FF0000 ');";
@@ -1219,13 +1194,15 @@ class Manager extends CI_Controller {
     function save_conceptos_pop() {
         $this->form_validation->set_rules('conc_desc', 'Concepto', "required|trim");
         $this->form_validation->set_rules('conc_tipo', 'Tipo de Concepto', "required|trim");
-        if ($this->form_validation->run()) {
+        if ($this->form_validation->run() == TRUE) {
+            if (!$this->input->post('conc_id'))
+                $this->input->post();
             $this->basic->save('conceptos', 'conc_id', $this->input->post());
             $response['js'] = "$('#back_fader').hide();$('#popup').hide();";
             $response['js'] .= "$('#back_fader2').hide();$('#popup2').hide();";
         } else {
             $response['html'] = validation_errors();
-            $response['js'] = '$("._com_display").css("display","block")';
+            $response['js'] = '$("#msg_display").css("display","block")';
             $response['error'] = '1';
         }
 
@@ -1237,12 +1214,12 @@ class Manager extends CI_Controller {
     /* Mantenimientos */
 
     function choose_prov() {
-        $proveedores = $this->basic->get_where('proveedores', array(), 'prov_id', 'desc')->result();
+        $proveedores = $this->basic->get_where('proveedores', array(), 'prov_nota', 'desc');
         $this->data['proveedores'] = array();
-        foreach ($proveedores as $row) {
-            $row->prov_bussy = 0;
-            if ($this->isBussy($row->prov_name)) {
-                $row->prov_bussy = 1;
+        foreach ($proveedores->result_array() as $row) {
+            $row['prov_bussy'] = 0;
+            if ($this->isBussy($row['prov_name'])) {
+                $row['prov_bussy'] = 1;
             }
             $this->data['proveedores'][] = $row;
         }
@@ -1337,7 +1314,7 @@ class Manager extends CI_Controller {
 
     function proveedores() {
         $this->load_similar_content('proveedores');
-        $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_id', '')->result();
+        $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name', '');
         $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
         $this->eliminar_vacios();
         $this->data['content'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
@@ -1345,11 +1322,10 @@ class Manager extends CI_Controller {
     }
 
     function load_edit_proveedores($id = false) {
-        $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_id', '')->result();
+        $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name');
+        $this->data['areas'] = $this->basic->get_where('areas_proveedores', array('area_prov' => $id));
         $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
         if ($id) {
-            $this->data['areas'] = $this->basic->get_where('areas_proveedores', array('area_prov' => $id));
-            $this->data['nota'] = $this->basic->get_where('proveedores_nota', array('nota_prov_id' => $id))->row();
             $this->data['row'] = $this->basic->get_where('proveedores', array('prov_id' => $id))->row();
             $this->data['id'] = $id;
             $response['js'] = "$('add_op').css('display','none');$('.contenedor_centro').css('width','95%');";
@@ -1383,25 +1359,10 @@ class Manager extends CI_Controller {
                     'prov_tel' => $this->input->post('prov_tel'),
                     'prov_domicilio' => $this->input->post('prov_domicilio'),
                     'prov_email' => $this->input->post('prov_email'),
-                    'prov_nota' => $this->input->post('nota_total'),
+                    'prov_nota' => $this->input->post('prov_nota'),
                     'prov_id' => $this->input->post('prov_id')
                 );
                 $prov_id = $this->basic->save('proveedores', 'prov_id', $proveedor);
-
-                $notas = array(
-                    'nota_id' => $this->input->post('nota_id'),
-                    'nota_prov_id' => $prov_id,
-                    'nota_garantia' => $this->input->post('nota_garantia'),
-                    'nota_exp' => $this->input->post('nota_exp'),
-                    'nota_timing' => $this->input->post('nota_timing'),
-                    'nota_presup' => $this->input->post('nota_presup'),
-                    'nota_trust' => $this->input->post('nota_trust'),
-                    'nota_calidad' => $this->input->post('nota_calidad'),
-                    'nota_total' => $this->input->post('nota_total'),
-                );
-
-                $this->basic->save('proveedores_nota', 'nota_id', $notas);
-
                 $this->basic->del('areas_proveedores', 'area_prov', $prov_id);
                 for ($x = 0; $x <= count($areas); $x++) {
                     if (isset($areas[$x])) {
@@ -1414,7 +1375,7 @@ class Manager extends CI_Controller {
                         }
                     }
                 }
-                $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_id')->result();
+                $this->data['proveedores'] = $this->basic->get_where('proveedores', array(), 'prov_name');
                 $this->data['lista'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
                 $response['js'] = '';
                 $response['html'] = $this->load->view('manager/proveedores/proveedores', $this->data, TRUE);
@@ -1763,10 +1724,6 @@ class Manager extends CI_Controller {
         }
         $fecha = explode('-', $fecha);
         $caja = $this->basic->get_where('mensuales', array('men_mes' => $fecha[1], 'men_ano' => $fecha[2]))->row_array();
-        // elimina la existencia de la transaccion en esta caja, pero no el arrastre en la de los siguientes meses
-        // debemos eliminar ese arrastre hasta la caja actual!.
-        // traer todas las cajas mensuales desde $fecha hasta el Date() de hoy y aplicar la misma operacion
-        // hacer lo mismo con todas las caja_comienza
         $conceptos = $this->basic->get_all('conceptos');
         foreach ($creditos->result_array() as $row) {
             $cc = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => $row['cred_cc']))->row_array();
@@ -1892,7 +1849,6 @@ class Manager extends CI_Controller {
         $this->load_similar_content('creditos');
         $this->data['creditos'] = $this->basic->get_where('creditos', array(), 'cred_id', 'desc', '50');
         $this->data['lista'] = $this->load->view('manager/transacciones/lista_creditos', $this->data, TRUE);
-        $this->data['unlocker'] = $this->load->view('manager/transacciones/form_locker', $this->data, TRUE);
         $this->data['content'] = $this->load->view('manager/transacciones/creditos', $this->data, TRUE);
         $this->eliminar_vacios();
         $this->load->view('default', $this->data);
@@ -2354,11 +2310,15 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
-    function autorizar($codigo_ingresado = false) {
+    function autorizar($id, $codigo_ingresado = false) {
+        $code = false;
         $code = $this->basic->get_where('codes', array('code_code' => $codigo_ingresado))->row_array();
-        if ($codigo_ingresado) {
+        if ($codigo_ingresado != false) {
             if ($code) {
                 $response['js'] = "$('#com_display1').css('display','none');";
+                $response['js'] .= "$('#interes" . $id . "').removeAttr('readonly');";
+                $response['js'] .= "$('#interes" . $id . "').removeAttr('onclick');";
+                $response['js'] .= "$('#interes" . $id . "').css('cursor','auto');";
                 $response['js'] .= "$('#popup').hide();$('#back_fader').hide();";
                 $this->basic->del('codes', 'code_id', $code['code_id']);
             } else {
@@ -2381,15 +2341,8 @@ class Manager extends CI_Controller {
             $code = false;
             $code = $this->basic->get_where('codes', array('code_code' => $this->input->post('codigo')))->row_array();
             if ($code) {
-                try {
-                    $this->saving_debs();
-                    $this->basic->del('codes', 'code_id', $code['code_id']);
-                } catch (Exception $exc) {
-                    $response['html'] = 'Ocurrio un error desconocido';
-                    $response['js'] = "$('#com_display').removeClass('alert alert-success');$('#com_display').addClass('alert alert-danger');$('#com_display').fadeIn(1300,'linear');";
-                    $response['error'] = '1';
-                    echo json_encode($response);
-                }
+                $this->saving_debs();
+                $this->basic->del('codes', 'code_id', $code['code_id']);
             } else {
                 $response['html'] = 'El Código de autorización ingresado no es válido';
                 $response['js'] = "$('#com_display').removeClass('alert alert-success');$('#com_display').addClass('alert alert-danger');$('#com_display').fadeIn(1300,'linear');";
@@ -2520,7 +2473,7 @@ class Manager extends CI_Controller {
         }
     }
 
-    public function numtoletras($xcifra) {
+    function numtoletras($xcifra) {
         $xarray = array(0 => "Cero",
             1 => "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE",
             "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISEIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE",
@@ -2708,12 +2661,17 @@ class Manager extends CI_Controller {
         $cant_bloques = $this->input->post('cant_bloques');
         $this->form_validation->set_rules('depositante', 'Depositante', "required|trim");
         $this->form_validation->set_rules('cc', 'Cta. Cte de Propietario', "required|trim");
+        $this->form_validation->set_rules('auto_cc_id', 'Cta. Cte: ' . $this->input->post('cc') . ' no existe. Creelo, ', "required|numeric");
+        $this->form_validation->set_rules('auto_depo_id', 'Depositante: ' . $this->input->post('depositante') . ' no existe. Creelo, ', "required|numeric");
         for ($x = 1; $x <= $cant_bloques; $x++) {
+            $this->form_validation->set_rules('auto_conc_id' . $x, ' Concepto: ' . $this->input->post('concepto' . $x) . ' no existe. Creelo, ', "required|trim");
             $this->form_validation->set_rules('concepto' . $x, 'Concepto', "required|trim");
             $this->form_validation->set_rules('monto' . $x, 'Monto', "required|trim|numeric");
             $this->form_validation->set_rules('mes' . $x, 'Mes', "callback_meses_check");
         }
-        if ($this->form_validation->run()) {
+        if ($this->form_validation->run() == TRUE) {
+            if (!$this->input->post('credito_id'))
+                $this->input->post();
             $this->data['prop'] = $this->input->post('cc');
             $transac = $this->basic->get_all('trans')->row_array();
             $trans = $transac['trans'];
@@ -2742,7 +2700,7 @@ class Manager extends CI_Controller {
                     'cred_interes' => preg_replace("/[^0-9]/", "", $this->input->post('interes' . $x)),
                     'cred_domicilio' => $this->input->post('domicilio' . $x),
                     'trans' => $trans,
-                    'cred_tipo_pago' => $this->input->post('cred_tipo_pago' . $x),
+                    'cred_tipo_pago' => $this->input->post('cred_tipo_pago'),
                     'cred_interes_calculados' => 0
                 );
                 $contrato = false;
@@ -2754,40 +2712,30 @@ class Manager extends CI_Controller {
                     $do_recibo = true;
                     $agregar_a_recibo = true;
                 }
-                if (strpos($credito['cred_concepto'], 'Loteo') !== FALSE || strpos($credito['cred_concepto'], 'Alquiler') !== FALSE) {
+                if (strpos($credito['cred_concepto'], 'Alquiler Comercial') !== FALSE || strpos($credito['cred_concepto'], 'Loteo') !== FALSE || strpos($credito['cred_concepto'], 'Alquiler') !== FALSE) {
                     $usar = true;
                 }
-
-                try {
-
-                    if (strpos($credito['cred_concepto'], 'Comision') !== FALSE) {
-                        $cc_rima = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
+                if ($credito['cred_concepto'] == 'Comision') {
+                    $cc_rima = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
+                    $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $credito['cred_cc'], 'con_inq' => $credito['cred_depositante']))->row_array();
+                    $r = $this->impacto_credito_comision($cc_rima, $credito, $trans, $contrato);
+                } else if (strpos($credito['cred_concepto'], 'Alquiler Comercial') !== FALSE) {
+                    $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $credito['cred_cc'], 'con_inq' => $credito['cred_depositante']))->row_array();
+                    $r = $this->impacto_credito_comercial($trans, $credito, $contrato, $this->input->post('con_porc'), $this->input->post('con_punitorio'));
+                } else {
+                    if ((strpos($credito['cred_concepto'], 'Loteo') !== FALSE || strpos($credito['cred_concepto'], 'indemnizacion') !== FALSE || $credito['cred_concepto'] == 'Alquiler' || strpos($credito['cred_concepto'], 'Comision') !== FALSE || strpos($credito['cred_concepto'], 'Intereses') !== FALSE || strpos($credito['cred_concepto'], 'Gestion de Cobro') !== FALSE)) {
                         $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $credito['cred_cc'], 'con_inq' => $credito['cred_depositante']))->row_array();
-                        $r = $this->impacto_credito_comision($cc_rima, $credito, $trans, $contrato);
-                    } else if (strpos($credito['cred_concepto'], 'Alquiler Comercial') !== FALSE) {
-                        $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $credito['cred_cc'], 'con_inq' => $credito['cred_depositante']))->row_array();
-                        $r = $this->impacto_credito_comercial($this->input->post('paga_intereses' . $x), $trans, $credito, $contrato, $this->input->post('con_porc'), $this->input->post('con_punitorio'));
-                    } else {
-                        if ((strpos($credito['cred_concepto'], 'Loteo') !== FALSE || strpos($credito['cred_concepto'], 'indemnizacion') !== FALSE || $credito['cred_concepto'] == 'Alquiler' || strpos($credito['cred_concepto'], 'Comision') !== FALSE || strpos($credito['cred_concepto'], 'Intereses') !== FALSE || strpos($credito['cred_concepto'], 'Gestion de Cobro') !== FALSE)) {
-                            $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $credito['cred_cc'], 'con_inq' => $credito['cred_depositante']))->row_array();
-                            if ($contrato != false) {
-                                $this->basic->save('creditos', 'cred_id', $credito);
-                                $r = $this->transaccion_credito($this->input->post('paga_intereses' . $x), $trans, $credito, $contrato, $this->input->post('con_porc'), $this->input->post('con_punitorio'));
-                            } else {
-                                $r = 0;
-                            }
-                        } else {
+                        if ($contrato != false) {
                             $this->basic->save('creditos', 'cred_id', $credito);
-                            $r = $this->transaccion_credito($this->input->post('paga_intereses' . $x), $trans, $credito, $contrato, $this->input->post('con_porc'), $this->input->post('con_punitorio'));
+                            $r = $this->transaccion_credito($trans, $credito, $contrato, $this->input->post('con_porc'), $this->input->post('con_punitorio'));
+                        } else {
+                            $r = 0;
                         }
+                    } else {
+                        $this->basic->save('creditos', 'cred_id', $credito);
+                        $r = $this->transaccion_credito($trans, $credito, $contrato, $this->input->post('con_porc'), $this->input->post('con_punitorio'));
                     }
-                } catch (Exception $exc) {
-                    $response['js'] = "$('#com_display').removeClass('alert alert-success');$('#com_display').addClass('alert alert-danger');$('#com_display').fadeIn(1300,'linear');";
-                    $response['html'] = 'Ha ocurrido un error en la creacion del credito, concepto:' . $credito['cred_concepto'] . ', depositante: ' . $credito['cred_depositante'] . ', cuenta: ' . $credito['cred_cc'] . '. Si hay mas movimientos en esta transaccion verifique su estado por favor';
-                    $response['error'] = '1';
-                    echo json_encode($response);
                 }
-
                 if ($r) {
                     // $r declara el exito de la creacion del credito.
                     $creditos_acumulados += $credito['cred_monto'];
@@ -2795,7 +2743,7 @@ class Manager extends CI_Controller {
                         if ($this->input->post('notifica') == 1) {
                             // Declara si se mandara un mail al prop por pago de sus alquileres
                             $interes = 0;
-                            if ($this->input->post('interes' . $x) != 0 && $this->input->post('paga_intereses' . $x) == 'Si') {
+                            if ($this->input->post('interes' . $x) != 0 && $this->input->post('paga_intereses') == 'Si') {
                                 $interes = round($credito['cred_monto'] * $this->input->post('interes' . $x) * $this->input->post('con_punitorio'), 2);
                                 $gestion_intereses = round(($interes * $this->input->post('con_porc')), 2);
                                 $interes = $interes - $gestion_intereses;
@@ -2809,12 +2757,12 @@ class Manager extends CI_Controller {
                         $agregar_a_recibo = true;
                         // Si hay intereses en el alquiler o loteo lo adhiero al credito
                         $credito['cred_interes_calculados'] = 0;
-                        if ($this->input->post('interes' . $x) != 0 && $this->input->post('paga_intereses' . $x) == 'Si') {
+                        if ($this->input->post('interes' . $x) != 0 && $this->input->post('paga_intereses') == 'Si') {
                             $interes = round($credito['cred_monto'] * $this->input->post('interes' . $x) * $this->input->post('con_punitorio'), 2);
                             $credito['cred_interes_calculados'] = $interes;
                             $intereses_gastos_acumulados += $interes;
                         }
-                        if ($this->input->post('paga_intereses' . $x) == 'No') {
+                        if ($this->input->post('paga_intereses') == 'No') {
                             //Si tiene intereses pero no pagara hoy, se le genera un registro de constancia
                             $interes_mora = array(
                                 'int_depositante' => $this->input->post('depositante'),
@@ -2831,7 +2779,7 @@ class Manager extends CI_Controller {
                             $do_recibo = true;
                             $agregar_a_recibo = true;
                             $credito['cred_interes_calculados'] = 0;
-                            if ($credito['cred_concepto'] == 'Expensas' && $this->input->post('interes' . $x) != 0 && $this->input->post('paga_intereses' . $x) == 'Si') {
+                            if ($credito['cred_concepto'] == 'Expensas' && $this->input->post('interes' . $x) != 0 && $this->input->post('paga_intereses') == 'Si') {
                                 // De ser expensa se revisara si tiene algun interes
                                 $interes = round($credito['cred_monto'] * $this->input->post('interes' . $x) * $this->input->post('con_punitorio'), 2);
                                 $credito['cred_interes_calculados'] = $interes;
@@ -2955,7 +2903,6 @@ class Manager extends CI_Controller {
                     }
                     $response['html'] = $this->load->view('manager/transacciones/recibo', $this->data, TRUE);
                 } else {
-                    $this->data['unlocker'] = $this->load->view('manager/transacciones/form_locker', $this->data, TRUE);
                     $response['html'] = $this->load->view('manager/transacciones/creditos', $this->data, TRUE);
                 }
             } else {
@@ -2963,19 +2910,18 @@ class Manager extends CI_Controller {
                 $response['html'] = 'Ha ocurrido un error en la creacion, verifique los datos ingresados';
                 $response['error'] = '1';
             }
-            if ($reserva) {
-                $response['html'] = $this->load->view('manager/transacciones/recibo_reserva', $this->data, TRUE);
-            }
         } else {
             $response['js'] = "$('#com_display').removeClass('alert alert-success');$('#com_display').addClass('alert alert-danger');$('#com_display').fadeIn(1300,'linear');";
             $response['html'] = validation_errors();
             $response['error'] = '1';
         }
-
+        if ($reserva) {
+            $response['html'] = $this->load->view('manager/transacciones/recibo_reserva', $this->data, TRUE);
+        }
         echo json_encode($response);
     }
 
-    function transaccion_credito($paga_intereses, $trans, $credito, $contrato = false, $gestion = false, $punitorio = false) {
+    function transaccion_credito($trans, $credito, $contrato = false, $gestion = false, $punitorio = false) {
         /*
          * -Realiza las transacciones a las Ctas Ctes correspondientes
          * -Crea Pagos correspondientes por computo de gestion de cobro, iva e intereses
@@ -2994,16 +2940,16 @@ class Manager extends CI_Controller {
             }
         }
         if ($cuenta == 'cc_saldo') {
-            $r = $this->impacto_credito_alquiler($paga_intereses, $trans, $cc_prop, $cc_rima, $credito, $contrato, $gestion, $punitorio);
+            $r = $this->impacto_credito_alquiler($trans, $cc_prop, $cc_rima, $credito, $contrato, $gestion, $punitorio);
         } else {
-            $r = $this->impacto_credito_servicios($paga_intereses, $trans, $cc_prop, $cc_rima, $credito, $punitorio);
+            $r = $this->impacto_credito_servicios($trans, $cc_prop, $cc_rima, $credito, $punitorio);
         }
         return $r;
     }
 
-    function impacto_credito_servicios($paga_intereses, $trans, $cc_prop, $cc_rima, $credito, $punitorio) {
+    function impacto_credito_servicios($trans, $cc_prop, $cc_rima, $credito, $punitorio) {
         //Los intereses automaticos solo cuando es en blanco lo hace automatico
-        if ($paga_intereses == 'Si' && $credito['cred_interes'] != 0 && $credito['cred_interes'] != '' && isset($punitorio)) {
+        if ($credito['cred_interes'] != 0 && $credito['cred_interes'] != '' && isset($punitorio)) {
             //Deposito los intereses cobrados del alquiler en la cuenta del prop
             $monto_castigo = round(($credito['cred_monto'] * $credito['cred_interes'] * $punitorio), 2);
             $credito_intereses = array(
@@ -3036,7 +2982,7 @@ class Manager extends CI_Controller {
         return $r;
     }
 
-    function impacto_credito_alquiler($paga_intereses, $trans, $cc_prop, $cc_rima, $credito, $contrato = false, $gestion = false, $punitorio = false) {
+    function impacto_credito_alquiler($trans, $cc_prop, $cc_rima, $credito, $contrato = false, $gestion = false, $punitorio = false) {
         $r = 0;
         //Realizo los movimientos de gestion de cobro
         $cc_prop['cc_saldo'] += $credito['cred_monto'];
@@ -3082,7 +3028,7 @@ class Manager extends CI_Controller {
             $cc_rima['cc_saldo'] += round($credito['cred_monto'] * $gestion, 2);
 //            }
             //Los intereses automaticos solo cuando es en blanco lo hace automatico
-            if ($paga_intereses == 'Si' && $credito['cred_interes'] != 0 && $credito['cred_interes'] != '' && isset($punitorio)) {
+            if ($credito['cred_interes'] != 0 && $credito['cred_interes'] != '' && isset($punitorio)) {
                 //Deposito los intereses cobrados del alquiler en la cuenta del prop
                 $monto_castigo = round(($credito['cred_monto'] * $credito['cred_interes'] * $punitorio), 2);
                 $credito_intereses = array(
@@ -3146,7 +3092,7 @@ class Manager extends CI_Controller {
         return $r;
     }
 
-    function impacto_credito_comercial($paga_intereses, $trans, $credito, $contrato = false, $gestion = false, $punitorio = false) {
+    function impacto_credito_comercial($trans, $credito, $contrato = false, $gestion = false, $punitorio = false) {
         $r = 0;
         if ($contrato != false) {
             // Los intereses se cobran en credito aparte
@@ -3241,7 +3187,7 @@ class Manager extends CI_Controller {
                     $this->basic->save('creditos', 'cred_id', $credito_iva);
                 }
                 //Los intereses automaticos solo cuando es en blanco lo hace automatico
-                if ($paga_intereses == 'Si' && $credito['cred_interes'] != '' && isset($punitorio)) {
+                if ($credito['cred_interes'] != '' && isset($punitorio)) {
                     //Deposito los intereses cobrados del alquiler en la cuenta del prop
                     $monto_castigo = round(($credito['cred_monto'] * $credito['cred_interes'] * $punitorio), 2);
                     $credito_intereses = array(
@@ -3356,6 +3302,12 @@ class Manager extends CI_Controller {
             $r = 1;
         }
         return $r;
+    }
+
+    function load_locker($id) {
+        $this->data['id'] = $id;
+        $response['html'] = $this->load->view('manager/transacciones/form_locker', $this->data, TRUE);
+        echo json_encode($response);
     }
 
     function load_concept() {
@@ -3881,7 +3833,7 @@ class Manager extends CI_Controller {
                 'mes' => '',
                 'monto' => $gestion_cobro,
                 'domicilio' => '',
-                'trans' => '999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999',
+                'trans' => '999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999',
                 'operacion' => 'debito',
                 'mostrar' => 1
             );
@@ -3954,12 +3906,8 @@ class Manager extends CI_Controller {
 
             foreach ($cuentas->result_array() as $row) {
                 $pendiente = false;
-
                 if ($row['cc_prop'] != 'INMOBILIARIA' && $row['cc_prop'] != 'CAJA FUERTE') {
                     $rendiciones = $this->basic->get_where('debitos', array('deb_cc' => $row['cc_prop'], 'deb_concepto' => 'Rendicion'));
-//                    if ($row['cc_prop'] == 'ERNESTO GEHRMANN') {
-//                        var_dump($rendiciones->result_array());
-//                    }
                     foreach ($rendiciones->result_array() as $rend) {
                         if ($this->comp_fecha($rend['deb_fecha'], $desde, $hasta) == '11') {
                             $creditos = $this->basic->get_where('creditos', array('cred_cc' => $rend['deb_cc']));
@@ -3973,11 +3921,6 @@ class Manager extends CI_Controller {
                                         $pendiente = true;
                                     }
                                 }
-                            }
-                        } else {
-                            // no tuvo rendiciones en la fecha por lo tanto tiene pendientes
-                            if (($row['cc_saldo'] + $row['cc_varios']) > 0) {
-                                $pendiente = true;
                             }
                         }
                     }
@@ -4073,7 +4016,7 @@ class Manager extends CI_Controller {
         if ($fecha != false) {
             $agregar = 0;
             $fecha_v = explode('-', $fecha);
-            $desde = $fecha_caja = explode('-', $fecha);
+            $desde = explode('-', $fecha);
             $primero = false;
             $dia_anterior = $fecha_v[0] - 1;
             if ($dia_anterior == 0) {
@@ -4176,7 +4119,6 @@ class Manager extends CI_Controller {
                     }
                 }
             }
-            $caja_comienza_hoy = $this->calculateCashToday($fecha_caja);
             $this->data['caja'] = $dia_caja_com['caj_saldo'] - $bancario_hasta_ayer;
             $this->data['intervalo_fecha_banco'] = '01/' . $fecha_v[1] . '/' . $fecha_v[2] . ' - ' . $fecha_v[0] . '/' . $fecha_v[1] . '/' . $fecha_v[2];
             $this->data['saldo_banco_periodo'] = $COM_BANC_MES;
@@ -4247,63 +4189,6 @@ class Manager extends CI_Controller {
         }
     }
 
-    function calculateCashToday($fecha_caja) {
-        $desde = '01-' . $fecha_caja[1] . '-' . $fecha_caja[2];
-        if ($fecha_caja[0] - 1 == 0) {
-            $dia_hasta = 1;
-        } else {
-            $dia_hasta = $fecha_caja[0] - 1;
-        }
-
-        $hasta = $dia_hasta . '-' . $fecha_caja[1] . '-' . $fecha_caja[2];
-
-
-        $creditos = $this->basic->get_where('creditos', array('cred_tipo_trans' => 'Caja'));
-        $debitos = $this->basic->get_where('debitos', array('deb_tipo_trans' => 'Caja'));
-        $transferencias = $this->basic->get_where('transferencias', array());
-
-        $entradas = 0;
-        foreach ($creditos->result_array() as $row) {
-            if ($this->comp_fecha($row['cred_fecha'], $desde, $hasta)) {
-                if (strpos($row['cred_concepto'], 'Gestion de Cobro') === false && strpos($row['cred_concepto'], 'Prestamo') === false && strpos($row['cred_concepto'], 'devolucion') === false) {
-                    $entradas += $row['cred_monto'];
-                }
-            }
-        }
-
-        $salidas = 0;
-        foreach ($debitos->result_array() as $row) {
-            if ($this->comp_fecha($row['deb_fecha'], $desde, $hasta)) {
-                if (strpos($row['deb_concepto'], 'Gestion de Cobro') === false && strpos($row['deb_concepto'], 'Prestamo') === false && strpos($row['deb_concepto'], 'devolucion') === false) {
-                    $salidas += $row['deb_monto'];
-                }
-            }
-        }
-        $fecha_caja = implode('-', $fecha_caja);
-
-        $transferencias_a_caja = 0;
-        foreach ($transferencias->result_array() as $row) {
-            $agregar = $this->comp_fecha($row['transf_fecha'], $desde, $hasta);
-            if ($agregar == '11' && 'Debitado Caja Daria - Acreditado Caja Fuerte' == $row['transf_tipo']) {
-                $transferencias_a_caja += $row['transf_monto'];
-            }
-        }
-
-        $transferencias_a_diaria = 0;
-        foreach ($transferencias->result_array() as $row) {
-            $agregar = $this->comp_fecha($row['transf_fecha'], $desde, $hasta);
-            if ($agregar == '11' && 'Debitado Caja Fuerte - Acreditado Caja Diaria' == $row['transf_tipo']) {
-                $transferencias_a_diaria += $row['transf_monto'];
-            }
-        }
-
-        $entradasmenossalidas = $entradas - $salidas;
-
-        $ret = $entradasmenossalidas - $transferencias_a_caja + $transferencias_a_diaria;
-
-        return $ret;
-    }
-
     function get_ultimo_pago($contrato) {
         $creditos = $this->basic->get_where('creditos', array('cred_cc' => $contrato['con_prop'], 'cred_concepto' => $contrato['con_tipo']), 'cred_id', 'asc');
         $ultimo_pago = $creditos->last_row('array');
@@ -4353,6 +4238,7 @@ class Manager extends CI_Controller {
         }
         if ($tiene_creds) {
             //obtengo el ultimo pago
+
             $last_payment = array_pop($cred_filt);
             $mes_last = preg_replace("/[^A-Za-z (),.]/", "", $last_payment['cred_mes_alq']);
             $ult_mes = $this->get_nro_mes_int(trim($mes_last));
@@ -4366,6 +4252,11 @@ class Manager extends CI_Controller {
                 $ano_last = preg_replace("/[^0-9 (),.]/", "", $cred_filt[$i]['cred_mes_alq']);
                 $ano_last = intval(trim($ano_last));
                 $mes_last_nro = $this->get_nro_mes_int($mes_last);
+//                var_dump('compara');
+//                var_dump($mes_last);
+//                var_dump($ano_last);
+//                var_dump($mes_last_nro);
+//                var_dump('TERMINA');
                 if ($ano_last >= $ult_ano && $mes_last_nro >= $ult_mes) {
                     $ult_mes = $mes_last_nro;
                     $ult_ano = $ano_last;
@@ -4376,6 +4267,9 @@ class Manager extends CI_Controller {
             if (!$entro) {
                 $last_payment = $this->basic->get_where('creditos', array('cred_id' => $ult_id))->row_array();
             }
+//            var_dump($ult_mes);
+//            var_dump($ult_ano);
+//            var_dump($last_payment);
         }
         return $last_payment;
     }
@@ -4448,7 +4342,7 @@ class Manager extends CI_Controller {
                 // Deudas de Alquileres o Loteos
                 if ($con['con_usado'] == 1) {
                     $ultimo_pago = $this->get_last_payment($con, $con['con_tipo']);
-                    $deuda = $this->get_deudas_morosos($ultimo_pago, $con);
+                    $deuda = $this->get_deudas($ultimo_pago, $con);
                     if (count($deuda) > 0) {
                         if ($ultimo_pago != false) {
                             for ($i = 0; $i < count($deuda); $i++) {
@@ -4924,12 +4818,12 @@ class Manager extends CI_Controller {
             }
             if ($table == 'proveedores' || $table == 'proveedores_pop') {
                 /* Obtiene una lista de los pagos, si es que $table es pagos */
-                $this->data['proveedores'] = $this->basic->get_where('proveedores', array('prov_id' => $needle))->result();
+                $this->data['proveedores'] = $this->basic->get_where('proveedores', array('prov_id' => $needle));
                 if ($table == 'proveedores_pop') {
                     $this->data['proveedores'] = array();
-                    $proveedores = $this->basic->get_where('proveedores', array('prov_id' => $needle))->result();
-                    foreach ($proveedores as $row) {
-                        $row->prov_bussy = $this->isBussy($row->prov_name);
+                    $proveedores = $this->basic->get_where('proveedores', array('prov_id' => $needle));
+                    foreach ($proveedores->result_array() as $row) {
+                        $row['prov_bussy'] = $this->isBussy($row['prov_name']);
                         $this->data['proveedores'][] = $row;
                     }
                 }
@@ -4949,13 +4843,10 @@ class Manager extends CI_Controller {
                 $this->data[$table] = $this->basic->get_all($table);
         }
         if ($table == 'proveedores_pop') {
-            $response['html'] = $this->load->view('manager/mantenimientos/proveedores', $this->data, TRUE);
-        } else if ($table == 'proveedores') {
-            $response['html'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+            $response['html'] = $this->load->view('manager/mantenimientos/buscar_fila_' . $table, $this->data, TRUE);
         } else {
             $response['html'] = $this->load->view('manager/' . $table . '/buscar_fila_' . $table, $this->data, TRUE);
         }
-
         echo json_encode($response);
     }
 
@@ -4979,21 +4870,15 @@ class Manager extends CI_Controller {
         } else if ($tabla == 'debitos') {
             $this->data[$tabla] = $this->basic->get_where($tabla, array(), $order, '', '50');
             $response['html'] = $this->load->view('manager/' . 'transacciones' . '/buscar_fila_' . $tabla, $this->data, TRUE);
-        } else if ($tabla == 'transferencias') {
-            $this->data[$tabla] = $this->basic->get_where($tabla, array(), $order, 'desc', '150')->result();
-            $response['html'] = $this->load->view('manager/transferencias/lista', $this->data, TRUE);
         } else if ($tabla == 'proveedores_pop') {
             /* Obtiene una lista de los pagos, si es que $table es pagos */
             $this->data['proveedores'] = array();
-            $proveedores = $this->basic->get_where('proveedores', array(), $order, '')->result();
-            foreach ($proveedores as $row) {
-                $row->prov_bussy = $this->isBussy($row->prov_name);
+            $proveedores = $this->basic->get_all('proveedores');
+            foreach ($proveedores->result_array() as $row) {
+                $row['prov_bussy'] = $this->isBussy($row['prov_name']);
                 $this->data['proveedores'][] = $row;
             }
-            $response['html'] = $this->load->view('manager/mantenimientos/proveedores', $this->data, TRUE);
-        } else if ($tabla == 'proveedores') {
-            $this->data[$tabla] = $this->basic->get_where('proveedores', array(), 'prov_id', 'desc')->result();
-            $response['html'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
+            $response['html'] = $this->load->view('manager/mantenimientos/buscar_fila_' . $tabla, $this->data, TRUE);
         } else if ($tabla == 'mantenimientos') {
             $this->data[$tabla] = $this->basic->get_where('mantenimientos', array(), 'mant_id', 'desc');
             $response['html'] = $this->load->view('manager/' . 'mantenimientos' . '/buscar_fila_' . $tabla, $this->data, TRUE);
@@ -5003,148 +4888,695 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
-    function filter_prov() {
-        $rubro = $this->input->post('rubro');
-        $table = $this->input->post('table');
-
-        $proveedores = $this->basic->get_all('proveedores')->result();
-        $areas = $this->basic->get_all('areas_proveedores')->result();
-        $this->data['proveedores'] = array();
-
-        foreach ($proveedores as $proveedor) {
-            foreach ($areas as $area) {
-                if ($area->area_area == $rubro && $area->area_prov == $proveedor->prov_id) {
-                    array_push($this->data['proveedores'], $proveedor);
-                }
-            }
-        }
-
-        if ($table) {
-            $response['html'] = $this->load->view('manager/mantenimientos/proveedores', $this->data, TRUE);
-        } else {
-            $response['html'] = $this->load->view('manager/proveedores/lista', $this->data, TRUE);
-        }
-
-        echo json_encode($response);
-    }
-
-    function buscar_concepto($table, $tipo = false, $inq = false, $prop = false, $needle = false) {
+    function buscar_concepto($table, $tipo = false, $tableo = false, $inq = false, $prop = false, $needle = false, $id_input = false) {
+        $response['periodos'] = '';
+        $x_input = (int) $id_input;
         $contrato = null;
         $inq = urldecode($inq);
+        $response['entro'] = 0;
+        $response['alq'] = 0;
         $response['lot'] = 0;
-        $deudas_contrato = array();
-        $deudas_servicios = array();
-        $monto_intereses = 0;
-        $monto_iva = 0;
-        $monto_todo = 0;
         $prop = urldecode($prop);
         if ($needle != false) {
-            /* Obtiene una lista de los pagos, si es que $table es pagos */
-            $this->data[$table] = $this->basic->get_where($table, array('conc_id' => $needle, 'conc_tipo' => $tipo));
-            $concepto = $this->basic->get_where($table, array('conc_id' => $needle, 'conc_tipo' => $tipo))->row_array();
-            $response['data']['concepto'] = $concepto['conc_desc'];
-            $response['id'] = $needle;
-            $servis = $this->db->query('SELECT DISTINCT serv_concepto FROM servicios');
-            $lista_servicios = '';
-            foreach ($servis->result_array() as $row) {
-                $lista_servicios .= ' ' . $row['serv_concepto'];
-            }
-//            if (strpos($lista_servicios, $concepto['conc_desc']) != false) {
-            $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $prop, 'con_inq' => $inq))->row_array();
-//            }
-            if ($concepto['conc_desc'] == 'Loteo' || $concepto['conc_desc'] == 'Comision' || $concepto['conc_desc'] == 'Alquiler N' || $concepto['conc_desc'] == 'Alquiler' || $concepto['conc_desc'] == 'Alquiler Comercial' || $concepto['conc_desc'] == 'Alquiler Comercial N') {
-                if ($concepto['conc_desc'] != 'Comision') {
-                    $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_tipo' => $concepto['conc_desc'], 'con_prop' => $prop, 'con_inq' => $inq))->row_array();
-                } else {
+            if ($table == 'conceptos') {
+                /* Obtiene una lista de los pagos, si es que $table es pagos */
+                $this->data[$table] = $this->basic->get_where($table, array('conc_id' => $needle, 'conc_tipo' => $tipo));
+                $concepto = $this->basic->get_where($table, array('conc_id' => $needle, 'conc_tipo' => $tipo))->row();
+                $response['id'] = $needle;
+                $servis = $this->db->query('SELECT DISTINCT serv_concepto FROM servicios');
+                $lista_servicios = '';
+                foreach ($servis->result_array() as $row) {
+                    $lista_servicios .= ' ' . $row['serv_concepto'];
+                }
+                $rtdo = strpos($lista_servicios, $concepto->conc_desc);
+                if ($rtdo != FALSE) {
                     $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $prop, 'con_inq' => $inq))->row_array();
                 }
-            }
-            if ($contrato != null) {
-                $contrato_usado = $contrato['con_usado'];
-                if ($contrato_usado) {
-                    // deudas de alquileres o loteo
-                    if (strpos($concepto['conc_desc'], 'Loteo') !== FALSE || strpos($concepto['conc_desc'], 'Alquiler') !== FALSE) {
-                        $last_payment = $this->get_last_payment($contrato, $concepto['conc_desc']);
-                        $deudas_contrato = $this->get_deudas($last_payment, $contrato);
-                        $monto_todo += $this->getTotalAlquileres($deudas_contrato);
-                        $monto_intereses += $this->getTotalIntereses($deudas_contrato);
-                    }
-
-                    // deudas de servicios
-                    $loading_service_debt = strpos($lista_servicios, $concepto['conc_desc']) !== false;
-                    $loading_contrato_debt = strpos($concepto['conc_desc'], 'Loteo') !== false || strpos($concepto['conc_desc'], 'Alquiler') !== false;
-                    if ($loading_service_debt || $loading_contrato_debt) {
-                        if ($loading_contrato_debt) {
-                            $servicios = $this->basic->get_where('servicios', array('serv_contrato' => $contrato['con_id']));
-                        }
-                        if ($loading_service_debt) {
-                            $servicios = $this->basic->get_where('servicios', array('serv_contrato' => $contrato['con_id'], 'serv_concepto' => $concepto['conc_desc']));
-                        }
-
-                        foreach ($servicios->result_array() as $row) {
-                            //Obtendre los ultimos pagos de los servicios del contrato
-                            if ($row['serv_accion'] == 'Pagar') {
-                                $last_pay_serv = $this->get_last_payment($contrato, $row['serv_concepto']);
-
-                                if (!$last_pay_serv) {
-                                    $last_pay_serv = $row['serv_concepto'];
-                                }
-
-                                $deuda = $this->get_deudas_serv($last_pay_serv, $contrato);
-                                $deudas_servicios = array_merge($deudas_servicios, $deuda);
-                            }
-                        }
+                if ($concepto->conc_desc == 'Loteo' || $concepto->conc_desc == 'Comision' || $concepto->conc_desc == 'Alquiler N' || $concepto->conc_desc == 'Alquiler' || $concepto->conc_desc == 'Alquiler Comercial' || $concepto->conc_desc == 'Alquiler Comercial N') {
+                    if ($concepto->conc_desc != 'Comision') {
+                        $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_tipo' => $concepto->conc_desc, 'con_prop' => $prop, 'con_inq' => $inq))->row_array();
+                    } else {
+                        $contrato = $this->basic->get_where('contratos', array('con_enabled' => 1, 'con_prop' => $prop, 'con_inq' => $inq))->row_array();
                     }
                 }
+                if ($contrato != null) {
+                    $response['alq'] = 1;
+                    $response['entro'] = 1;
+                    $monto_intereses = 0;
+                    $monto_todo = 0;
+                    $id_input_new = $x_input;
+                    $response['js'] = '$(".periodos").removeClass("alert alert-danger");';
+                    // CONCEPTO EXPENSAS, MOSTRAR TODAS LAS DEUDAS
+                    $contrato_usado = $contrato['con_usado'];
+                    if ($contrato_usado) {
+                        $lista_servicios = '';
+                        foreach ($servis->result_array() as $row) {
+                            $lista_servicios .= ' ' . $row['serv_concepto'];
+                        }
+                        if (strpos($lista_servicios, $concepto->conc_desc) !== FALSE) {
+                            if ($tableo != 1) {
+                                $response['js'] .= "$('#relleno').empty();$('.periodos').empty();";
+                            }
+                            $servicios = $this->basic->get_where('servicios', array('serv_contrato' => $contrato['con_id']));
+                            $deudas_serv = array();
+                            foreach ($servicios->result_array() as $row) {
+                                $last_pay_serv = false;
+                                //Obtendre los ultimos pagos de los servicios del contrato
+                                if ($row['serv_accion'] == 'Pagar' && $row['serv_concepto'] == $concepto->conc_desc) {
+                                    $last_pay_serv = $this->get_last_payment($contrato, $row['serv_concepto']);
+                                    $deuda = $this->get_deudas_serv($last_pay_serv, $contrato);
+                                    if (count($deuda) > 0) {
+                                        for ($i = 0; $i < count($deuda); $i++) {
+                                            $deuda_fecha = '01-' . $this->get_nro_mes($deuda[$i]['mes']) . '-' . $deuda[$i]['ano'];
+                                            $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $ano_last = trim($ano_last);
+                                            $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $mes_last = trim($mes_last);
+                                            $mes_last = $this->get_nro_mes($mes_last);
+                                            if ($ano_last != $last_pay_serv['cred_mes_alq']) {
+                                                $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                            } else {
+                                                $ano_last = explode('-', $last_pay_serv['cred_fecha']);
+                                                $ano_last = $ano_last[2];
+                                                $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                            }
+                                            $fecha_last_pay = strtotime($fecha_last_pay);
+                                            $deuda_fecha = strtotime($deuda_fecha);
+                                            if ($fecha_last_pay >= $deuda_fecha) {
+                                                $deuda[$i] = array();
+                                            } else {
+                                                array_push($deudas_serv, $deuda[$i]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            $serv_mes = false;
+                            if (!(count($deudas_serv) > 0)) {
+                                $serv_mes = true;
+                                foreach ($servicios->result_array() as $row) {
+                                    if ($row['serv_accion'] == 'Pagar' && $row['serv_concepto'] == $concepto->conc_desc) {
+                                        $last_pay_serv = $this->get_last_payment($contrato, $row['serv_concepto']);
+                                        $meses = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+                                        $flag = true;
+                                        $mes_alq = '';
+                                        if ($last_pay_serv != false) {
+                                            reset($meses);
+                                            $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $mes_last = trim($mes_last);
+                                            $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $ano_last = trim($ano_last);
+                                            $mes_last = $this->get_nro_mes($mes_last);
+                                        }
+                                        if (($mes_last + 1) > 12) {
+                                            $mes_prox_cred = 1;
+                                            $ano_prox_cred = $ano_last + 1;
+                                        } else {
+                                            $mes_prox_cred = $mes_last + 1;
+                                            $ano_prox_cred = $ano_last;
+                                        }
+                                        $mes_alq = $this->get_mes($mes_prox_cred);
+                                        $deuda = array(
+                                            'mes' => $mes_alq,
+                                            'dias_mora' => 0,
+                                            'concepto' => $row['serv_concepto'],
+                                            'ano' => $ano_prox_cred,
+                                            'monto' => 0,
+                                            'saldo_cuenta' => 0,
+                                            'intereses' => 0
+                                        );
+                                        if ($concepto == 'Expensas') {
+                                            $mes_debido = '00-' . $mes_prox_cred . '-' . $ano_prox_cred;
+                                            $deuda = $this->calcular_intereses_expensas($deuda, $contrato, $mes_debido, Date('00-' . $mes_prox_cred . '-' . $ano_prox_cred));
+                                        }
+                                        array_push($deudas_serv, $deuda);
+                                    }
+                                }
+                            }
+                            $dimensiones = $this->countdim($deudas_serv);
+                            if ($dimensiones == 2) {
+                                // No se enconraron deudas en los servicios del contrato
+                                $response['js'] .= $this->armar_vista_serv($id_input_new, $deudas_serv, $contrato);
+                            } else if ($dimensiones != 1) {
+                                // Se arma la vista para las deudas encontradas
+                                $response['js'] .= $this->armar_vista($id_input_new, $deudas_serv, $contrato);
+                            }
+                        }
+                        //CONCEPTO ALQUILER o LOTEO, MOSTRAR TODAS LAS DEUDAS MAS LOS SERVICIOS ADEUDADOS
+                        if (strpos($concepto->conc_desc, 'Loteo') !== FALSE || strpos($concepto->conc_desc, 'Alquiler') !== FALSE && $tableo != 1) {
+                            $response['js'] .= "$('#relleno').empty();$('.periodos').empty();";
+                            $last_pay = false;
+                            $deudas_inquilino = array();
+                            $last_pay = $this->get_last_payment($contrato, $concepto->conc_desc);
+//                            echo '<pre>';
+//                            print_r($last_pay);
+//                            echo '</pre>';
+                            $deuda = $this->get_deudas($last_pay, $contrato);
 
-                $this->data['porc'] = $contrato['con_porc'];
-                $this->data['iva'] = $contrato['con_iva'];
-                $this->data['iva_alq'] = $contrato['con_iva_alq'];
-                $this->data['punitorio'] = $contrato['con_punitorio'];
-                $this->data['periodos'] = $this->basic->get_where('periodos', array('per_contrato' => $contrato['con_id']));
-                $this->data['servicios'] = $this->basic->get_where('servicios', array('serv_contrato' => $contrato['con_id']));
-                $this->data['pintar'] = $this->fecha_periodo_actual($this->data['periodos']);
+//                            print_r($deuda);
+//                            
+                            if (count($deuda) > 0) {
+                                for ($i = 0; $i < count($deuda); $i++) {
+                                    $deuda_fecha = '01-' . $this->get_nro_mes($deuda[$i]['mes']) . '-' . $deuda[$i]['ano'];
+                                    $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay['cred_mes_alq']);
+                                    $mes_last = trim($mes_last);
+                                    $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay['cred_mes_alq']);
+                                    $ano_last = trim($ano_last);
+                                    $mes_last = $this->get_nro_mes($mes_last);
+                                    if ($ano_last != $last_pay['cred_mes_alq']) {
+                                        $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                    } else {
+                                        $ano_last = explode('-', $last_pay['cred_fecha']);
+                                        $ano_last = $ano_last[2];
+                                        $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                    }
+                                    $fecha_last_pay = strtotime($fecha_last_pay);
+                                    $deuda_fecha = strtotime($deuda_fecha);
+                                    if ($fecha_last_pay >= $deuda_fecha) {
+                                        if ($deuda[$i]['saldo_cuenta'] == 0) {
+                                            $deuda[$i] = array();
+                                        } else {
+                                            $deudas_inquilino[] = $deuda[$i];
+                                        }
+                                    } else {
+                                        $deudas_inquilino[] = $deuda[$i];
+                                    }
+                                }
+                            }
+//                            echo '<pre>';
+//                            print_r($deudas_inquilino);
+//                            echo '</pre>';
+                            // SERVICIOS
+                            $servicios = $this->basic->get_where('servicios', array('serv_contrato' => $contrato['con_id']));
+                            $deudas_serv = array();
+                            foreach ($servicios->result_array() as $row) {
+                                //Obtendre los ultimos pagos de los servicios del contrato
+                                if ($row['serv_accion'] == 'Pagar') {
+                                    $last_pay_serv = $this->get_last_payment($contrato, $row['serv_concepto']);
+                                    if (empty($last_pay_serv)) {
+                                        $last_pay_serv = $row['serv_concepto'];
+                                    }
+                                    $deuda = $this->get_deudas_serv($last_pay_serv, $contrato);
+                                    if (count($deuda) > 0) {
+                                        //Elimina las deudas si estan mal traidas porq son del mes y ya estan opagadas
+                                        for ($i = 0; $i < count($deuda); $i++) {
+                                            $deuda_fecha = '01-' . $this->get_nro_mes($deuda[$i]['mes']) . '-' . $deuda[$i]['ano'];
+                                            $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $ano_last = trim($ano_last);
+                                            $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $mes_last = trim($mes_last);
+                                            $mes_last = $this->get_nro_mes($mes_last);
+                                            if ($ano_last != $last_pay_serv['cred_mes_alq']) {
+                                                $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                            } else {
+                                                $ano_last = explode('-', $last_pay_serv['cred_fecha']);
+                                                $ano_last = $ano_last[2];
+                                                $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                            }
+                                            $fecha_last_pay = strtotime($fecha_last_pay);
+                                            $deuda_fecha = strtotime($deuda_fecha);
+                                            if ($fecha_last_pay >= $deuda_fecha) {
+                                                $deuda[$i] = array();
+                                            } else {
+                                                array_push($deudas_serv, $deuda[$i]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            $serv_mes = false;
+                            if (!(count($deudas_serv) > 0)) {
+                                // No hay deudas se traen los pagos para el mes siguiente
+                                $serv_mes = true;
+                                foreach ($servicios->result_array() as $row) {
+                                    if ($row['serv_accion'] == 'Pagar') {
+                                        $last_pay_serv = $this->get_last_payment($contrato, $row['serv_concepto']);
+                                        $meses = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+                                        $flag = true;
+                                        $mes_alq = '';
+                                        if ($last_pay_serv != false) {
+                                            reset($meses);
+                                            $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $ano_last = trim($ano_last);
+                                            $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                            $mes_last = trim($mes_last);
+                                            $mes_last = $this->get_nro_mes($mes_last);
+                                            if ($ano_last != $last_pay_serv['cred_mes_alq']) {
+                                                $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                            } else {
+                                                $ano_last = explode('-', $last_pay_serv['cred_fecha']);
+                                                $ano_last = $ano_last[2];
+                                                $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                            }
+                                        }
+                                        if (($mes_last + 1) > 12) {
+                                            $mes_prox_cred = 1;
+                                            $ano_prox_cred = $ano_last + 1;
+                                        } else {
+                                            $mes_prox_cred = $mes_last + 1;
+                                            $ano_prox_cred = $ano_last;
+                                        }
+                                        $mes_alq = $this->get_mes($mes_prox_cred);
+                                        $deuda = array(
+                                            'mes' => $mes_alq,
+                                            'dias_mora' => 0,
+                                            'concepto' => $row['serv_concepto'],
+                                            'ano' => $ano_prox_cred,
+                                            'monto' => 0,
+                                            'saldo_cuenta' => 0,
+                                            'intereses' => 0
+                                        );
+                                        if ($concepto == 'Expensas') {
+                                            $mes_debido = '00-' . $mes_prox_cred . '-' . $ano_prox_cred;
+                                            $deuda = $this->calcular_intereses_expensas($deuda, $contrato, $mes_debido, Date('00-' . $mes_prox_cred . '-' . $ano_prox_cred));
+                                        }
+                                        array_push($deudas_serv, $deuda);
+                                    }
+                                }
+                            }
+                            if ($serv_mes) {
+                                //Elimina las deudas si estan mal traidas porq son del mes y ya estan opagadas
+                                for ($i = 0; $i < count($deudas_serv); $i++) {
+                                    $last_pay_serv = $this->get_last_payment($contrato, $deudas_serv[$i]['concepto']);
+                                    $deuda_fecha = '01-' . $this->get_nro_mes($deudas_serv[$i]['mes']) . '-' . $deudas_serv[$i]['ano'];
+                                    $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                    $ano_last = trim($ano_last);
+                                    $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay_serv['cred_mes_alq']);
+                                    $mes_last = trim($mes_last);
+                                    $mes_last = $this->get_nro_mes($mes_last);
+                                    if ($ano_last != $last_pay_serv['cred_mes_alq']) {
+                                        $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                    } else {
+                                        $ano_last = explode('-', $last_pay_serv['cred_fecha']);
+                                        $ano_last = $ano_last[2];
+                                        $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                    }
+                                    $fecha_last_pay = strtotime($fecha_last_pay);
+                                    $deuda_fecha = strtotime($deuda_fecha);
+                                    if ($fecha_last_pay >= $deuda_fecha) {
+                                        $deudas_serv[$i] = array();
+                                    }
+                                }
+                            }
+                            if (count($deudas_inquilino) > 0) {
 
-                $response['data']['deudas_contrato'] = array_merge($deudas_contrato, $deudas_servicios);
-                $response['data']['contrato'] = $contrato;
-                $response['data']['monto'] = $monto_todo;
-                $response['data']['interes'] = $monto_intereses;
-                $response['data']['iva'] = $monto_iva;
-                $response['data']['total'] = $monto_todo + $monto_intereses + $monto_iva;
-                $response['status'] = true;
-                $response['exist_contrato'] = true;
-                $response['info_contrato'] = $this->load->view('manager/transacciones/periodos_serv', $this->data, TRUE);
-            } else {
-                if (strpos($lista_servicios, $concepto['conc_desc']) != false || $concepto['conc_desc'] == 'Loteo' || $concepto['conc_desc'] == 'Comision' || $concepto['conc_desc'] == 'Alquiler N' || $concepto['conc_desc'] == 'Alquiler' || $concepto['conc_desc'] == 'Alquiler Comercial' || $concepto['conc_desc'] == 'Alquiler Comercial N') {
-                    $response['status'] = false;
-                    $response['message'] = 'No existe contrato que vincule a ' . $prop . ' y ' . $inq . ', o el mismo esta VENCIDO';
+                                for ($x = 0; $x < count($deudas_inquilino); $x++) {
+//                                    var_dump($id_input_new);
+//                                    var_dump($deudas_inquilino[$x]);
+                                    if ($id_input_new != 'undefined') {
+                                        $monto_todo += $deudas_inquilino[$x]['monto'];
+                                        $monto_intereses += $deudas_inquilino[$x]['intereses'];
+
+                                        if ($id_input_new == 1) {
+//                                        echo '<pre>';
+//                                        print_r($deudas_inquilino[$x]);
+//                                        echo '<pre>';
+                                            $row = "$('#concepto1').attr('readonly','true');$('#domicilio1').attr('readonly','true');
+                                    $('#mes1').val('" . $deudas_inquilino[$x]['mes'] . ' ' . $deudas_inquilino[$x]['ano'] . "');$('#domicilio1').val('" . $contrato['con_domi'] . "');";
+                                            $row .= "$('#mes1').autocomplete({source: meses});$('#monto1').val('" . $deudas_inquilino[$x]['monto'] . "');";
+                                            if ($deudas_inquilino[$x]['saldo_cuenta'] == 1) {
+                                                $row .= '$("#cred_tipo_pago option[value=Saldo]").attr("selected","selected");';
+                                            }
+                                            if ($deudas_inquilino[$x]['dias_mora'] != 0) {
+                                                $response['js'] .= '$("#interes1").remove();
+                                            jQuery("<input/>", {
+                                                id: "interes1",
+                                                onkeyup:"recalcular()",
+                                                onblur:"recalcular()",
+                                                onclick:"unlock(1)",
+                                                name: "interes1",
+                                                type: "text",
+                                                autocomplete: "off",
+                                                style : "cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                                "class": "form-control ui-autocomplete-input",
+                                                placeholder: "Dias de Interes"                 
+                                        }).appendTo("#bloque1");';
+                                                $response['js'] .= '$("#interes1").hover(function(){
+                                            $("#tooltipInt").css("display","block");
+                                            },function(){
+                                            $("#tooltipInt").css("display","none");
+                                        });$("#interes1").val("' . $deudas_inquilino[$x]['dias_mora'] . ' dias mora");
+                                        jQuery("<input/>", {
+                                                id: "interes_calculado1",
+                                                name: "interes_calculado1",
+                                                type: "text",
+                                                autocomplete: "off",
+                                                value: "' . ($deudas_inquilino[$x]['intereses']) . '",  
+                                                style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                                "class": "form-control ui-autocomplete-input",
+                                                placeholder: "Dias de Interes"                 
+                                        }).appendTo("#bloque1");';
+                                            }
+                                            if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
+                                                $row .= " jQuery('<input/>', {
+                                                        id: 'iva_calculado'+" . $id_input_new . ",
+                                                        name: 'iva_calculado'+" . $id_input_new . ",
+                                                        type: 'text',
+                                                        autocomplete: 'off',
+                                                        value: '" . $deudas_inquilino[$x]['monto'] * 0.21 . "',
+                                                        style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                        'class': 'form-control ui-autocomplete-input',
+                                                        placeholder: 'IVA/Alquiler'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");";
+                                            }
+                                        } else {
+                                            $row = "jQuery('<div/>', {
+                                            id: 'bloque'+" . $id_input_new . ",
+                                            'class' : 'bloque'
+                                            }).appendTo('#relleno').hide().fadeIn(700);  
+                                            jQuery('<input/>', {
+                                                id: 'auto_conc_id'+" . $id_input_new . ",
+                                                name: 'auto_conc_id'+" . $id_input_new . ",
+                                                type: 'hidden',
+                                                autocomplete: 'off',           
+                                                value: '" . $concepto->conc_id . "'           
+                                            }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                            jQuery('<input/>', {
+                                                    id: 'concepto'+" . $id_input_new . ",
+                                                    name: 'concepto'+" . $id_input_new . ",
+                                                    type: 'text',
+                                                    readonly: true,
+                                                    onblur:'validar('+" . $id_input_new . "+')',
+                                                    value: '" . $concepto->conc_desc . "',     
+                                                    onkeyup:'validar('+" . $id_input_new . "+')',
+                                                    style : 'margin-right: 5px;font-size: 16px;width: 290px;float: left;',
+                                                    'class': 'form-control ui-autocomplete-input',
+                                                    placeholder: 'Concepto',  
+                                                    'data-row-id': '" . $id_input_new . "', 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");
+                                                    
+                                                jQuery('<input/>', {
+                                                    readonly: false,
+                                                    id: 'monto'+" . $id_input_new . ",
+                                                    name: 'monto'+" . $id_input_new . ",
+                                                    type: 'text',
+                                                    onkeyup:'recalcular()',
+                                                    onblur:'recalcular()',
+                                                    value: '" . $deudas_inquilino[$x]['monto'] . "',
+                                                    autocomplete: 'off',
+                                                    style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                    'class': 'form-control ui-autocomplete-input',
+                                                    placeholder: 'Monto'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                                jQuery('<input/>', {
+                                                    id: 'mes'+" . $id_input_new . ",
+                                                    name: 'mes'+" . $id_input_new . ",
+                                                    type: 'text',
+                                                    value: '" . $deudas_inquilino[$x]['mes'] . ' ' . $deudas_inquilino[$x]['ano'] . "',
+                                                    style : 'margin-right: 5px;font-size: 16px;width: 120px;float: left;',
+                                                    'class': 'form-control ui-autocomplete-input',
+                                                    placeholder: 'Mes'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");
+                                                    
+                                                $('#mes'+" . $id_input_new . ").autocomplete({source: meses});                                        
+                                                    jQuery('<input/>', {
+                                                    id: 'domicilio'+" . $id_input_new . ",
+                                                    name: 'domicilio'+" . $id_input_new . ",
+                                                    type: 'text',
+                                                    value: '" . $contrato['con_domi'] . "',
+                                                    style : 'margin-right: 5px;font-size: 16px;width: 230px;float: left;',
+                                                    'class': 'form-control ui-autocomplete-input',
+                                                    placeholder: 'Domicilio Inmueble'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                                jQuery('<input/>', {
+                                                      
+                                                        id: 'interes'+" . $id_input_new . ",
+                                                        name: 'interes'+" . $id_input_new . ",
+                                                        type: 'text',       
+                                                        onkeyup:'recalcular()',
+                                                        onclick:'unlock(" . $id_input_new . ")',
+                                                        onblur:'recalcular()',
+                                                        autocomplete: 'off',
+                                                        value: '" . $deudas_inquilino[$x]['dias_mora'] . " dias mora',
+                                                        
+                                                        style : 'cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                        'class': 'form-control ui-autocomplete-input',
+                                                        placeholder: 'Dias de Interes'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");";
+
+                                            $row .= "jQuery('<input/>', {
+                                                     
+                                                        id: 'interes_calculado'+" . $id_input_new . ",
+                                                        name: 'interes_calculado'+" . $id_input_new . ",
+                                                        type: 'text',
+                                                        autocomplete: 'off',
+                                                        value: '" . ($deudas_inquilino[$x]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x]['monto']) . "',
+                                                      
+                                                        style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                        'class': 'form-control ui-autocomplete-input',
+                                                        placeholder: 'Monto Interes'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");";
+
+                                            if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
+                                                $row .= " jQuery('<input/>', {
+                                                    
+                                                        id: 'iva_calculado'+" . $id_input_new . ",
+                                                        name: 'iva_calculado'+" . $id_input_new . ",
+                                                        type: 'text',
+                                                        autocomplete: 'off',
+                                                        value: '" . $deudas_inquilino[$x]['monto'] * 0.21 . "',
+                                                    
+                                                        style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                        'class': 'form-control ui-autocomplete-input',
+                                                        placeholder: 'IVA/Alquiler'                 
+                                                }).appendTo('#bloque'+" . $id_input_new . ");";
+                                            }
+                                            $row .= "
+                                                jQuery('<span/>', {
+                                                    id: 'span'+" . $id_input_new . ",
+                                                    onclick: 'removeElement('+" . $id_input_new . "+')',
+                                                    style: 'height: 34px;',
+                                                    disabled: true,
+                                                    'class' : 'btn btn-default btn-lg'
+                                                }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                                jQuery('<a/>', {
+                                                    'class' : 'glyphicon glyphicon-minus-sign',
+                                                    style : 'text-decoration: none; margin-top: -3px;'
+                                                }).appendTo('#span'+" . $id_input_new . ");
+                                                ";
+                                        }
+                                        $response['js'] .= $row;
+                                        $id_input_new++;
+                                    }
+//                                    $id_input_new--;
+                                }
+                            } else {
+                                $last_pay = $this->get_last_payment($contrato, $concepto->conc_desc);
+                                $meses = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+                                $flag = true;
+                                $mes_alq = '';
+                                reset($meses);
+                                if ($last_pay != false) {
+                                    $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_pay['cred_mes_alq']);
+                                    $ano_last = trim($ano_last);
+                                    $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_pay['cred_mes_alq']);
+                                    $mes_last = trim($mes_last);
+                                    $mes_last = $this->get_nro_mes($mes_last);
+                                    if ($ano_last != $last_pay['cred_mes_alq']) {
+                                        $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                    } else {
+                                        $ano_last = explode('-', $last_pay['cred_fecha']);
+                                        $ano_last = $ano_last[2];
+                                        $fecha_last_pay = '01-' . $mes_last . '-' . $ano_last;
+                                    }
+                                    if (($mes_last + 1) > 12) {
+                                        $mes_prox_cred = 1;
+                                        $ano_prox_cred = $ano_last + 1;
+                                    } else {
+                                        $mes_prox_cred = $mes_last + 1;
+                                        $ano_prox_cred = $ano_last;
+                                    }
+                                    $mes_alq = $this->get_mes($mes_prox_cred);
+                                    $mes_debido = '00-' . $mes_prox_cred . '-' . $ano_prox_cred;
+                                }
+                                // No se encontraron deudas de alquileres o loteos
+                                $periodos = $this->basic->get_where('periodos', array('per_contrato' => $contrato['con_id']), 'per_id');
+                                $monto = $this->calcular_monto($mes_debido, $periodos);
+                                $monto_todo += $monto;
+//                                print_r($monto);
+//                                print_r($mes_alq . $ano_prox_cred);
+//                                $id_input_new++;
+                                $row_unica = "$('#concepto1').attr('readonly','true');$('#domicilio1').attr('readonly','true');$('#monto1').val('" . $monto . "');
+                                    $('#mes1').val('" . $mes_alq . ' ' . $ano_prox_cred . "');$('#domicilio1').val('" . $contrato['con_domi'] . "');$('#concepto1').val('" . $contrato['con_tipo'] . "');";
+                                $row_unica .= "$('#mes1').autocomplete({source: meses});";
+                                if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
+                                    $row_unica .= " jQuery('<input/>', {
+                                                   
+                                                        id: 'iva_calculado1',
+                                                        name: 'iva_calculado1',
+                                                        type: 'text',
+                                                        autocomplete: 'off',
+                                                        value: '" . $monto * 0.21 . "',
+                                                      
+                                                        style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                        'class': 'form-control ui-autocomplete-input',
+                                                        placeholder: 'IVA/Alquiler'                 
+                                                }).appendTo('#bloque1');
+                                                ";
+                                }
+                                $response['js'] .= $row_unica;
+                            }
+                            $dimensiones = $this->countdim($deudas_serv);
+
+                            $armo_serv = false;
+                            if ($dimensiones == 2) {
+                                $armo_serv = true;
+                                // No se enconraron deudas en los servicios del contrato
+//                                print_r('1');
+                                $id_input_new++;
+                                $response['js'] .= $this->armar_vista_serv($id_input_new, $deudas_serv, $contrato);
+                            } else if ($dimensiones != 1) {
+                                $armo_serv = true;
+//                                print_r('2');
+                                $id_input_new++;
+                                $response['js'] .= $this->armar_vista($id_input_new, $deudas_serv, $contrato);
+                                // Se arma la vista para las deudas encontradas
+                            }
+                            if (!$armo_serv) {
+                                //el contrato no posee servicios a cobrar
+                                $id_input_new--;
+                                $response['js'] .= '$("#cant_bloques").val("' . $id_input_new . '");';
+                                $response['js'] .= '$("#span"+' . $id_input_new . ').removeAttr("disabled");';
+                                $response['js'] .= 'x = ' . $id_input_new . ';';
+                                $response['js'] .= 'cant = ' . $id_input_new . ';';
+                            }
+
+                            // Fijo la cantidad de bloque que va tener la nueva vista
+                            // HELL YEAH!
+                        }
+                    } else {
+                        if ($contrato['con_tolerancia'] <= Date('d')) {
+                            $response['js'] .= '
+                                    jQuery("<input/>", {
+                                    id: "interes"+' . $id_input_new . ',
+                                    name: "interes"+' . $id_input_new . ',
+                                    type: "text",
+                                    autocomplete: "off",
+                                    onkeyup:"recalcular()",
+                                    onclick:"unlock(' . $id_input_new . ')",
+                                    onblur:"recalcular()",                                           
+                                    style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                    "class": "form-control ui-autocomplete-input",
+                                    placeholder: "Dias de Interes"                 
+                                }).appendTo("#bloque"+' . $id_input_new . ');';
+                            $response['js'] .= '$("#interes"+' . $id_input_new . ').hover(function(){
+                                    $("#tooltipInt").css("display","block");
+                                    },function(){
+                                    $("#tooltipInt").css("display","none");
+                                });$("#interes"+' . $id_input_new . ').val("' . Date('d') . ' dias mora");
+                                jQuery("<input/>", {
+                                        id: "interes_calculado"+' . $id_input_new . ',
+                                        name: "interes_calculado"+' . $id_input_new . ',
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "",                                  
+                                     
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "Monto Interes"                 
+                                }).appendTo("#bloque"+' . $id_input_new . ');recalcular();';
+                        }
+                        if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial') {
+                            $row = " $('#concepto" . $id_input_new . "').attr('readonly','true');
+                                jQuery('<input/>', {
+                                
+                                    id: 'iva_calculado'+" . $id_input_new . ",
+                                    name: 'iva_calculado'+" . $id_input_new . ",
+                                    type: 'text',
+                                    autocomplete: 'off',
+                                    value: '',
+                            
+                                    style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                    'class': 'form-control ui-autocomplete-input',
+                                    placeholder: 'IVA/Alquiler'                 
+                          }).appendTo('#bloque'+" . $id_input_new . ");recalcular();";
+                            $response['js'] .= $row;
+                        }
+                        $id_input_new--;
+                        $row = '$("#cant_bloques").val("' . $id_input_new . '");';
+                        $row .= '$("#span"+' . $id_input_new . ').removeAttr("disabled");';
+                        $row .= 'x = ' . $id_input_new . ';';
+                        $row .= 'cant = ' . $id_input_new . ';';
+                        $response['js'] .= $row;
+                    }
+                    if (strpos($concepto->conc_desc, 'Comision') !== FALSE) {
+                        // existe contrato, usado o no usado entra aca cuando es comision
+                        $periodos = $this->basic->get_where('periodos', array('per_contrato' => $contrato['con_id']), 'per_id');
+                        if ($contrato['con_iva'] == 'Si') {
+                            $row_unica = "$('#domicilio" . $id_input_new . "').val('" . $contrato['con_domi'] . "');
+                                $('#domicilio" . $id_input_new . "').attr('readonly','true');
+                                $('#concepto" . $id_input_new . "').attr('readonly','true');
+                                        jQuery('<input/>', {
+                                    
+                                            id: 'iva_calculado'+" . $id_input_new . ",
+                                            name: 'iva_calculado'+" . $id_input_new . ",
+                                            type: 'text',
+                                            autocomplete: 'off',
+                                            value: '',
+                                         
+                                            style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'IVA/Comision'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");";
+                            $row_unica .= "$('#mes" . $id_input_new . "').autocomplete({source: meses});recalcular();";
+                            $response['js'] .= $row_unica;
+                        }
+                    }
+//                    if ($contrato['con_iva_alq'] == 'Si' && $concepto->conc_desc == 'Alquiler Comercial' && $contrato_usado) {
+//                        $row = "$('#domicilio" . $id_input_new . "').val('" . $contrato['con_domi'] . "');
+//                                $('#domicilio" . $id_input_new . "').attr('readonly','true');
+//                                $('#concepto" . $id_input_new . "').attr('readonly','true');";
+//                        $row .= " $('#concepto" . $id_input_new . "').attr('readonly', 'true');
+//                                jQuery('<input/>', {
+//                         
+//                                id: 'iva_calculado'+" . $id_input_new . ",
+//                                name: 'iva_calculado'+" . $id_input_new . ",
+//                                type: 'text',
+//                                autocomplete: 'off',
+//                                value: '',
+//                           
+//                                style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+//                                'class': 'form-control ui-autocomplete-input',
+//                                placeholder: 'IVA/Alquiler'
+//                                }).appendTo('#bloque' + " . $id_input_new . ");recalcular();
+//                        ";
+//                        $response['js'] .= $row;
+//                    }
+//                    $id_input_new--;
+//                    print_r($response['js']);
+
+                    $response['js'] .= '$("#monto").val("' . $monto_todo . '");';
+                    $response['js'] .= '$("#intere").val("' . $monto_intereses . '");';
+                    $total = $monto_todo + $monto_intereses;
+                    $response['js'] .= '$("#total_todo").val("' . $total . '");';
+                    $response['js'] .= '$("#montos").fadeOut().fadeIn(700);';
+                    $this->data['porc'] = $contrato['con_porc'];
+                    $this->data['iva'] = $contrato['con_iva'];
+                    $this->data['iva_alq'] = $contrato['con_iva_alq'];
+                    $this->data['punitorio'] = $contrato['con_punitorio'];
+                    $this->data['periodos'] = $this->basic->get_where('periodos', array('per_contrato' => $contrato['con_id']));
+                    $this->data['servicios'] = $this->basic->get_where('servicios', array('serv_contrato' => $contrato['con_id']));
+                    $this->data['pintar'] = $this->fecha_periodo_actual($this->data['periodos']);
+                    $response['periodos'] = $this->load->view('manager/transacciones/periodos_serv', $this->data, TRUE);
                 } else {
-                    $response['data']['concepto'] = $concepto['conc_desc'];
-                    $response['status'] = true;
-                    $response['contrato'] = false;
+                    if ($rtdo != false || $concepto->conc_desc == 'Loteo' || $concepto->conc_desc == 'Comision' || $concepto->conc_desc == 'Alquiler N' || $concepto->conc_desc == 'Alquiler' || $concepto->conc_desc == 'Alquiler Comercial' || $concepto->conc_desc == 'Alquiler Comercial N') {
+                        $response['js'] = '$(".periodos").addClass("alert alert-danger");';
+                        $response['periodos'] = 'No existe contrato que vincule a ' . $prop . ' y ' . $inq . ', o el mismo esta VENCIDO';
+                    } else {
+                        $response['js'] = '$(".periodos").removeClass("alert alert-danger");';
+                    }
                 }
             }
         } else {
             $this->data[$table] = $this->basic->get_all($table);
         }
+        $response['js'] .= '$("#monto1").focus();setTimeout(function(){$("#monto1").blur();},200);';
         $response['html'] = $this->load->view('manager/' . $table . '/buscar_fila_' . $table, $this->data, TRUE);
         echo json_encode($response);
-    }
-
-    public function getTotalAlquileres($deudas_inquilino) {
-        $total = 0;
-        foreach ($deudas_inquilino as $deuda) {
-            $total += $deuda['monto'];
-        }
-        return $total;
-    }
-
-    public function getTotalIntereses($deudas_inquilino) {
-        $total = 0;
-        foreach ($deudas_inquilino as $deuda) {
-            $total += $deuda['intereses'];
-        }
-        return $total;
     }
 
     function countdim($array) {
@@ -5166,6 +5598,393 @@ class Manager extends CI_Controller {
         } else {
             return false;
         }
+    }
+
+    function armar_vista($id_input_new, $deudas_inquilino, $contrato) {
+        $row = '';
+        for ($x = 0; $x < count($deudas_inquilino); $x++) {
+            for ($y = 0; $y < count($deudas_inquilino[$x]); $y++) {
+                if (!empty($deudas_inquilino[$x][$y]) || !empty($deudas_inquilino[$x])) {
+                    $conc = $this->basic->get_where('conceptos', array('conc_desc' => $deudas_inquilino[$x][$y]['concepto']))->row_array();
+                    if ($id_input_new == 1) {
+                        $row = "$('#concepto" . $id_input_new . "').attr('readonly','true');$('#domicilio" . $id_input_new . "').attr('readonly','true');$('#monto" . $id_input_new . "').val('" . $deudas_inquilino[$x][$y]['monto'] . "');
+                    $('#mes" . $id_input_new . "').val('" . $deudas_inquilino[$x][$y]['mes'] . ' ' . $deudas_inquilino[$x][$y]['ano'] . "');$('#domicilio" . $id_input_new . "').val('" . $contrato['con_domi'] . "');";
+                        $row .= "$('#mes1').autocomplete({source: meses});";
+                        if ($deudas_inquilino[$x][$y]['dias_mora'] != 0) {
+                            $row .= '$("#interes' . $id_input_new . '").remove();
+                                    jQuery("<input/>", {
+                                    id: "interes' . $id_input_new . '",
+                                    name: "interes' . $id_input_new . '",
+                                    onkeyup:"recalcular()",
+                                    onblur:"recalcular()",
+                                    onclick:"unlock(' . $id_input_new . ')",
+                                    type: "text",
+                                    autocomplete: "off",
+                              
+                                    style : "cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                    "class": "form-control ui-autocomplete-input",
+                                    placeholder: "Dias de Interes"                 
+                                }).appendTo("#bloque' . $id_input_new . '");';
+                            $row .= '$("#interes' . $id_input_new . '").hover(function(){
+                                    $("#tooltipInt").css("display","block");
+                                    },function(){
+                                    $("#tooltipInt").css("display","none");
+                                });$("#interes' . $id_input_new . '").val("' . $deudas_inquilino[$x][$y]['dias_mora'] . ' dias mora");
+                                   
+
+                                jQuery("<input/>", {
+                                        id: "interes_calculado1",
+                                        name: "interes_calculado1",
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "' . ($deudas_inquilino[$x][$y]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x][$y]['monto']) . '",                                  
+                          
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "Dias de Interes"                 
+                                }).appendTo("#bloque1");';
+                        }
+                        if ($contrato['con_iva_alq'] == 'Si' && $conc == 'Alquiler Comercial') {
+                            $row .= '
+                                jQuery("<input/>", {
+                                        id: "iva_calculado1",
+                                        name: "iva_calculado1",
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "' . $deudas_inquilino[$x][$y]['monto'] * 0.21 . '",                                  
+                                  
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "IVA/Alquiler"                 
+                                }).appendTo("#bloque1");';
+                        }
+                    } else {
+                        $row .= "$('#bloque" . $id_input_new . "').empty();";
+                        $row .= "jQuery('<div/>', {
+                                    id: 'bloque'+" . $id_input_new . ",
+                                    'class' : 'bloque'
+                                    }).appendTo('#relleno').hide().fadeIn(700);    
+                            
+                                    jQuery('<input/>', {
+                                        id: 'auto_conc_id'+" . $id_input_new . ",
+                                        name: 'auto_conc_id'+" . $id_input_new . ",
+                                        type: 'hidden',
+                                        autocomplete: 'off',           
+                                        value: '" . $conc['conc_id'] . "'           
+                                    }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                    jQuery('<input/>', {
+                                            id: 'concepto'+" . $id_input_new . ",
+                                            name: 'concepto'+" . $id_input_new . ",
+                                            type: 'text',
+                                            readonly: true,
+                                            onblur:'validar('+" . $id_input_new . "+')',
+                                            value: '" . $deudas_inquilino[$x][$y]['concepto'] . "',     
+                                            onkeyup:'validar('+" . $id_input_new . "+')',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 290px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Concepto',                 
+                                            'data-row-id': '" . $id_input_new . "',                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                        jQuery('<input/>', {
+                                            readonly: false,
+                                            id: 'monto'+" . $id_input_new . ",
+                                            name: 'monto'+" . $id_input_new . ",
+                                            type: 'text',
+                                            onkeyup:'recalcular()',
+                                            onblur:'recalcular()',
+                                            autocomplete: 'off',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Monto'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                        jQuery('<input/>', {
+                                            id: 'mes'+" . $id_input_new . ",
+                                            name: 'mes'+" . $id_input_new . ",
+                                            type: 'text',
+                                            value: '" . $deudas_inquilino[$x][$y]['mes'] . ' ' . $deudas_inquilino[$x][$y]['ano'] . "',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 120px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Mes'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+                                        $('#mes'+" . $id_input_new . ").autocomplete({source: meses});
+                                        jQuery('<input/>', {
+                                            readonly: true,
+                                            id: 'domicilio'+" . $id_input_new . ",
+                                            name: 'domicilio'+" . $id_input_new . ",
+                                            type: 'text',
+                                            value: '" . $contrato['con_domi'] . "',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 230px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Domicilio Inmueble'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");";
+
+                        if ($contrato['con_iva_alq'] == 'Si' && $conc == 'Alquiler Comercial') {
+                            $row .= '
+                                jQuery("<input/>", {
+                                        id: "iva_calculado+"' . $id_input_new . ',
+                                        name: "iva_calculado+"' . $id_input_new . ',
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "' . $deudas_inquilino[$x][$y]['monto'] * 0.21 . '",                                  
+                                    
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "IVA/Alquiler"                 
+                                }).appendTo("#bloque"+' . $id_input_new . ');';
+                        }
+
+                        if ($deudas_inquilino[$x][$y]['concepto'] == 'Expensas') {
+                            if ($deudas_inquilino[$x][$y]['dias_mora'] != 0) {
+                                $row .= "
+
+                                        jQuery('<input/>', {
+                                             
+                                                id: 'interes'+" . $id_input_new . ",
+                                                name: 'interes'+" . $id_input_new . ",
+                                                type: 'text',
+                                                onkeyup:'recalcular()',
+                                                onblur:'recalcular()',
+                                                onclick:'unlock(" . $id_input_new . ")',
+                                                autocomplete: 'off',
+                                                value: '" . $deudas_inquilino[$x][$y]['dias_mora'] . " dias mora',
+                                            
+                                                style : 'cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                'class': 'form-control ui-autocomplete-input',
+                                                placeholder: 'Dias de Interes'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+                                            
+                                        jQuery('<input/>', {
+                                      
+                                            id: 'interes_calculado'+" . $id_input_new . ",
+                                            name: 'interes_calculado'+" . $id_input_new . ",
+                                            type: 'text',
+                                            autocomplete: 'off',
+                                            value: '" . ($deudas_inquilino[$x][$y]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x][$y]['monto']) . "',
+                                      
+                                            style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Dias de Interes'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+                                    ";
+                            }
+                        }
+                        $row .= "
+                                        jQuery('<span/>', {
+                                            id: 'span'+" . $id_input_new . ",
+                                            onclick: 'removeElement('+" . $id_input_new . "+')',
+                                            style: 'height: 34px;',
+                                            disabled: true,
+                                            'class' : 'btn btn-default btn-lg'
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                        jQuery('<a/>', {
+                                            'class' : 'glyphicon glyphicon-minus-sign',
+                                            style : 'text-decoration: none; margin-top: -3px;'
+                                        }).appendTo('#span'+" . $id_input_new . ");";
+                    }
+                    $id_input_new++;
+                }
+            }
+        }
+        $id_input_new = $id_input_new - 1;
+        $row .= '$("#cant_bloques").val("' . $id_input_new . '");';
+        $row .= '$("#span"+' . $id_input_new . ').removeAttr("disabled");';
+        $row .= 'x = ' . $id_input_new . ';';
+        $row .= 'cant = ' . $id_input_new . ';';
+        return $row;
+    }
+
+    function armar_vista_serv($id_input_new, $deudas_inquilino, $contrato) {
+        $row = '';
+        for ($x = 0; $x < count($deudas_inquilino); $x++) {
+            if (!empty($deudas_inquilino[$x])) {
+                $conc = $this->basic->get_where('conceptos', array('conc_desc' => $deudas_inquilino[$x]['concepto']))->row_array();
+                if ($id_input_new == 1) {
+                    $row = "$('#concepto1').attr('readonly','true');$('#domicilio1').attr('readonly','true');$('#monto1').val('" . $deudas_inquilino[$x]['monto'] . "');
+                    $('#mes1').val('" . $deudas_inquilino[$x]['mes'] . ' ' . $deudas_inquilino[$x]['ano'] . "');$('#domicilio1').val('" . $contrato['con_domi'] . "');";
+                    $row .= "$('#mes1').autocomplete({source: meses}); ";
+                    if ($deudas_inquilino[$x]['dias_mora'] != 0) {
+                        $row .= '$("#interes1").remove();
+                                    jQuery("<input/>", {
+                                    id: "interes1",
+                                    name: "interes1",
+                                    onkeyup:"recalcular()",
+                                    onblur:"recalcular()",
+                                    onclick:"unlock(1)",
+                                    type: "text",
+                                    autocomplete: "off",
+                                   
+                                    style : "cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                    "class": "form-control ui-autocomplete-input",
+                                    placeholder: "Dias de Interes"                 
+                                }).appendTo("#bloque1");';
+                        $row .= '$("#interes1").hover(function(){
+                                    $("#tooltipInt").css("display","block");
+                                    },function(){
+                                    $("#tooltipInt").css("display","none");
+                                });$("#interes1").val("' . $deudas_inquilino[$x]['dias_mora'] . ' dias mora");
+                                   
+                                jQuery("<input/>", {
+                                        id: "interes_calculado1",
+                                        name: "interes_calculado1",
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "' . ($deudas_inquilino[$x]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x]['monto']) . '",                                  
+                                  
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "Dias de Interes"                 
+                                }).appendTo("#bloque1");';
+                    }
+
+                    if ($contrato['con_iva_alq'] == 'Si' && $conc == 'Alquiler Comercial') {
+                        $row .= '
+                                jQuery("<input/>", {
+                                        id: "iva_calculado1",
+                                        name: "iva_calculado1",
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "' . $deudas_inquilino[$x][$y]['monto'] * 0.21 . '",                                  
+                                    
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "IVA/Alquiler"                 
+                                }).appendTo("#bloque1");';
+                    }
+                } else {
+
+                    $row .= "$('#bloque" . $id_input_new . "').empty();";
+                    $row .= "jQuery('<div/>', {
+                                    id: 'bloque'+" . $id_input_new . ",
+                                    'class' : 'bloque'
+                                    }).appendTo('#relleno').hide().fadeIn(700);    
+                            
+                                    jQuery('<input/>', {
+                                        id: 'auto_conc_id'+" . $id_input_new . ",
+                                        name: 'auto_conc_id'+" . $id_input_new . ",
+                                        type: 'hidden',
+                                        autocomplete: 'off',           
+                                        value: '" . $conc['conc_id'] . "'           
+                                    }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                    jQuery('<input/>', {
+                                            id: 'concepto'+" . $id_input_new . ",
+                                            name: 'concepto'+" . $id_input_new . ",
+                                            type: 'text',
+                                            readonly: true,
+                                            onblur:'validar('+" . $id_input_new . "+')',
+                                            value: '" . $deudas_inquilino[$x]['concepto'] . "',     
+                                            onkeyup:'validar('+" . $id_input_new . "+')',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 290px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Concepto',   
+                                            'data-row-id': '" . $id_input_new . "', 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                        jQuery('<input/>', {
+                                            readonly: false,
+                                            id: 'monto'+" . $id_input_new . ",
+                                            name: 'monto'+" . $id_input_new . ",
+                                            type: 'text',
+                                            onkeyup:'recalcular()',
+                                            onblur:'recalcular()',
+                                            autocomplete: 'off',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Monto'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                        jQuery('<input/>', {
+                                            id: 'mes'+" . $id_input_new . ",
+                                            name: 'mes'+" . $id_input_new . ",
+                                            type: 'text',
+                                            value: '" . $deudas_inquilino[$x]['mes'] . ' ' . $deudas_inquilino[$x]['ano'] . "',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 120px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Mes'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+                                        $('#mes'+" . $id_input_new . ").autocomplete({source: meses}); 
+                                        jQuery('<input/>', {
+                                            readonly: true,
+                                            id: 'domicilio'+" . $id_input_new . ",
+                                            name: 'domicilio'+" . $id_input_new . ",
+                                            type: 'text',
+                                            value: '" . $contrato['con_domi'] . "',
+                                            style : 'margin-right: 5px;font-size: 16px;width: 230px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Domicilio Inmueble'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");";
+                    if ($contrato['con_iva_alq'] == 'Si' && $conc == 'Alquiler Comercial') {
+                        $row .= '
+                                jQuery("<input/>", {
+                                        id: "iva_calculado+"' . $id_input_new . ',
+                                        name: "iva_calculado+"' . $id_input_new . ',
+                                        type: "text",
+                                        autocomplete: "off",
+                                        value: "' . $deudas_inquilino[$x]['monto'] * 0.21 . '",                                  
+                                    
+                                        style : "margin-right: 5px;font-size: 16px;width: 110px;float: left;",
+                                        "class": "form-control ui-autocomplete-input",
+                                        placeholder: "IVA/Alquiler"                 
+                                }).appendTo("#bloque"+' . $id_input_new . ');';
+                    }
+                    if ($deudas_inquilino[$x]['concepto'] == 'Expensas' && $deudas_inquilino[$x]['dias_mora'] != 0) {
+                        $row .= "jQuery('<input/>', {
+                                      
+                                                id: 'interes'+" . $id_input_new . ",
+                                                name: 'interes'+" . $id_input_new . ",
+                                                type: 'text',
+                                                onkeyup:'recalcular()',
+                                                onblur:'recalcular()',
+                                                onclick:'unlock(" . $id_input_new . ")',
+                                                autocomplete: 'off',
+                                                value: '" . $deudas_inquilino[$x]['dias_mora'] . " dias mora',
+                                          
+                                                style : 'cursor:pointer;margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                                'class': 'form-control ui-autocomplete-input',
+                                                placeholder: 'Dias de Interes'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+                                            
+                                        jQuery('<input/>', {
+                                      
+                                            id: 'interes_calculado'+" . $id_input_new . ",
+                                            name: 'interes_calculado'+" . $id_input_new . ",
+                                            type: 'text',
+                                            autocomplete: 'off',
+                                            value: '" . ($deudas_inquilino[$x]['dias_mora'] * $contrato['con_punitorio'] * $deudas_inquilino[$x]['monto']) . "',
+                                        
+                                            style : 'margin-right: 5px;font-size: 16px;width: 110px;float: left;',
+                                            'class': 'form-control ui-autocomplete-input',
+                                            placeholder: 'Dias de Interes'                 
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+                                    ";
+                    }
+                    $row .= "
+                                        jQuery('<span/>', {
+                                            id: 'span'+" . $id_input_new . ",
+                                            onclick: 'removeElement('+" . $id_input_new . "+')',
+                                            style: 'height: 34px;',
+                                            disabled: true,
+                                            'class' : 'btn btn-default btn-lg'
+                                        }).appendTo('#bloque'+" . $id_input_new . ");
+
+                                        jQuery('<a/>', {
+                                            'class' : 'glyphicon glyphicon-minus-sign',
+                                            style : 'text-decoration: none; margin-top: -3px;'
+                                        }).appendTo('#span'+" . $id_input_new . ");";
+                }
+                $id_input_new++;
+            }
+        }
+        $id_input_new = $id_input_new - 1;
+        $row .= '$("#cant_bloques").val("' . $id_input_new . '");';
+        $row .= '$("#span"+' . $id_input_new . ').removeAttr("disabled");';
+        $row .= 'x = ' . $id_input_new . ';';
+        $row .= 'cant = ' . $id_input_new . ';';
+        return $row;
     }
 
     function get_deudas($last_payment, $con) {
@@ -5200,7 +6019,6 @@ class Manager extends CI_Controller {
                 'mes' => $mes_last,
                 'dias_mora' => 0,
                 'ano' => $ano_ultimo_pago,
-                'concepto' => $con['con_tipo'],
                 'saldo_cuenta' => 1,
                 'monto' => $diferencia_a_saldar,
                 'intereses' => 0
@@ -5219,8 +6037,6 @@ class Manager extends CI_Controller {
             $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_payment['cred_mes_alq']);
             $ano_ultimo_pago = trim($ano_last);
             $mes_ultimo_pago = $this->get_nro_mes($mes_last);
-//            var_dump('$mes_ultimo_pago '. $mes_ultimo_pago);
-//            var_dump('$ano_ultimo_pago '. $ano_ultimo_pago);
         } else {
             $fecha_ultimo_pago = explode('-', $primer_periodo['per_inicio']);
             $mes_ultimo_pago = $fecha_ultimo_pago[1] - 1;
@@ -5255,11 +6071,6 @@ class Manager extends CI_Controller {
         $fecha_stop_comp = '00-' . $fecha_stop;
         $fecha_stop_comp = strtotime($fecha_stop_comp);
         $fecha_hoy = strtotime('00-' . Date('m-Y'));
-
-//        var_dump('$cont_mes_inicial '. $cont_mes_inicial);
-//        var_dump('$fecha_stop_comp '. $fecha_stop_comp);
-//        var_dump('$fecha_hoy '. $fecha_hoy);
-
         if ($fecha_hoy >= $fecha_stop_comp) {
             for ($i = $cont_mes_inicial; $fecha_stop != Date('m-Y'); ($i == 11 ? $i = 0 : $i++)) {
                 //crea el arreglo de meses que debe hasta la $fecha
@@ -5272,7 +6083,6 @@ class Manager extends CI_Controller {
                             'mes' => $meses[$i],
                             'dias_mora' => 0,
                             'ano' => $ano_deuda,
-                            'concepto' => $con['con_tipo'],
                             'saldo_cuenta' => 0,
                             'monto' => 0,
                             'intereses' => 0,
@@ -5285,7 +6095,6 @@ class Manager extends CI_Controller {
                             'mes' => $meses[$i],
                             'dias_mora' => 0,
                             'ano' => $ano_deuda,
-                            'concepto' => $con['con_tipo'],
                             'saldo_cuenta' => 0,
                             'monto' => 0,
                             'intereses' => 0,
@@ -5302,168 +6111,30 @@ class Manager extends CI_Controller {
 //            print_r($deuda_acum);
 //            echo '<pre>';
         }
-//        var_dump($this->get_nro_mes($mes_alq));
         // Este bloque fuera del for calcula un mes de deuda mas si es que el dia en el que se ejecuta
         // el informe se esta propasando el limite de tolerancia de mora
-
+//        var_dump($deuda_acum);
         $dia_informe = Date('d');
-//        echo '<pre>';
-//        print_r('$dia_informe '. $dia_informe);
-//        print_r('$con[con_tolerancia] '. $con['con_tolerancia']);
-//        print_r('date m '. Date('m'));
-//        print_r('$this->get_nro_mes($mes_alq)'. $this->get_nro_mes($mes_alq));
-//        print_r(count($deuda_acum));
-        if (!count($deuda_acum) || $dia_informe > $con['con_tolerancia'] && Date('m') > $this->get_nro_mes($mes_alq)) {
-//            print_r('entra');
-            $a = $this->get_nro_mes($mes_alq) + 1;
+        if ($dia_informe > $con['con_tolerancia']) {
             $deuda = array(
-                'mes' => $this->get_mes($a),
+                'mes' => $mes_hoy_letras,
                 'dias_mora' => 0,
                 'ano' => Date('Y'),
-                'concepto' => $con['con_tipo'],
                 'monto' => 0,
                 'saldo_cuenta' => 0,
                 'intereses' => 0
             );
-
-            $mes_debido = '00-' . $a . '-' . Date('Y');
+            $mes_debido = '00-' . Date('m') . '-' . Date('Y');
             $deuda['monto'] = $this->calcular_monto($mes_debido, $periodos);
             $deuda = $this->calcular_intereses($deuda, $con, $mes_debido, $periodos, Date('d-m-Y'));
             if (!in_array($deuda, $deuda_acum)) {
                 array_push($deuda_acum, $deuda);
             }
-        } else {
-//            print_r('no entra');
         }
-//        print_r($deuda_acum);
-//        die;
 //        }
-
-        return $deuda_acum;
-    }
-
-    function get_deudas_morosos($last_payment, $con) {
-        $periodos = $this->basic->get_where('periodos', array('per_contrato' => $con['con_id']), 'per_id');
-        $deuda_acum = array();
-        if ($last_payment['cred_tipo_pago'] == 'A Cuenta') {
-            $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_payment['cred_mes_alq']);
-            $mes_last = trim($mes_last);
-            $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_payment['cred_mes_alq']);
-            $ano_ultimo_pago = trim($ano_last);
-            $mes_ultimo_pago = $this->get_nro_mes($mes_last);
-            $abono_fecha = '10' . '-' . $mes_ultimo_pago . '-' . $ano_ultimo_pago;
-            $monto_periodo = 0;
-            foreach ($periodos->result_array() as $periodo) {
-                $agregar = $this->comp_fecha($abono_fecha, $periodo['per_inicio'], $periodo['per_fin']);
-                if ($agregar == '11') {
-                    $monto_periodo = $periodo['per_monto'];
-                }
-            }
-            $creditos_pagados_a_cuenta = $this->basic->get_where('creditos', array('cred_mes_alq' => $last_payment['cred_mes_alq'], 'cred_tipo_pago' => 'A Cuenta', 'cred_cc' => $con['con_prop'], 'cred_depositante' => $con['con_inq']));
-            $pagado_a_cuenta = 0;
-            if ($creditos_pagados_a_cuenta->num_rows() > 0) {
-                foreach ($creditos_pagados_a_cuenta->result_array() as $row) {
-                    if (strpos($row['cred_concepto'], 'Alquiler') !== FALSE || strpos($row['cred_concepto'], 'Loteo') !== FALSE)
-                        $pagado_a_cuenta += $row['cred_monto'];
-                }
-            }
-            $diferencia_a_saldar = $monto_periodo - $pagado_a_cuenta;
-            $deuda = array(
-                'mes' => $mes_last,
-                'dias_mora' => 0,
-                'ano' => $ano_ultimo_pago,
-                'concepto' => $con['con_tipo'],
-                'saldo_cuenta' => 1,
-                'monto' => $diferencia_a_saldar,
-                'intereses' => 0
-            );
-
-            $mes_debido = '00-' . $mes_ultimo_pago . '-' . $ano_ultimo_pago;
-            $deuda = $this->calcular_intereses($deuda, $con, $mes_debido, $periodos, Date('d-m-Y'));
-            array_push($deuda_acum, $deuda);
-        }
-        $primer_periodo = $periodos->first_row('array');
-        $meses = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
-        if ($last_payment != false) {
-            $mes_last = preg_replace("/[^^A-Za-z (),.]/", "", $last_payment['cred_mes_alq']);
-            $mes_last = trim($mes_last);
-            $mes_alq = $mes_last;
-            $ano_last = preg_replace("/[^0-9 (),.]/", "", $last_payment['cred_mes_alq']);
-            $ano_ultimo_pago = trim($ano_last);
-            $mes_ultimo_pago = $this->get_nro_mes($mes_last);
-        } else {
-            $fecha_ultimo_pago = explode('-', $primer_periodo['per_inicio']);
-            $mes_ultimo_pago = $fecha_ultimo_pago[1] - 1;
-            $ano_ultimo_pago = (int) $fecha_ultimo_pago[2];
-            if ($mes_ultimo_pago == 0) {
-                $mes_ultimo_pago == 12;
-                $ano_ultimo_pago = (int) $fecha_ultimo_pago[2] - 1;
-            }
-            $mes_alq = $this->get_mes($mes_ultimo_pago);
-        }
-        while (current($meses) != $mes_alq) {
-            next($meses);
-        }
-        next($meses); //Me muevo un elemento mas en el array de meses para empezar con el primer mes debido
-        if (key($meses) == false) {
-            $cont_mes_inicial = 0;
-        } else {
-            $cont_mes_inicial = key($meses);
-        }
-        $ano_nuevo = false;
-        if (($cont_mes_inicial + 1) == 1) {
-            $ano_nuevo = true;
-            $ano_deuda = $ano_ultimo_pago + 1;
-        } else {
-            $ano_deuda = $ano_ultimo_pago;
-        }
-        $deuda = array();
-        $a = 0;
-        $entro = false;
-        $fecha_stop = $mes_ultimo_pago . '-' . $ano_ultimo_pago;
-        $fecha_stop_comp = '00-' . $fecha_stop;
-        $fecha_stop_comp = strtotime($fecha_stop_comp);
-        $fecha_hoy = strtotime('00-' . Date('m-Y'));
-
-        if ($fecha_hoy >= $fecha_stop_comp) {
-            for ($i = $cont_mes_inicial; $fecha_stop != Date('m-Y'); ($i == 11 ? $i = 0 : $i++)) {
-                //crea el arreglo de meses que debe hasta la $fecha
-                $corriente = $this->get_nro_mes($meses[$i]);
-                if ($corriente != Date('m') || $ano_deuda != Date('Y')) {
-                    $entro = true;
-                    $a = $cont_mes_inicial + 1;
-                    if ($a <= 12) {
-                        $deuda = array(
-                            'mes' => $meses[$i],
-                            'dias_mora' => 0,
-                            'ano' => $ano_deuda,
-                            'concepto' => $con['con_tipo'],
-                            'saldo_cuenta' => 0,
-                            'monto' => 0,
-                            'intereses' => 0,
-                        );
-                        $cont_mes_inicial++;
-                    } else {
-                        $cont_mes_inicial = 1;
-                        $ano_deuda++;
-                        $deuda = array(
-                            'mes' => $meses[$i],
-                            'dias_mora' => 0,
-                            'ano' => $ano_deuda,
-                            'concepto' => $con['con_tipo'],
-                            'saldo_cuenta' => 0,
-                            'monto' => 0,
-                            'intereses' => 0,
-                        );
-                    }
-                    $mes_debido = '00-' . $corriente . '-' . $ano_deuda;
-                    $deuda['monto'] = $this->calcular_monto($mes_debido, $periodos);
-                    $deuda = $this->calcular_intereses($deuda, $con, $mes_debido, $periodos, Date('d-m-Y'));
-                    array_push($deuda_acum, $deuda);
-                }
-                $fecha_stop = $corriente . '-' . $ano_deuda;
-            }
-        }
+//        echo '<pre>';
+//        print_r($deuda_acum);
+//        echo '</pre>';
         return $deuda_acum;
     }
 
@@ -5583,10 +6254,9 @@ class Manager extends CI_Controller {
         // Este bloque fuera del for calcula un mes de deuda mas si es que el dia en el que se ejecuta
         // el informe se esta propasando el limite de tolerancia de mora
         $dia_informe = Date('d');
-        if (!count($deuda_acum) || $dia_informe > $con['con_tolerancia'] && Date('m') > $this->get_nro_mes($mes_alq)) {
-            $a = $this->get_nro_mes($mes_alq) + 1;
+        if ($dia_informe > $con['con_tolerancia']) {
             $deuda = array(
-                'mes' => $this->get_mes($a),
+                'mes' => $mes_hoy_letras,
                 'dias_mora' => 0,
                 'saldo_cuenta' => 0,
                 'concepto' => $concepto,

@@ -6,12 +6,6 @@
         background-color: white;
         padding-top: 60px;
     }
-    /*    .contenedor_centro{
-            display: block;
-           
-            margin-left: 0px !important;
-            width: 86%;
-        }*/
     .dots{    
         clear: both;
         border-bottom: 1px dashed;

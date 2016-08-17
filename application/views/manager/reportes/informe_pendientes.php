@@ -28,7 +28,7 @@
                 for ($x = 0; $x < count($pendientes); $x++) {
                     echo '<tr class="reg_' . $pendientes[$x]['cc_id'] . '">';
                     echo '<td class="centrar">' . $pendientes[$x]['cc_prop'] . '</td>';
-                    echo '<td class="centrar">$ ' . ($pendientes[$x]['cc_saldo'] + $pendientes[$x]['cc_varios']) . '</td>';
+                    echo '<td class="centrar">$ ' . round($pendientes[$x]['cc_saldo'] + $pendientes[$x]['cc_varios'], 2) . '</td>';
                     echo '</tr>';
                 }
                 ?>

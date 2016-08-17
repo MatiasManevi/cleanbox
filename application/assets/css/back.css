@@ -374,7 +374,6 @@ label{
 form{
     margin-bottom: 10px;
     padding: 5px 10px;
-    overflow: hidden;
 }
 form .title{
     font-size: 12px;
@@ -2318,13 +2317,21 @@ ul.nav ul li:last-child a { border: none; }
     float: left;
     width: 100%;
     margin-top: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
-.periodos{
+.info_contrato{
     clear: both;
     float: left;
     margin-top: 18px !important;
     width:100%;
+    display:none;
+}
+.alert_message{
+    clear: both;
+    float: left;
+    margin-top: 18px !important;
+    width:100%;
+    display:none;
 }
 .tablas{
     float: left;
@@ -2341,11 +2348,22 @@ ul.nav ul li:last-child a { border: none; }
     background:#B0C4DE;
     border: 2px solid;
 }
-.forma_pago_select{
+.medio_pago{
     float: left;
     margin-right: 7px;
     margin-top: -21px;
-    width: 133px;
+    width: 8%;
+}
+.tipo_transac{
+    float: left;
+    margin-right: 7px;
+    margin-top: -21px;
+    width: 8%;
+}
+.forma_pago_select{
+    float: left;
+    margin-right: 7px;
+    width: 8%;
 }
 .caja_comienza{
     border: 1px solid;
@@ -2405,11 +2423,21 @@ ul.nav ul li:last-child a { border: none; }
     font-size: 17px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 0;
+    margin-top: 8px;
     text-align: center;
     width: auto;
 }
 #com_display{
+    clear: both;
+    font-family: "Trebuchet MS";
+    display: none;
+    border-radius: 10px;
+    float: left;
+    font-size: 17px;
+    margin-top: 16px;
+    width: auto;
+}
+._com_display{
     clear: both;
     font-family: "Trebuchet MS";
     display: none;
@@ -2445,7 +2473,7 @@ ul.nav ul li:last-child a { border: none; }
 }
 .porc_data{
     float: left;
-    margin-right: 32px;
+    margin-right: 5px;
 }
 .cobro{
     background: #F5DA81;
@@ -2460,6 +2488,7 @@ ul.nav ul li:last-child a { border: none; }
 }
 .domicilio{
     width: 399px;
+    clear: both;
 }
 .auth{
     clear: both;
@@ -2529,4 +2558,9 @@ a._close:hover{
 }
 .glyphicon {
     text-decoration: none !important;
+}
+.calif{
+    width: 144px;
+    float: left;
+    clear: both;
 }

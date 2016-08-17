@@ -42,10 +42,10 @@
 </div>
 <div class="porcentajes">
     <div class="porc_data">
-        <label>Gestion Cobro:</label><input value="<?= $porc ?>"  type="text" name="con_porc" id="con_porc" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="Gestion Cobro" readonly>
+        <label>Gestion Cobro:</label><input title="Porc. Gestion de Cobro Ej: 7% = 0.07" value="<?= $porc ?>"  type="text" name="con_porc" id="con_porc" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="Gestion Cobro" readonly>
     </div>
     <div class="porc_data">
-        <label>Porc. Punitorio:</label><input value="<?= $punitorio ?>"  type="text" name="con_punitorio" id="con_punitorio" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="Punitorios" readonly>
+        <label>Porc. Punitorio:</label><input title="Porc. Punitorio para cobra de Mora Ej: 7% = 0.07" value="<?= $punitorio ?>"  type="text" name="con_punitorio" id="con_punitorio" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="Punitorios" readonly>
     </div>
     <div class="porc_data">
         <label>Incluye IVA/Comision:</label><input value="<?= $iva ?>"  type="text" name="con_iva" id="con_iva" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
@@ -54,21 +54,7 @@
         <label>Incluye IVA/Alquiler:</label><input value="<?= $iva_alq ?>"  type="text" name="con_iva_alq" id="con_iva_alq" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
     </div>
     <div class="porc_data">
-        <label>Notificar al Propietario Via Mail:</label><input onclick="change(this)" value="0" type="checkbox" name="notifica" id="notifica" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="Notifica">
-    </div>
-    <div class="porc_data">
-        <label style="margin-left: 5px; margin-top: 5px;">Paga Intereses?</label>
-        <select id="paga_intereses" autofocus="1" class="form-control ui-autocomplete-input" name="paga_intereses">
-            <option class="form-control ui-autocomplete-input" value="Si">Si</option>
-            <option class="form-control ui-autocomplete-input" value="No">No</option>
-        </select>
-    </div>
-    <div id="paga">
-        Si: el inquilino pagara intereses devengados<br>  
-        No: el inquilino tiene intereses devengados, No pagara hoy
-    </div>
-    <div id="tooltip">
-        Porc. Gestion de Cobro Ej: 7% = 0.07
+        <label>Notificar al Propietario Via Mail:</label><input title="Si checkeas esta opcion una vez guardado el credito se informara via mail al propietario, es necesario agendar el mail en su respectiva plantilla de Cliente" onclick="change(this)" value="0" type="checkbox" name="notifica" id="notifica" style="margin-right: 5px;font-size: 16px;width: 114px;" class="form-control ui-autocomplete-input" placeholder="Notifica">
     </div>
 </div>
 <div class="porcentajes">
@@ -85,27 +71,4 @@
             $(check).val(1);
         }
     }
-    $(document).ready(function(){
-        $('#con_porc').hover(function(){
-            $('#tooltip').css('display','block');
-        },function(){
-            $('#tooltip').css('display','none');
-        });
-        $(document).mousemove(function(event){
-            var mx = event.pageX;
-            var my = event.pageY;
-            $('#tooltip').css('left',mx+'px').css('right',my+'px').css('top',170);
-        })   
-        $('#paga_intereses').hover(function(){
-            $('#paga').css('display','block');
-        },function(){
-            $('#paga').css('display','none');
-        });
-        $(document).mousemove(function(event){
-            var mx = event.pageX;
-            var my = event.pageY;
-            $('#paga').css('left',mx+'px').css('right',my+'px').css('top',170);
-        })   
-    });
-   
 </script>

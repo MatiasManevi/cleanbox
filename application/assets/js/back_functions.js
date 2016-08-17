@@ -1,3 +1,4 @@
+var $dias_mora;
 var loading={
     show:function(){
         $('#loading').fadeIn()
@@ -7,6 +8,82 @@ var loading={
     }
 };
 
+$(document).ready(function() {
+    initTooltips();
+    $(window).keydown(function(event){
+        if(event.keyCode == 13) {
+            event.preventDefault();
+            return false;
+        }
+    });
+});
+
+function initTooltips (selector){
+    if(typeof selector === 'undefined'){
+        selector = '[title]';
+    }
+    
+    if ($(window).width() > 767) {
+        $(selector).tooltip({
+            container: 'body'
+        });
+    }
+}
+
+function saveCredits(url, show){
+    var params = {
+        'cc': $('#cuentas').val(),
+        'depositante': $('#depositante').val(),
+        'con_porc': $('#con_porc').val(),
+        'con_punitorio': $('#con_punitorio').val(),
+        'notifica': $('#notifica').val(), // mail al prop
+        'cant_bloques': $('._dinamic_credits').children().length,
+        'con_iva_alq': $('#con_iva_alq').val(),
+        'banco': $('#banco').val(),
+        'nro_cheque': $('#nro_cheque').val(),
+        'cred_forma': $('#cred_forma').val(),
+        'cred_tipo_trans': $('#cred_tipo_trans').val()
+    };
+    
+    var x = 1;
+    $('._dinamic_credits ._bloque').each(function(){
+        var $bloque = $(this);
+        params['mes'+x] = $bloque.find('._mes').val();
+        params['concepto'+x] = $bloque.find('._concepto').val();
+        params['monto'+x] = $bloque.find('._monto').val();
+        params['interes'+x] = $bloque.find('._dias_mora').val();
+        params['domicilio'+x] = $bloque.find('._domicilio').val();
+        params['paga_intereses'+x] = $bloque.find('._paga_intereses').val();
+        params['cred_tipo_pago'+x] = $bloque.find('._select_tipo_pago').val();
+        x++;
+    });
+
+    $.ajax({
+        url: url,
+        type:'POST',
+        dataType: 'json',
+        data: params,
+        beforeSend:function(){
+            loading.show();
+        },
+        success:function(response){
+            if(response.js != '') eval(response.js);
+            if(response.error==1 || response.error==2){
+                $('#com_display').html(response.html).addClass('alert alert-danger');
+                $('#com_display').removeClass('msg_display');
+            }else{
+                if (response.error==5){   
+                    $('#com_display span').html(response.mensaje_error);
+                }else{
+                    $(show).html(response.html);            
+                    $('#com_display').addClass('alert alert-success').removeClass('alert alert-danger');   
+                    $('#com_display').removeClass('msg_display');
+                }             
+            }  
+            loading.hide();
+        }
+    });
+}
 
 $(document).ready(function(){
     $('body').append(LOADING_HTML);
@@ -387,7 +464,9 @@ function request_post(url,form,show){
         success:function(R){
             if(R.js != '') eval(R.js);
             if(R.error==1){
+                
                 $('#com_display').html(R.html).addClass('alert alert-danger');
+                $('._com_display').html(R.html).addClass('alert alert-danger');
             }else{
                 if (R.error==5){   
                     $('#com_display span').html(R.mensaje_error);
@@ -395,6 +474,7 @@ function request_post(url,form,show){
                     $(show).html(R.html);                   
                     $('#com_display').html(R.success);
                     $('#com_display').addClass('alert alert-success').removeClass('alert alert-danger');   
+                    $('._com_display').addClass('alert alert-success').removeClass('alert alert-danger');   
                 }
                 
             }  

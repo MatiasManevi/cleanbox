@@ -52,7 +52,7 @@ $autoload['packages'] = array(APPPATH.'third_party');
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('database','form_validation','session');
+$autoload['libraries'] = array('database','form_validation','session','General','Transaction','Contract','Report','Cash','User');
 
 
 /*
@@ -64,7 +64,7 @@ $autoload['libraries'] = array('database','form_validation','session');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('form','url','path','ckeditor','img');
+$autoload['helper'] = array('form','url','path','ckeditor','img','language','cookie');
 
 
 /*
@@ -96,7 +96,7 @@ $autoload['config'] = array();
 |
 */
 
-$autoload['language'] = array();
+$autoload['language'] = array('common');
 
 
 /*

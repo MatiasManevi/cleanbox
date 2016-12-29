@@ -62,9 +62,9 @@ $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
 $db['developer']['hostname'] = "localhost";
-$db['developer']['username'] = "caja";
-$db['developer']['password'] = "caja";
-$db['developer']['database'] = "caja";
+$db['developer']['username'] = "cleanbox";
+$db['developer']['password'] = "cleanbox";
+$db['developer']['database'] = "cleanbox";
 $db['developer']['dbdriver'] = "mysql";
 $db['developer']['dbprefix'] = "";
 $db['developer']['pconnect'] = TRUE;

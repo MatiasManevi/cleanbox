@@ -2,13 +2,20 @@
 
 /*
   Document   : basic_model
-  Created on : 04-may-2011, 10:46:14
-  Author     : Rodrigo E. Torres
-  Sobrelaweb Web Developer
-  rtorres@sobrelaweb.com | torresrodrigoe@gmail.com
+  Author     : manevi matias
  */
 
 Class Basic extends CI_Model {
+
+    function repairTables() {
+        $tables = $this->db->query('SHOW TABLES IN cleanbox')->result_array();
+        $database = $this->db->query('select database();')->row_array();
+        $database = $database['database()'];
+
+        foreach ($tables as $table) {
+            $this->db->query('REPAIR TABLE `' . $table['Tables_in_' . $database] . '`');
+        }
+    }
 
     function save($table, $id_field, $data = array()) {
         if (!isset($data[$id_field]) || empty($data[$id_field])) {
@@ -21,7 +28,7 @@ Class Basic extends CI_Model {
         }
     }
 
-    function get_auto($nombre = false, $tabla = false, $tipo = false) {
+    function get_auto($nombre = false, $tabla = false, $type = false) {
         $this->db->select("*");
         if ($tabla == 'proveedores_prop') {
             $tabla = 'proveedores';
@@ -29,33 +36,33 @@ Class Basic extends CI_Model {
         $this->db->from($tabla);
         if ($tabla == 'cuentas_corrientes') {
             $this->db->like('cc_prop', $nombre, 'match');
-            // WHERE $nombre LIKE '%cc_prop% anda mejor que el AFTER, EL COMODIN VA A AMBOS LADOS
         }
         if ($tabla == 'clientes') {
             $this->db->like('client_name', $nombre, 'match');
-            //el parametro after produce where client_name like $nombre%
+        }
+        if ($tabla == 'providers_rols') {
+            $this->db->like('rol', $nombre, 'match');
         }
         if ($tabla == 'conceptos') {
             $this->db->like('conc_desc', $nombre, 'match');
-            if ($tipo != false && $tipo != 'cc_varios') {
-                $this->db->like('conc_tipo', $tipo, 'match');
-            } else if ($tipo == 'cc_varios') {
-                $this->db->like('conc_cc', $tipo, 'match');
-                $this->db->like('conc_tipo', 'Salida', 'match');
+
+            if ($type == 'cc_varios') {
+                // conceptos para servicios de contrato
+                $this->db->like('conc_cc', $type, 'match');
+                $this->db->like('conc_tipo', 'Entrada', 'match');
+            } else if ($type != 'both') {
+                // busca conceptos para seccion debitos o creditos
+                $this->db->like('conc_tipo', $type, 'match');
             }
-            //el parametro after produce where client_name like $nombre%
         }
         if ($tabla == 'propiedades') {
             $this->db->like('prop_dom', $nombre, 'match');
-            //el parametro after produce where client_name like $nombre%
         }
         if ($tabla == 'proveedores') {
             $this->db->like('prov_name', $nombre, 'match');
-            //el parametro after produce where client_name like $nombre%
         }
         if ($tabla == 'contratos') {
             $this->db->like('con_prop', $nombre, 'match');
-            //el parametro after produce where client_name like $nombre%
         }
         $this->db->limit(10);
         return $this->db->get();
@@ -80,13 +87,24 @@ Class Basic extends CI_Model {
             $this->db->limit($limit);
         return $this->db->get_where($table, $where_array);
     }
-    
+
     function del($table, $id_field, $id) {
-        $this->db->delete($table, array($id_field => $id));
+        return $this->db->delete($table, array($id_field => $id));
     }
 
     function query($sql) {
         return $this->db->query($sql);
+    }
+
+    function getAllServicesArray() {
+        $servs = $this->db->query('SELECT DISTINCT serv_concepto FROM servicios')->result_array();
+        $arr_servs = array();
+
+        foreach ($servs as $serv) {
+            array_push($arr_servs, $serv['serv_concepto']);
+        }
+
+        return $arr_servs;
     }
 
 }

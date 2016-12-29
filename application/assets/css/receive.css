@@ -1,0 +1,61 @@
+body {
+    background-color: white;
+    padding-top: 60px;
+}
+#receive_table {
+    font-size: 13px;
+    font-family: monospace !important;
+/*    letter-spacing: 2px;*/
+}
+#receive_table .dashed{
+    border-top: 1px dashed black;
+}
+th, td {
+    padding: 5px;
+}
+.receive{
+    background: none repeat scroll 0 0 window;
+    border: medium none;
+    margin: 0 auto;
+    margin-top: 90px;
+    width: 800px;
+}
+.total_receive{
+    font-size: 18px;
+    font-weight: bold;
+}
+.receive_cel{
+    text-align: center !important;
+    border: 1px dashed black !important;
+    padding: 3px !important;
+}
+@media all {
+    .receive{
+        width: 900px;
+    }
+}
+@media screen{
+    .receive{
+        background: none repeat scroll 0 0 window;
+        border: medium none;
+        margin: 0 auto;
+        margin-top: 60px;
+        width: 900px;
+    }
+}
+@media print
+{
+    .receive{
+        position: relative;
+        page-break-after: always;
+        page-break-inside: avoid;
+        background: none repeat scroll 0 0 window;
+        border: medium none;
+        margin: 0 auto;
+        margin-top: 60px;
+        width: 900px;
+    }
+    .receive:last-child{
+        page-break-after: avoid;
+    }
+}

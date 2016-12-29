@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1">
+        <file>
+            <url>application/assets/js/general_scripts.js</url>
+            <line>155</line>
+            <line>408</line>
+        </file>
+    </editor-bookmarks>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/C:/lamp/www/new_cleanbox/application/assets/css/receive.css</file>
+        <file>file:/C:/lamp/www/new_cleanbox/application/views/reports/receive.php</file>
+        <file>file:/C:/lamp/www/new_cleanbox/application/assets/js/cleanbox_alert.js</file>
+        <file>file:/C:/lamp/www/new_cleanbox/application/assets/js/general_scripts.js</file>
+        <file>file:/C:/lamp/www/new_cleanbox/application/views/settings/settings.php</file>
+    </open-files>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group/>
     </open-files>

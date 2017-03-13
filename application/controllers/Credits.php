@@ -45,11 +45,6 @@ class Credits extends CI_Controller {
 
                 if ($contract_id) {
                     $contract = $this->basic->get_where('contratos', array('con_id' => $contract_id))->row_array();
-
-                    if ($credits) {
-                        // Funcion momentanea
-                        $this->updateContractFields($credits[0]);
-                    }
                 }
 
                 if ($services_controls) {
@@ -254,15 +249,6 @@ class Credits extends CI_Controller {
         }
 
         echo json_encode($response);
-    }
-
-    public function updateContractFields($credit) {
-        $contract = $this->basic->get_where('contratos', array('con_id' => $credit['con_id']))->row_array();
-
-        $contract['client_id'] = $credit['client_id'];
-        $contract['cc_id'] = $credit['cc_id'];
-
-        $this->basic->save('contratos', 'con_id', $contract);
     }
 
     public function showCreditReport() {

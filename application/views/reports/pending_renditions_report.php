@@ -15,7 +15,7 @@
         <?php foreach ($pending_renditions as $pending_rendition) { ?>
             <tr class="reg<?php echo $pending_rendition['cc_id']; ?>">
                 <td class="cell"><?php echo $pending_rendition['cc_prop']; ?></td>
-                <td class="cell">$ <?php echo round($pending_rendition['cc_saldo'] + $pending_rendition['cc_varios'], 2); ?></td>
+                <td class="cell">$ <?php echo $pending_rendition['sald']; ?></td>
             </tr>
             <?php $total += $pending_rendition['cc_saldo'] + $pending_rendition['cc_varios']; ?>
         <?php } ?>

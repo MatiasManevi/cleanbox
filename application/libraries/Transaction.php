@@ -47,7 +47,7 @@ class Transaction {
 
         $monthly_cash = $instance->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
 
-        if ($contract) {
+        if (!empty($contract)) {
 
             $honorarios_credit = array(
                 'cred_depositante' => $credit['cred_depositante'],
@@ -139,7 +139,7 @@ class Transaction {
                 $month_cash['men_creditos'] += $credit['cred_monto'];
             }
 
-            if ($contract) {
+            if (!empty($contract)) {
 
                 if ($credit['cred_concepto'] == 'Intereses') {
                     self::deleteInteresesDebt($credit);
@@ -671,7 +671,7 @@ class Transaction {
 
             // se adosan creditos secundarios
             foreach ($credits as $key => $secondary_credit) {
-                if ($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq'] && $credit['cred_concepto'] != $secondary_credit['cred_concepto']) {
+                if ($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq'] && $credit['cred_concepto'] != $secondary_credit['cred_concepto'] && strpos($secondary_credit['cred_concepto'], 'Prestamo') === FALSE) {
                     if (!Report::mustPrintReport($secondary_credit['cred_concepto'])) {
                         if (!self::isAlreadyAdded($receive_reports, $secondary_credit, 'secondary_credits')) {
                             array_push($receive['secondary_credits'], $secondary_credit);
@@ -721,7 +721,7 @@ class Transaction {
         // con algun alquiler se verifica si fue adosado a alguno de ellos y sino
         // se agrega al primero por defecto
         foreach ($credits as $credit) {
-            if (!Report::mustPrintReport($credit['cred_concepto'])) {
+            if (!Report::mustPrintReport($credit['cred_concepto']) && strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
                 if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {
 
                     array_push($receive_reports[0]['secondary_credits'], $credit);
@@ -757,7 +757,9 @@ class Transaction {
             $receive_report['total_letters'] = self::getTotalInLetters($receive_report['total']);
 
             // se debe
-            $receive_report['debt'] = self::getReceiveDebt($receive_report['principal_credit'], $contract);
+            if ($receive_report['principal_credit']['cred_concepto'] != 'Loteo') {
+                $receive_report['debt'] = self::getReceiveDebt($receive_report['principal_credit'], $contract);
+            }
 
             array_push($receives, $receive_report);
         }
@@ -1215,18 +1217,20 @@ class Transaction {
             }
 
             if ($impact_on_safe_box > 0) {
-                $debit = array(
-                    'deb_cc' => $safe_box['cc_prop'],
-                    'cc_id' => $safe_box['cc_id'],
-                    'deb_concepto' => 'Eliminacion de credito',
-                    'deb_monto' => $impact_on_safe_box,
-                    'deb_mes' => General::getStringMonth(date('m')) . ' ' . Date('Y'),
-                    'deb_fecha' => Date('d-m-Y'),
-                    'is_transfer' => 1
-                );
+                if (($safe_box['cc_saldo'] + $safe_box['cc_varios']) > 0) {
+                    $debit = array(
+                        'deb_cc' => $safe_box['cc_prop'],
+                        'cc_id' => $safe_box['cc_id'],
+                        'deb_concepto' => 'Eliminacion de credito',
+                        'deb_monto' => $impact_on_safe_box,
+                        'deb_mes' => General::getStringMonth(date('m')) . ' ' . Date('Y'),
+                        'deb_fecha' => Date('d-m-Y'),
+                        'is_transfer' => 1
+                    );
 
-                self::createDebit($debit, 'cc_saldo', $safe_box);
-                $instance->basic->save('cuentas_corrientes', 'cc_id', $safe_box);
+                    self::createDebit($debit, 'cc_saldo', $safe_box);
+                    $instance->basic->save('cuentas_corrientes', 'cc_id', $safe_box);
+                }
             }
 
             if ($impact_on_cash > 0) {
@@ -1248,6 +1252,8 @@ class Transaction {
                     }
                 }
             }
+        } else if (self::isImpactableCredit($credit) && $credit['cred_tipo_trans'] == 'Bancaria') {
+            self::recalculateTaxDebit($credit);
         }
     }
 
@@ -1479,7 +1485,9 @@ class Transaction {
             $amount = 0;
 
             // Busco intereses pagados a cuenta para ese mes para ver si los resto
-            $account_payed_intereses = self::getAccountPayedIntereses($contract, $month_debt, $current_date);
+            //  esto anda para el culoo
+//            $account_payed_intereses = self::getAccountPayedIntereses($contract, $month_debt, $current_date);
+            $account_payed_intereses = 0;
 
             // Obtengo el monto del alquiler
             $amount = self::calculateAmount($month_debt, $periods);

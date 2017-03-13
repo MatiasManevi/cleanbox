@@ -24,7 +24,7 @@ class Manager extends CI_Controller {
         $this->basic->repairTables();
 
         $this->data['row_count'] = 0;
-
+ 
         Contract::declineContracts();
 
         Cash::loadMonthlyCash();
@@ -35,7 +35,7 @@ class Manager extends CI_Controller {
     }
 
     public function loadHomeData() {
-        $this->data['daily_start'] = $this->basic->get_where('caja_comienza', array('caj_dia' => date('d'), 'caj_mes' => date('m'), 'caj_ano' => date('Y')))->row_array();
+        $this->data['begin_cash'] = Cash::getBeginCash(date('d-m-Y'));
 
         $monthly_progressive = Cash::getBalance('Caja');
         $this->data['monthly_progressive'] = $monthly_progressive > 0 ? $monthly_progressive : '0.00';
@@ -169,22 +169,22 @@ class Manager extends CI_Controller {
             $response['entities'] = array();
             $response['status'] = true;
 
-            if ($table == 'comentarios' || $table == 'proveedores') {
-                $limit = false;
-            } else {
-                $limit = 30;
-            }
+            $limit = 30;
 
             if ($table == 'creditos' || $table == 'debitos') {
                 $entities = $this->basic->get_where($table, array('is_transfer' => 0), $table_order, 'desc', $limit)->result_array();
             } else {
                 if ($table == 'transferencias_to_safe') {
-                    $entities = $this->basic->get_where('creditos', array('is_transfer' => 1), '', 'desc', $limit)->result_array();
+                    $entities = $this->basic->get_where('creditos', array('is_transfer' => 1), 'cred_id', 'desc', $limit)->result_array();
                 } else if ($table == 'transferencias_to_cash') {
-                    $entities = $this->basic->get_where('debitos', array('is_transfer' => 1), '', 'desc', $limit)->result_array();
+                    $entities = $this->basic->get_where('debitos', array('is_transfer' => 1), 'deb_id', 'desc', $limit)->result_array();
                 } else {
-
-                    $entities = $this->basic->get_where($table, array(), $table_order, 'desc', $limit)->result_array();
+                    if ($table == 'mantenimientos') {
+                        $or = 'desc';
+                    } else {
+                        $or = 'asc';
+                    }
+                    $entities = $this->basic->get_where($table, array(), $table_order, $or, $limit)->result_array();
                 }
             }
 
@@ -812,6 +812,7 @@ class Manager extends CI_Controller {
             $id = $this->input->post('id');
             $table = $this->input->post('table');
             $table_pk = $this->input->post('table_pk');
+            $force_delete = json_decode($this->input->post('force_delete'));
 
             $entity = $this->basic->get_where($table, array($table_pk => $id))->row_array();
             if ($entity) {
@@ -829,9 +830,17 @@ class Manager extends CI_Controller {
                             $this->basic->del('periodos', 'per_contrato', $id);
                             break;
                         case 'creditos':
-                            Transaction::removeCreditAndDecreaseAccount(array($entity));
-                            if (Transaction::isImpactableCredit($entity) && $entity['cred_tipo_trans'] == 'Bancaria') {
-                                Transaction::recalculateTaxDebit($entity);
+                            if ($entity['cred_tipo_trans'] == 'Caja') {
+                                if (Cash::canDeleteCredits($entity['cred_monto']) || $force_delete) {
+                                    Transaction::removeCreditAndDecreaseAccount(array($entity));
+                                } else {
+                                    $response['status'] = false;
+                                    $response['error_type'] = 'delete_credit';
+                                    $response['id'] = $entity['cred_id'];
+                                    $response['error'] = 'Eliminar este credito dejara tu caja con saldo negativo, estas seguro?';
+                                }
+                            } else {
+                                Transaction::removeCreditAndDecreaseAccount(array($entity));
                             }
                             break;
                         case 'debitos':

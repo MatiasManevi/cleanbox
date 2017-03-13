@@ -119,12 +119,17 @@ class General {
                 );
                 break;
             case 'cuentas_corrientes':
-                $entity = array(
-                    'id' => $entity['cc_id'],
-                    'cc_prop' => $entity['cc_prop'],
-                    'cc_saldo' => '$ ' . $entity['cc_saldo'],
-                    'cc_varios' => '$ ' . $entity['cc_varios'],
-                );
+                if (!in_array($entity['cc_prop'], array('INMOBILIARIA', 'CAJA FUERTE'))) {
+                    $entity = array(
+                        'id' => $entity['cc_id'],
+                        'cc_prop' => $entity['cc_prop'],
+                        'saldo' => '$ ' . round($entity['cc_saldo'] + $entity['cc_varios'], 2),
+//                        'cc_varios' => '$ ' . $entity['cc_varios'],
+                    );
+                } else {
+                    $entity = array();
+                }
+
                 break;
             case 'man_users':
                 $entity = array(
@@ -221,98 +226,109 @@ class General {
         return $entity;
     }
 
-    public static function getMonthNumber($mes) {
-        if (stripos($mes, 'Enero') !== false) {
-            $messtring = '01';
+    public static function getMonthNumber($month) {
+        if (stripos($month, 'Enero') !== false) {
+            $month_number = '01';
         }
-        if (stripos($mes, 'Febrero') !== false) {
-            $messtring = '02';
+        if (stripos($month, 'Febrero') !== false) {
+            $month_number = '02';
         }
-        if (stripos($mes, 'Marzo') !== false) {
-            $messtring = '03';
+        if (stripos($month, 'Marzo') !== false) {
+            $month_number = '03';
         }
-        if (stripos($mes, 'Abril') !== false) {
-            $messtring = '04';
+        if (stripos($month, 'Abril') !== false) {
+            $month_number = '04';
         }
-        if (stripos($mes, 'Mayo') !== false) {
-            $messtring = '05';
+        if (stripos($month, 'Mayo') !== false) {
+            $month_number = '05';
         }
-        if (stripos($mes, 'Junio') !== false) {
-            $messtring = '06';
+        if (stripos($month, 'Junio') !== false) {
+            $month_number = '06';
         }
-        if (stripos($mes, 'Julio') !== false) {
-            $messtring = '07';
+        if (stripos($month, 'Julio') !== false) {
+            $month_number = '07';
         }
-        if (stripos($mes, 'Agosto') !== false) {
-            $messtring = '08';
+        if (stripos($month, 'Agosto') !== false) {
+            $month_number = '08';
         }
-        if (stripos($mes, 'Septiembre') !== false) {
-            $messtring = '09';
+        if (stripos($month, 'Septiembre') !== false) {
+            $month_number = '09';
         }
-        if (stripos($mes, 'Octubre') !== false) {
-            $messtring = '10';
+        if (stripos($month, 'Octubre') !== false) {
+            $month_number = '10';
         }
-        if (stripos($mes, 'Noviembre') !== false) {
-            $messtring = '11';
+        if (stripos($month, 'Noviembre') !== false) {
+            $month_number = '11';
         }
-        if (stripos($mes, 'Diciembre') !== false) {
-            $messtring = '12';
+        if (stripos($month, 'Diciembre') !== false) {
+            $month_number = '12';
         }
 
-        return $messtring;
+        return $month_number;
     }
 
-    public static function getStringMonth($mes) {
-        $messtring = '';
-        if ($mes == '01') {
-            $messtring = 'Enero';
+    public static function getStringMonth($int_month) {
+
+        if ($int_month == '01') {
+            $string_month = 'Enero';
         }
-        if ($mes == '02') {
-            $messtring = 'Febrero';
+        if ($int_month == '02') {
+            $string_month = 'Febrero';
         }
-        if ($mes == '03') {
-            $messtring = 'Marzo';
+        if ($int_month == '03') {
+            $string_month = 'Marzo';
         }
-        if ($mes == '04') {
-            $messtring = 'Abril';
+        if ($int_month == '04') {
+            $string_month = 'Abril';
         }
-        if ($mes == '05') {
-            $messtring = 'Mayo';
+        if ($int_month == '05') {
+            $string_month = 'Mayo';
         }
-        if ($mes == '06') {
-            $messtring = 'Junio';
+        if ($int_month == '06') {
+            $string_month = 'Junio';
         }
-        if ($mes == '07') {
-            $messtring = 'Julio';
+        if ($int_month == '07') {
+            $string_month = 'Julio';
         }
-        if ($mes == '08') {
-            $messtring = 'Agosto';
+        if ($int_month == '08') {
+            $string_month = 'Agosto';
         }
-        if ($mes == '09') {
-            $messtring = 'Septiembre';
+        if ($int_month == '09') {
+            $string_month = 'Septiembre';
         }
-        if ($mes == '10') {
-            $messtring = 'Octubre';
+        if ($int_month == '10') {
+            $string_month = 'Octubre';
         }
-        if ($mes == '11') {
-            $messtring = 'Noviembre';
+        if ($int_month == '11') {
+            $string_month = 'Noviembre';
         }
-        if ($mes == '12') {
-            $messtring = 'Diciembre';
+        if ($int_month == '12') {
+            $string_month = 'Diciembre';
         }
-        return $messtring;
+
+        return $string_month;
     }
 
     /**
      * Algoritmo para comparar entre fechas String, si una de ellas esta entre un rango de fechas
-     * @param string $fecha
-     * @param string $desde
-     * @param string $hasta
+     * @param string $date
+     * @param string $from
+     * @param string $to
      * @return boolean 
      */
     public static function isBetweenDates($date, $from, $to) {
         if ($date == $from || $date == $to) {
             return true;
+        }
+
+        $date = strtotime($date);
+        $from = strtotime($from);
+        $to = strtotime($to);
+
+        if($from <= $date && $to >= $date){
+            return true;
+        }else{
+            return false;
         }
 
         $dagre = false;

@@ -102,8 +102,8 @@
     var transfer_to_safebox = '<?php echo site_url('transferToSafeBox') ?>';
     var is_admin = <?php echo json_encode($this->session->userdata('username') == 'admin') ?>;
     
-    var code_control = <?php echo User::codeControl(); ?>;
-    var iva_percentaje = <?php echo User::getUserIVATAX(); ?>;
+    var code_control = <?php echo json_decode(User::codeControl()); ?>;
+    var iva_percentaje = <?php echo json_decode(User::getUserIVATAX()); ?>;
     var BASE_URL = '<?php echo base_url(); ?>';
     var LOADING_HTML ='<div id="loading" style="display:none"><div class="shadow"></div><img src="<?php echo img_url(); ?>ajax-loader.gif"  alt="loading..."/></div>';    
     var LOADING_LIST_HTML ='<div id="loading_list" style="display:none"><div class="shadow"></div><img src="<?php echo img_url(); ?>ajax-loader.gif"  alt="loading..."/></div>';    

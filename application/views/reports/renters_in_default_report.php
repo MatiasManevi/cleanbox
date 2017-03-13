@@ -3,7 +3,6 @@
     <h4 style="float:left;">Posadas, Misiones</h4>           
     <h4 style="float:right;"><?php echo date('d-m-Y') ?></h4>
     <h4>Informe Inquilinos Morosos al día: <?php echo $date ?></h4>
-    <label>Nota: A los intereses punitorios ya se han descontados los depósitos a cuenta que se puedan haber hecho de los mismos </label>
 
     <?php if (count($renters) > 0) { ?>
         <?php foreach ($renters as $renter) { ?>

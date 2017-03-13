@@ -18,7 +18,7 @@ class User {
         $instance = &get_instance();
 
         if (!$instance->session->userdata('logged_in') && strpos(current_url(), 'login') === FALSE) {
-            echo "<script>window.top.location.href = '" . site_url('login') . "';</script>";
+            redirect(site_url('login'));
         }
     }
 

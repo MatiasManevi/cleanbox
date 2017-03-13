@@ -153,7 +153,7 @@ class Contracts extends CI_Controller {
         if (empty($prop_client)) {
             $prop_client = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();
         }
-        $prop_cc = $this->basic->get_where('cuentas_corrientes', array('client_id' => $contract['cc_id']))->row_array();
+        $prop_cc = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $contract['cc_id']))->row_array();
         if (empty($prop_cc)) {
             $prop_cc = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => $contract['con_prop']))->row_array();
         }

@@ -32,14 +32,14 @@
                         <td class="cell">$ <?php echo $movement['amount']; ?></td>
                         <td class="cell"></td>
                     <?php } ?>
-                    <td class="cell">$ <?php echo $sald; ?></td>
+                    <td class="cell">$ <?php echo round($sald, 2); ?></td>
                 </tr>
             <?php } ?>
             <tr>
                 <td colspan="2" class="cell"></td>
                 <td class="cell">$ <?php echo $principal_outs; ?></td>
                 <td class="cell">$ <?php echo $principal_ins; ?></td>
-                <td class="cell">$ <?php echo $sald; ?></td>
+                <td class="cell">$ <?php echo round($sald, 2); ?></td>
             </tr>
         <?php } else { ?>
             <div class="movements_zero">No se registraron movimientos en las fechas indicadas</div>
@@ -75,7 +75,7 @@
                             <td class="cell">$ <?php echo $movement['amount']; ?></td>
                             <td class="cell"></td>
                         <?php } ?>
-                        <td class="cell">$ <?php echo $secondary_sald; ?></td>
+                        <td class="cell">$ <?php echo round($secondary_sald, 2); ?></td>
                     </tr>
                 <?php } ?>
             <?php } ?>
@@ -83,7 +83,7 @@
                 <td colspan="2" class="cell"></td>
                 <td class="cell">$ <?php echo $secondary_outs; ?></td>
                 <td class="cell">$ <?php echo $secondary_ins; ?></td>
-                <td class="cell">$ <?php echo $secondary_sald; ?></td>
+                <td class="cell">$ <?php echo round($secondary_sald, 2); ?></td>
             </tr>
         <?php } else { ?>
             <div class="movements_zero">No se registraron movimientos en las fechas indicadas</div>
@@ -178,18 +178,19 @@
             </table>
         </div>
     <?php } ?>
-    <table class="table">
-        <tr>
-            <td style="border:none"> Recibimos conforme de <?php echo $bussines_name; ?>, la cantidad de Pesos (<?php echo '$ ' . $today_rendition_amount . ') ' . $today_rendition_amount_letra ?>
-                en concepto de rendición de cuenta por la cobranza de alquileres, habiendo verificado los comprobantes de ingresos y egresos del inmueble/s
-                sito domicilio/os <?php echo $address_rendition ?>
-                correspondiente al mes/es de <?php echo $month_rendition ?></td>
-        </tr>
-        <tr>
-            <td style="border:none">Firma: ________________________              <?php echo $account['cc_prop'] ?></td>
-        </tr>
-    </table>
-
+    <?php if ($account['cc_prop'] != 'CAJA FUERTE' && $account['cc_prop'] != 'INMOBILIARIA') { ?>
+        <table class="table">
+            <tr>
+                <td style="border:none"> Recibimos conforme de <?php echo $bussines_name; ?>, la cantidad de Pesos (<?php echo '$ ' . $today_rendition_amount . ') ' . $today_rendition_amount_letra ?>
+                    en concepto de rendición de cuenta por la cobranza de alquileres, habiendo verificado los comprobantes de ingresos y egresos del inmueble/s
+                    sito domicilio/os <?php echo $address_rendition ?>
+                    correspondiente al mes/es de <?php echo $month_rendition ?></td>
+            </tr>
+            <tr>
+                <td style="border:none">Firma: ________________________              <?php echo $account['cc_prop'] ?></td>
+            </tr>
+        </table>
+    <?php } ?>
 </div>      
 
 <div id="non-printable" class="report_actions">

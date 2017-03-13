@@ -78,7 +78,7 @@
                         <td class="cell">$ <?php echo $movement['amount']; ?></td>
                     <?php } ?>
                 <?php } ?>
-                <td class="cell">$ <?php echo $sald; ?></td>
+                <td class="cell">$ <?php echo round($sald, 2); ?></td>
             </tr>
         <?php } ?>
 
@@ -93,14 +93,14 @@
             <th class="cell" colspan="3">Totales</th>
             <td class="cell">$ <?php echo $outs; ?></td>
             <td class="cell">$ <?php echo $ins; ?></td>
-            <td class="cell" title="<?php echo $title; ?>">$ <?php echo $sald; ?></td>
+            <td class="cell" title="<?php echo $title; ?>">$ <?php echo round($sald, 2); ?></td>
         </tr>
         <tr>
             <td colspan="6"></td>
         </tr>
         <tr>
             <th colspan="2" class="cell">La caja termina con:</th>
-            <td colspan="4" class="cell">$ <?php echo $begin_cash + $sald; ?></td>
+            <td colspan="4" class="cell">$ <?php echo round($begin_cash + $sald, 2); ?></td>
         </tr>
     </table>
 </div>

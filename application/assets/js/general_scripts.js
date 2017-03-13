@@ -156,7 +156,12 @@ general_scripts.ajaxSubmit = function (url, params, callback) {
                     callback(response);
                 } 
             }else{
-                cleanbox_alert.showAlertError(response.error);
+                if(response.error_type == 'delete_credit'){
+                    var action = 'general_scripts.deleteEntity('+ response.id +', "creditos", "cred_id", "'+true+'")';
+                    modals.loadModalConfirm('Eliminar credito', response.error, action, 'Eliminar');  
+                }else{
+                    cleanbox_alert.showAlertError(response.error);
+                }
             }     
             if(response.keep_loading != undefined && !response.keep_loading){
                 loading.hide();
@@ -183,11 +188,12 @@ general_scripts.saveEntity = function (url, form) {
     
 };
 
-general_scripts.deleteEntity = function (id, table, table_pk, callback) {
+general_scripts.deleteEntity = function (id, table, table_pk, force_delete, callback) {
     var params = {
         'id': id,
         'table': table,
-        'table_pk': table_pk
+        'table_pk': table_pk,
+        'force_delete' : force_delete
     };
 
     general_scripts.ajaxSubmit(delete_entity, params, function () {
@@ -236,6 +242,9 @@ general_scripts.refreshList = function (table, table_pk, table_order, entity_nam
             for (x = 0; x < entities.length; x++) {
                 general_scripts.loadEntityToList(entities[x], table, choosing_provider)
             }
+            
+            $("._row_count").val(30);
+            $("._page").val(1);
         }else{
             general_scripts.noRecordsTable(table.table);
         }
@@ -333,7 +342,7 @@ general_scripts.loadEntityHtml = function (response){
             break;
         case 'comentarios':
             proprietary.loadFormDataComments(entity);
-        //            break;
+            break;
         case 'proveedores':
             provider.loadFormData(entity, response.areas, response.nota);
             break;
@@ -349,61 +358,63 @@ general_scripts.loadEntityHtml = function (response){
 };
 
 general_scripts.loadEntityToList = function (entity, table, choosing_provider, insert_bottom){
-    var $table = $('._' + table.table + '_table');
+    if(typeof entity.id !== 'undefined'){
+        var $table = $('._' + table.table + '_table');
     
-    $table.find("._no_records").remove();
+        $table.find("._no_records").remove();
     
-    if($table.find('._reg_entity_' + entity.id).is('*')){
-        $table.find('._reg_entity_' + entity.id).remove();
-    }
+        if($table.find('._reg_entity_' + entity.id).is('*')){
+            $table.find('._reg_entity_' + entity.id).remove();
+        }
     
-    var $new_row = $('<tr class="_reg_entity_' + entity.id + '">');
+        var $new_row = $('<tr class="_reg_entity_' + entity.id + '">');
 
-    $.each(entity, function(index, value) {
-        if(index !== 'id' && index !== 'print' && index !== 'transaction_id'){
-            var $new_oolumn = $('<td>' + value + '</td>');
-            $new_row.append($new_oolumn);
-        }
-    });
-    
-    var $actions_column = $('<td>');
-    
-    var $edit_action = $('<a title="Editar" onclick="general_scripts.loadEntityToEdit(' + entity.id + ',\''+ table.table + '\',\''+ table.table_pk + '\')" href="javascript:;" class="glyphicon glyphicon-edit"></a>');
-    
-    if(table.table == 'creditos' || table.table == 'debitos'){
-        var $delete_action = $('<a title="Eliminar" onclick="modals.deleteTransactionModal(' + entity.transaction_id + ',\''+ table.table + '\')" href="javascript:;" class="glyphicon glyphicon-trash"></a>');    
-    }else{
-        var $delete_action = $('<a title="Eliminar" onclick="modals.deleteEntityModal(' + entity.id + ',\'' + table.table + '\',\'' + table.table_pk + '\',\''+ table.entity_name + '\')" href="javascript:;" class="glyphicon glyphicon-trash"></a>');
-    }
-    
-    if(choosing_provider){
-        var $choose_action = $('<a href="javascript:;" title="Elegir" class="glyphicon glyphicon-ok" onclick="maintenance.chooseProvider('+entity.id+')"></a>&nbsp;Elegir');
-        $actions_column.append('&nbsp;');
-        $actions_column.append($choose_action);
-    }else{
-        if(is_admin || table.table != 'cuentas_corrientes'|| table.table != 'man_users'){
-            if(table.table != 'creditos' && table.table != 'debitos' && table.table != 'transferencias_to_safe' && table.table != 'transferencias_to_cash'){
-                $actions_column.append($edit_action);
+        $.each(entity, function(index, value) {
+            if(index !== 'id' && index !== 'print' && index !== 'transaction_id'){
+                var $new_oolumn = $('<td>' + value + '</td>');
+                $new_row.append($new_oolumn);
             }
-            if(table.table != 'providers_rols' && table.table != 'transferencias_to_safe' && table.table != 'transferencias_to_cash' || table.table == 'man_users' && is_admin){
-                $actions_column.append('&nbsp;');
-                $actions_column.append($delete_action);
+        });
+    
+        var $actions_column = $('<td>');
+    
+        var $edit_action = $('<a title="Editar" onclick="general_scripts.loadEntityToEdit(' + entity.id + ',\''+ table.table + '\',\''+ table.table_pk + '\')" href="javascript:;" class="glyphicon glyphicon-edit"></a>');
+    
+        if(table.table == 'creditos' || table.table == 'debitos'){
+            var $delete_action = $('<a title="Eliminar" onclick="modals.deleteTransactionModal(' + entity.transaction_id + ',\''+ table.table + '\')" href="javascript:;" class="glyphicon glyphicon-trash"></a>');    
+        }else{
+            var $delete_action = $('<a title="Eliminar" onclick="modals.deleteEntityModal(' + entity.id + ',\'' + table.table + '\',\'' + table.table_pk + '\',\''+ table.entity_name + '\')" href="javascript:;" class="glyphicon glyphicon-trash"></a>');
+        }
+    
+        if(choosing_provider){
+            var $choose_action = $('<a href="javascript:;" title="Elegir" class="glyphicon glyphicon-ok" onclick="maintenance.chooseProvider('+entity.id+')"></a>&nbsp;Elegir');
+            $actions_column.append('&nbsp;');
+            $actions_column.append($choose_action);
+        }else{
+            if(is_admin || table.table != 'cuentas_corrientes'|| table.table != 'man_users'){
+                if(table.table != 'creditos' && table.table != 'debitos' && table.table != 'transferencias_to_safe' && table.table != 'transferencias_to_cash'){
+                    $actions_column.append($edit_action);
+                }
+                if(table.table != 'providers_rols' && table.table != 'transferencias_to_safe' && table.table != 'transferencias_to_cash' || table.table == 'man_users' && is_admin){
+                    $actions_column.append('&nbsp;');
+                    $actions_column.append($delete_action);
+                }
             }
         }
-    }
     
-    if(entity.print){
-        var onclick = general_scripts.getPrintAction(table.table, entity);
-        var $print_action = $('<a title="Imprimir" onclick="' + onclick + '" href="javascript:;" class="glyphicon glyphicon-print"></a>');
-        $actions_column.append('&nbsp;');
-        $actions_column.append($print_action);
-    }
+        if(entity.print){
+            var onclick = general_scripts.getPrintAction(table.table, entity);
+            var $print_action = $('<a title="Imprimir" onclick="' + onclick + '" href="javascript:;" class="glyphicon glyphicon-print"></a>');
+            $actions_column.append('&nbsp;');
+            $actions_column.append($print_action);
+        }
     
-    $new_row.append($actions_column);
-    if(insert_bottom){
-        $new_row.insertAfter($table.find('tbody tr:last'));
-    }else{
-        $new_row.insertAfter($table.find('tbody tr:first'));
+        $new_row.append($actions_column);
+        if(insert_bottom){
+            $new_row.insertAfter($table.find('tbody tr:last'));
+        }else{
+            $new_row.insertAfter($table.find('tbody tr:first'));
+        }
     }
 };
 

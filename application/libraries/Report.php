@@ -43,8 +43,8 @@ class Report {
         if ($cash_type == 'cash') {
             $type = 'Caja';
             $type_show = 'Fisica';
-            $caja_comienza = $instance->basic->get_where('caja_comienza', array('caj_dia' => $date_array[0], 'caj_mes' => $date_array[1], 'caj_ano' => $date_array[2]))->row_array();
-            $instance->data['begin_cash'] = $caja_comienza['caj_saldo'];
+      
+            $instance->data['begin_cash'] = Cash::getBeginCash($date);
 
             $transfers_to_cash = $instance->basic->get_where('debitos', array('is_transfer' => 1, 'deb_fecha' => $date), 'deb_id', 'desc')->result_array();
             $transfers_to_safe = $instance->basic->get_where('creditos', array('is_transfer' => 1, 'cred_fecha' => $date), 'cred_id', 'desc')->result_array();
@@ -876,6 +876,51 @@ class Report {
                         $is_pending = true;
                     }
 
+                    $account['sald'] = round($account['cc_saldo'] + $account['cc_varios'], 2);
+//                    $account['sald'] = 0;
+//
+//                    $credits_prop = $instance->basic->get_where('creditos', array('cred_cc' => $account['cc_prop'], 'is_transfer' => 0), 'cred_id', 'asc')->result_array();
+//
+//                    $debits_prop = $instance->basic->get_where('debitos', array('deb_cc' => $account['cc_prop'], 'is_transfer' => 0), 'deb_id', 'asc')->result_array();
+//
+//
+//                    $in_concepts = $instance->basic->get_where('conceptos', array('conc_tipo' => 'Entrada'))->result_array();
+//                    $in_concepts = self::distinctConcepts($in_concepts);
+//                    $out_concepts = $instance->basic->get_where('conceptos', array('conc_tipo' => 'Salida'))->result_array();
+//                    $out_concepts = self::distinctConcepts($out_concepts);
+//
+//                    $account['ins'] = array();
+//                    $account['outs'] = array();
+//
+//                    foreach ($in_concepts as $in_concept) {
+//                        $amount = 0;
+//                        foreach ($credits_prop as $credit) {
+//
+//                            if ($in_concept['conc_desc'] == $credit['cred_concepto']) {
+//                                $amount += $credit['cred_monto'];
+//                                $account['sald'] += $credit['cred_monto'];
+//                            }
+//                        }
+//
+//                        if ($amount)
+//                            array_push($account['ins'], array($in_concept['conc_desc'] => $amount));
+//                    }
+//
+//                    foreach ($out_concepts as $out_concept) {
+//                        $amount = 0;
+//                        foreach ($debits_prop as $debit) {
+//
+//                            if ($out_concept['conc_desc'] == $debit['deb_concepto']) {
+//                                $amount += $debit['deb_monto'];
+//                                $account['sald'] -= $debit['deb_monto'];
+//                            }
+//                        }
+//                        if ($amount)
+//                            array_push($account['outs'], array($out_concept['conc_desc'] => $amount));
+//                    }
+//
+//
+//                    print_r($account);
                     if ($is_pending) {
                         array_push($instance->data['pending_renditions'], $account);
                     }

@@ -124,7 +124,6 @@ class General {
                         'id' => $entity['cc_id'],
                         'cc_prop' => $entity['cc_prop'],
                         'saldo' => '$ ' . round($entity['cc_saldo'] + $entity['cc_varios'], 2),
-//                        'cc_varios' => '$ ' . $entity['cc_varios'],
                     );
                 } else {
                     $entity = array();
@@ -331,60 +330,6 @@ class General {
             return false;
         }
 
-        $dagre = false;
-        $hagre = false;
-        $from = explode('-', $from);
-        $to = explode('-', $to);
-        $date = explode('-', $date);
-        if (count($date) == 3 && count($from) == 3 && count($to) == 3) {
-            $resta_ano_des_desde = $date[2] - $from[2];
-            $resta_mes_des_desde = $date[1] - $from[1];
-            $resta_dia_des_desde = $date[0] - $from[0];
-//compara fecha inferior
-            if ($resta_ano_des_desde > 0) {
-                $dagre = true;
-            } else {
-                if ($resta_ano_des_desde == 0) {
-                    if ($resta_mes_des_desde > 0) {
-                        $dagre = true;
-                    } else {
-                        if ($resta_mes_des_desde == 0) {
-                            if ($resta_dia_des_desde >= 0) {
-                                $dagre = true;
-                            }
-                        }
-                    }
-                }
-            }
-//si fecha inferior se cumple, se comprara superior
-            if ($dagre) {
-                $resta_ano_des_hasta = $date[2] - $to[2];
-                $resta_mes_des_hasta = $date[1] - $to[1];
-                $resta_dia_des_hasta = $date[0] - $to[0];
-                if ($resta_ano_des_hasta < 0) {
-                    $hagre = true;
-                } else {
-                    if ($resta_ano_des_hasta == 0) {
-                        if ($resta_mes_des_hasta == 0) {
-                            if ($resta_dia_des_hasta <= 0) {
-                                $hagre = true;
-                            }
-                        } else {
-                            if ($resta_mes_des_hasta < 0) {
-                                $hagre = true;
-                            }
-                        }
-                    }
-                }
-            }
-            if ($dagre && $hagre) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
     }
 
     public static function msort($array, $key, $sort_flags = SORT_REGULAR) {

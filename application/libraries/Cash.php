@@ -29,6 +29,12 @@ class Cash {
         }
     }
 
+    /**
+     * DEPRECATED
+     * [getMonthlyCashes description]
+     * @param  [type] $date [description]
+     * @return [type]       [description]
+     */
     public static function getMonthlyCashes($date) {
         $date = explode('-', $date);
         $instance = &get_instance();
@@ -60,6 +66,12 @@ class Cash {
         }
     }
 
+    /**
+     * DEPRECATED
+     * [getDialyCashes description]
+     * @param  [type] $date [description]
+     * @return [type]       [description]
+     */
     public static function getDialyCashes($date) {
         $date = explode('-', $date);
         $instance = &get_instance();
@@ -85,6 +97,11 @@ class Cash {
         }
     }
 
+    /**
+     * DEPRECATED
+     * [loadMonthlyCash description]
+     * @return [type] [description]
+     */
     public static function loadMonthlyCash() {
         self::loadDailyStartingCash();
 
@@ -112,6 +129,11 @@ class Cash {
         }
     }
 
+    /**
+     * DEPRECATED
+     * [loadDailyStartingCash description]
+     * @return [type] [description]
+     */
     public static function loadDailyStartingCash() {
         $instance = &get_instance();
         General::loadModels($instance);

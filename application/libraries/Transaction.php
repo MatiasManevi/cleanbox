@@ -1168,7 +1168,7 @@ class Transaction {
 
     /**
      * Plazma los cambios de la eliminacion del credito, des-usando un contrato,
-     * controlando si se deben eliminar transferencias y/o reflejar arrastres en la caja mensual/diaria.
+     * controlando si se deben eliminar transferencias.
      * @param type $credit 
      * @param type $cash_balance_today 
      */
@@ -1216,6 +1216,7 @@ class Transaction {
                 }
             }
 
+            // Balancear la caja porque sino la fisica queda negativa
             if ($impact_on_safe_box > 0) {
                 if (($safe_box['cc_saldo'] + $safe_box['cc_varios']) > 0) {
                     $debit = array(
@@ -1233,25 +1234,6 @@ class Transaction {
                 }
             }
 
-            if ($impact_on_cash > 0) {
-                // Eliminando arrastre de cajas mensuales si es fisico
-                $monthly_cashes = Cash::getMonthlyCashes($credit['cred_fecha']);
-                if (count($monthly_cashes)) {
-                    foreach ($monthly_cashes as $monthly_cash) {
-                        $monthly_cash['men_creditos'] -= $impact_on_cash;
-                        $instance->basic->save('mensuales', 'men_id', $monthly_cash);
-                    }
-                }
-
-                // Eliminando arrastre de cajas diarias si es fisico
-                $daily_cashes = Cash::getDialyCashes($credit['cred_fecha']);
-                if ($daily_cashes) {
-                    foreach ($daily_cashes as $day_cash) {
-                        $day_cash['caj_saldo'] -= $impact_on_cash;
-                        $instance->basic->save('caja_comienza', 'caj_id', $day_cash);
-                    }
-                }
-            }
         } else if (self::isImpactableCredit($credit) && $credit['cred_tipo_trans'] == 'Bancaria') {
             self::recalculateTaxDebit($credit);
         }
@@ -1289,8 +1271,7 @@ class Transaction {
     }
 
     /**
-     * Elimina el debito, aumenta en su monto a la cuenta correspondiente y tambien a
-     * la caja mensual
+     * Elimina el debito, aumenta en su monto a la cuenta correspondiente
      * @param type $debits
      * @param type $monthly_cash
      * @param type $concepts 
@@ -1301,13 +1282,16 @@ class Transaction {
 
                 // Eliminando efecto del debito a la cuenta
                 self::deleteDebit($debit);
-
-                // Plazmando impacto de la eliminacion
-                self::impactDebitDelete($debit);
             }
         }
     }
 
+    /**
+     * DEPRECATED
+     * [impactDebitDelete description]
+     * @param  [type] $debit [description]
+     * @return [type]        [description]
+     */
     public static function impactDebitDelete($debit) {
         $instance = &get_instance();
         General::loadModels($instance);
@@ -1577,11 +1561,6 @@ class Transaction {
         }
 
         $debit['deb_id'] = self::createDebit($debit, $account_type, $cc_to_impact);
-
-        // Impacta debito puro a la caja mensual si es tipo Fisico
-        if ($debit['deb_tipo_trans'] == 'Caja') {
-            $month_cash['men_debitos'] += $debit['deb_monto'];
-        }
 
         // Guarda las cuentas corrientes del propietario e inmobiliaria, y la caja mensual
         $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_to_impact);

@@ -27,8 +27,6 @@ class Manager extends CI_Controller {
  
         Contract::declineContracts();
 
-        Cash::loadMonthlyCash();
-
         $this->loadHomeData();
 
         $this->load->view('layout', $this->data);

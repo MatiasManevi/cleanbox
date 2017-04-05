@@ -32,11 +32,9 @@ class Transfers extends CI_Controller {
 
             if ($amount) {
                 $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
-                $current_monthly_cash = $this->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
 
                 if ($amount <= $safe_box['cc_saldo']) {
 
-                    $current_monthly_cash['men_creditos'] += $amount;
                     $safe_box['cc_saldo'] -= $amount;
                     
                     $debit = array(
@@ -54,7 +52,6 @@ class Transfers extends CI_Controller {
                     
                     $this->basic->save('debitos', 'deb_id', $debit);
                     $this->basic->save('cuentas_corrientes', 'cc_id', $safe_box);
-                    $this->basic->save('mensuales', 'men_id', $current_monthly_cash);
 
                     $response['status'] = true;
                     $response['success'] = 'Transferencia realizada!!';
@@ -83,12 +80,10 @@ class Transfers extends CI_Controller {
             $amount = $this->input->post('amount');
             if ($amount) {
                 $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
-                $current_monthly_cash = $this->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
 
                 $actual_balance = Cash::getBalance('Caja');
 
                 if ($amount <= $actual_balance) {
-                    $current_monthly_cash['men_creditos'] -= $amount;
                     $safe_box['cc_saldo'] += $amount;
 
                     $credit = array(
@@ -107,7 +102,6 @@ class Transfers extends CI_Controller {
                     
                     $this->basic->save('creditos', 'cred_id', $credit);
                     $this->basic->save('cuentas_corrientes', 'cc_id', $safe_box);
-                    $this->basic->save('mensuales', 'men_id', $current_monthly_cash);
 
                     $response['status'] = true;
                     $response['success'] = 'Transferencia realizada!!';

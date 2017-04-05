@@ -16,179 +16,23 @@ use Carbon\Carbon;
 
 class Cash {
 
-    public static function isFirstCashOfMonth() {
-        $instance = &get_instance();
-        General::loadModels($instance);
-
-        $daily_starting_cashes = $instance->basic->get_where('caja_comienza', array('caj_mes' => date('m'), 'caj_ano' => date('Y')))->result_array();
-
-        if (empty($daily_starting_cashes)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * DEPRECATED
-     * [getMonthlyCashes description]
-     * @param  [type] $date [description]
-     * @return [type]       [description]
-     */
-    public static function getMonthlyCashes($date) {
-        $date = explode('-', $date);
-        $instance = &get_instance();
-        General::loadModels($instance);
-
-        if ($date[1] == Date('m') && $date[2] == Date('Y')) {
-            return $instance->basic->get_where('mensuales', array('men_mes' => $date[1], 'men_ano' => $date[2]))->result_array();
-        } else {
-            $monthly_cashes = array();
-            $today_m = Date('m');
-            $today_y = Date('Y');
-
-            $current_m = $date[1];
-            $current_y = $date[2];
-
-            while ($current_m <= $today_m && $current_y <= $today_y) {
-                $cash = $instance->basic->get_where('mensuales', array('men_mes' => $current_m, 'men_ano' => $current_y))->row_array();
-                array_push($monthly_cashes, $cash);
-
-                if (($current_m + 1) > 12) {
-                    $current_m = 1;
-                    $current_y++;
-                } else {
-                    $current_m++;
-                }
-            }
-
-            return $monthly_cashes;
-        }
-    }
-
-    /**
-     * DEPRECATED
-     * [getDialyCashes description]
-     * @param  [type] $date [description]
-     * @return [type]       [description]
-     */
-    public static function getDialyCashes($date) {
-        $date = explode('-', $date);
-        $instance = &get_instance();
-        General::loadModels($instance);
-
-        if ($date[0] == Date('d') && $date[1] == Date('m') && $date[2] == Date('Y')) {
-            // Si esta eliminando un movimiento del dia, no modifica a la caja_comienza del dia
-            return false;
-        } else {
-            // Si esta pasando la fecha de un dia pasado
-            // No se debe modificar la caja de ese dia, sino de todas las
-            // siguientes a ese dia
-            // Traemos la caja del dia del movimiento, unicamente para luego traer todas
-            // las cajas que tengan un id superior a ella
-
-            $movement_day_cash = $instance->basic->get_where('caja_comienza', array('caj_dia' => $date[0], 'caj_mes' => $date[1], 'caj_ano' => $date[2]))->row_array();
-
-            $instance->db->select('*');
-            $instance->db->where('caj_id >', $movement_day_cash['caj_id']);
-            $monthly_cashes = $instance->db->get('caja_comienza')->result_array();
-
-            return $monthly_cashes;
-        }
-    }
-
-    /**
-     * DEPRECATED
-     * [loadMonthlyCash description]
-     * @return [type] [description]
-     */
-    public static function loadMonthlyCash() {
-        self::loadDailyStartingCash();
-
-        $instance = &get_instance();
-        General::loadModels($instance);
-
-        $month_cash = $instance->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
-
-        if (empty($month_cash)) {
-
-            if (User::beginCashZero()) {
-                $begin_amount = 0;
-            } else {
-                $begin_amount = self::getBalance('Caja');
-            }
-
-            $month_cash = array(
-                'men_mes' => date('m'),
-                'men_ano' => date('Y'),
-                'men_creditos' => $begin_amount,
-                'men_debitos' => 0
-            );
-
-            $instance->basic->save('mensuales', 'men_id', $month_cash);
-        }
-    }
-
-    /**
-     * DEPRECATED
-     * [loadDailyStartingCash description]
-     * @return [type] [description]
-     */
-    public static function loadDailyStartingCash() {
-        $instance = &get_instance();
-        General::loadModels($instance);
-        // creditos - debitos, desde comienzo de mes hasta el dia anterior al actual, ese es el monto
-        // con el cual comienza este dia
-        $begin_amount = 0;
-        $daily_starting_cash = $instance->basic->get_where('caja_comienza', array('caj_dia' => date('d'), 'caj_mes' => date('m'), 'caj_ano' => date('Y')))->row_array();
-
-        if (empty($daily_starting_cash)) {
-
-            // Para calcular el monto con el que comienza la caja fisica,
-            // obtiene la caja comienza del dia anterior + los creditos - debitos de ese dia
-            //  */- el saldo de transferencias, depende tambien de la configuracion establecida
-            // en beginCashZero()
-
-            if (User::beginCashZero() && self::isFirstCashOfMonth()) {
-                $begin_amount = 0;
-            } else {
-                $begin_amount = self::getBalance('Caja');
-            }
-
-            $daily_starting_cash = array(
-                'caj_dia' => date('d'),
-                'caj_mes' => date('m'),
-                'caj_ano' => date('Y'),
-                'caj_saldo' => $begin_amount
-            );
-            $instance->basic->save('caja_comienza', 'caj_id', $daily_starting_cash);
-        }
-    }
-
-    public static function getBalance($type, $fecha = null) {
+    public static function getBalance($type, $date = null) {
         $balance = 0;
         $instance = &get_instance();
         General::loadModels($instance);
 
         if ($type == 'Caja') {
-            if (!$fecha) {
+            if (!$date) {
                 // actual balance
-                $last_begin = $instance->basic->get_where('caja_comienza', array(), 'caj_id')->last_row('array');
-                if (empty($last_begin)) {
-                    // first day using balance = 0
-                    $balance = 0;
-                } else {
-                    // actual balance
-                    $fecha = $last_begin['caj_dia'] . '-' . $last_begin['caj_mes'] . '-' . $last_begin['caj_ano'];
+                $date = date('d-m-Y');
 
-                    $balance = self::getBalanceByDate($fecha, $last_begin['caj_saldo']);
-                }
+                $balance = self::getBalanceByDate($date, self::getBeginCash($date));
             } else {
                 // balance of specific date
-                $balance = self::getBalanceByDate($fecha, 0);
+                $balance = self::getBalanceByDate($date, 0);
             }
         } else if ($type == 'Bancaria') {
-            $arr_date = explode('-', $fecha);
+            $arr_date = explode('-', $date);
 
             if ($arr_date[0] - 1 == 0) {
                 $to_day = 1;

@@ -45,8 +45,6 @@ class Transaction {
         $impacted_credits = array();
         $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
 
-        $monthly_cash = $instance->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
-
         if (!empty($contract)) {
 
             $honorarios_credit = array(
@@ -68,10 +66,6 @@ class Transaction {
                 'cred_domicilio' => $credit['cred_domicilio'],
                 'trans' => $transaction_id
             );
-
-            if ($credit['cred_tipo_trans'] == 'Caja') {
-                $monthly_cash['men_creditos'] += $honorarios_credit['cred_monto'];
-            }
 
             $cc_inmo['cc_saldo'] += $credit['cred_monto'];
 
@@ -101,9 +95,6 @@ class Transaction {
                     'trans' => $transaction_id
                 );
 
-                if ($credit['cred_tipo_trans'] == 'Caja') {
-                    $monthly_cash['men_creditos'] += $credit['cred_iva_calculado'];
-                }
                 $cc_inmo['cc_saldo'] += $credit['cred_iva_calculado'];
 
                 $iva_honorarios_credit['cred_id'] = $instance->basic->save('creditos', 'cred_id', $iva_honorarios_credit);
@@ -112,7 +103,6 @@ class Transaction {
 
             $contract['honorary_cuotes_payed'] = $contract['honorary_cuotes_payed'] + 1;
 
-            $instance->basic->save('mensuales', 'men_id', $monthly_cash);
             $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
         }
 
@@ -128,16 +118,11 @@ class Transaction {
 
             $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
             $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_id' => $credit['cc_id']))->row_array();
-            $month_cash = $instance->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
-
+          
             $account_type = General::getAccountType($credit, 'Entrada', 'cred_concepto');
 
             // Impacta credito puro en la cuenta corriente del propietario
             $cc_to_impact[$account_type] += $credit['cred_monto'];
-            // Impacta credito puro a la caja mensual si es tipo Fisico
-            if ($credit['cred_tipo_trans'] == 'Caja') {
-                $month_cash['men_creditos'] += $credit['cred_monto'];
-            }
 
             if (!empty($contract)) {
 
@@ -159,10 +144,6 @@ class Transaction {
                     array_push($impacted_credits, $iva_credit);
                     // Si se percibe IVA dicho monto se suma a la cuenta corriente del propietario
                     $cc_to_impact['cc_saldo'] += $iva_credit['cred_monto'];
-                    // Si se percibe IVA dicho monto se suma a la caja mensual
-                    if ($iva_credit['cred_tipo_trans'] == 'Caja') {
-                        $month_cash['men_creditos'] += $iva_credit['cred_monto'];
-                    }
                 }
 
                 $interes_credit = self::createInteresMovements($instance, $credit, $cc_to_impact, $transaction_id);
@@ -171,10 +152,6 @@ class Transaction {
 
                     // Si se percibe Intereses dicho monto se suma a la cuenta corriente del propietario
                     $cc_to_impact['cc_saldo'] += $interes_credit['cred_monto'];
-                    // Si se percibe Intereses dicho monto se suma a la caja mensual
-                    if ($interes_credit['cred_tipo_trans'] == 'Caja') {
-                        $month_cash['men_creditos'] += $interes_credit['cred_monto'];
-                    }
 
                     if (Contract::conceptPerceiveGestion($credit['cred_concepto'])) {
                         $gestion_interes_credit = self::createGestionMovements($instance, $interes_credit, $contract, $cc_inmo, $cc_to_impact, $transaction_id, true);
@@ -197,7 +174,6 @@ class Transaction {
             // Guarda las cuentas corrientes del propietario e inmobiliaria, y la caja mensual
             $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_to_impact);
             $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
-            $instance->basic->save('mensuales', 'men_id', $month_cash);
 
             unset($credit['cred_iva_calculado']);
             unset($credit['cred_interes_calculado']);
@@ -1286,37 +1262,6 @@ class Transaction {
         }
     }
 
-    /**
-     * DEPRECATED
-     * [impactDebitDelete description]
-     * @param  [type] $debit [description]
-     * @return [type]        [description]
-     */
-    public static function impactDebitDelete($debit) {
-        $instance = &get_instance();
-        General::loadModels($instance);
-
-        if (self::isImpactabledebit($debit) && $debit['deb_tipo_trans'] == 'Caja') {
-            // Eliminando arrastre de cajas mensuales si es fisico
-            $monthly_cashes = Cash::getMonthlyCashes($debit['deb_fecha']);
-            if (count($monthly_cashes)) {
-                foreach ($monthly_cashes as $monthly_cash) {
-                    $monthly_cash['men_debitos'] -= $debit['deb_monto'];
-                    $instance->basic->save('mensuales', 'men_id', $monthly_cash);
-                }
-            }
-
-            // Eliminando arrastre de cajas diarias si es fisico
-            $daily_cashes = Cash::getDialyCashes($debit['deb_fecha']);
-            if ($daily_cashes) {
-                foreach ($daily_cashes as $day_cash) {
-                    $day_cash['caj_saldo'] += $debit['deb_monto'];
-                    $instance->basic->save('caja_comienza', 'caj_id', $day_cash);
-                }
-            }
-        }
-    }
-
     public static function getLastControl($contract, $service) {
         $instance = &get_instance();
         General::loadModels($instance);
@@ -1551,7 +1496,6 @@ class Transaction {
         General::loadModels($instance);
 
         $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => $debit['deb_cc']))->row_array();
-        $month_cash = $instance->basic->get_where('mensuales', array('men_mes' => date('m'), 'men_ano' => date('Y')))->row_array();
 
         $account_type = General::getAccountType($debit, 'Salida', 'deb_concepto');
 
@@ -1564,33 +1508,9 @@ class Transaction {
 
         // Guarda las cuentas corrientes del propietario e inmobiliaria, y la caja mensual
         $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_to_impact);
-        $instance->basic->save('mensuales', 'men_id', $month_cash);
 
         return $debit;
     }
-
-    /**
-     * Si se elimina una transfrencia se debe impactar sobre el progresivo mensual
-     * @param type $transfer 
-     */
-//    public static function impactRemoveTransfer($transfer) {
-//        $instance = &get_instance();
-//        General::loadModels($instance);
-//
-//        if (isset($transfer['cred_concepto']) && $transfer['cred_concepto'] == 'Transferencia a CAJA FUERTE') {
-//            $date_explode = explode('-', $transfers['cred_fecha']);
-//            $monthly_cash = $instance->basic->get_where('mensuales', array('men_mes' => $date_explode[1], 'men_ano' => $date_explode[2]))->row_array();
-//
-//            $monthly_cash['men_creditos'] += $transfer['cred_monto'];
-//        } else if (isset($transfer['deb_concepto']) && $transfer['deb_concepto'] == 'Transferencia a CAJA FISICA') {
-//            $date_explode = explode('-', $transfers['deb_fecha']);
-//            $monthly_cash = $instance->basic->get_where('mensuales', array('men_mes' => $date_explode[1], 'men_ano' => $date_explode[2]))->row_array();
-//
-//            $monthly_cash['men_creditos'] -= $transfer['deb_monto'];
-//        }
-//
-//        $instance->basic->save('mensuales', 'men_id', $monthly_cash);
-//    }
 
     /**
      * Un credito es impactable cuando su valor impacta en la caja fisica o bancaria

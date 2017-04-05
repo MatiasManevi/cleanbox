@@ -106,7 +106,8 @@ class Report {
 
         foreach ($credits as $row) {
             if (isset($row)) {
-                if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses') {
+                if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses' &&
+                    strpos($row['cred_concepto'], 'Prestamo') === FALSE) {
                     array_push($instance->data['movements'], array(
                         'id' => $row['cred_id'],
                         'cc' => $row['cred_cc'],
@@ -118,8 +119,7 @@ class Report {
                         'address' => $row['cred_domicilio'],
                         'type' => 'credito',
                         'trans' => $row['trans'],
-                        'is_transfer' => 0,
-                        'receive_number' => $row['receive_number']
+                        'is_transfer' => 0
                     ));
                     $instance->data['ins'] += $row['cred_monto'];
                 }
@@ -127,7 +127,8 @@ class Report {
         }
         foreach ($debits as $row) {
             if (isset($row)) {
-                if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses') {
+                if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses' && 
+                    strpos($row['deb_concepto'], 'Prestamo') === FALSE) {
                     array_push($instance->data['movements'], array(
                         'id' => $row['deb_id'],
                         'cc' => $row['deb_cc'],

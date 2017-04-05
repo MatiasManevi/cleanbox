@@ -106,13 +106,6 @@ int_amount */
 ALTER TABLE `intereses_mora` ADD `con_id` INT NOT NULL , ADD `cc_id` INT NOT NULL , ADD `client_id` INT NOT NULL , ADD `int_amount` DECIMAL(10,2) NOT NULL ;
 
 
-/* mensuales 
-borrar men_date, men_info */
-
-ALTER TABLE `mensuales` DROP `men_date`;
-ALTER TABLE `mensuales` DROP `men_info`;
-
-
 /* propiedades
 cc_id
 prop_date_created	varchar(255) */
@@ -305,13 +298,10 @@ ALTER TABLE `mantenimientos` CHANGE `mant_calif` `mant_calif` DECIMAL(10,2) NOT 
 ALTER TABLE `proveedores` CHANGE `prov_nota` `prov_nota` DECIMAL(10,2) NOT NULL;
 ALTER TABLE `proveedores_nota` CHANGE `nota_total` `nota_total` DECIMAL(10,2) NOT NULL;
 
-ALTER TABLE `caja_comienza` CHANGE `caj_saldo` `caj_saldo` DECIMAL(10,2) NOT NULL;
 ALTER TABLE `creditos` CHANGE `cred_monto` `cred_monto` DECIMAL(10,2) NOT NULL;
 ALTER TABLE `cuentas_corrientes` CHANGE `cc_saldo` `cc_saldo` DECIMAL(10,2) NOT NULL;
 ALTER TABLE `cuentas_corrientes` CHANGE `cc_varios` `cc_varios` DECIMAL(10,2) NOT NULL;
 ALTER TABLE `debitos` CHANGE `deb_monto` `deb_monto` DECIMAL(10,2) NOT NULL;
-ALTER TABLE `mensuales` CHANGE `men_creditos` `men_creditos` DECIMAL(10,2) NOT NULL;
-ALTER TABLE `mensuales` CHANGE `men_debitos` `men_debitos` DECIMAL(10,2) NOT NULL;
 ALTER TABLE `periodos` CHANGE `per_monto` `per_monto` DECIMAL(10,2) NOT NULL;
 
 ALTER TABLE `man_users` ADD `admin_id` INT NOT NULL;

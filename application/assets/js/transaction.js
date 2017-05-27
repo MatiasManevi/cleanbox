@@ -800,6 +800,7 @@ credit.authUnlock = function (auth_code){
 
 credit.saveCredits = function (url) {
     
+    // deshabilitado para RIMA
     if($('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
         cleanbox_alert.showAlertInfo('Ingresa el numero de recibo que imprimiras!');
         $('#receive_number').focus();

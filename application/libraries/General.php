@@ -311,24 +311,14 @@ class General {
 
     /**
      * Algoritmo para comparar entre fechas String, si una de ellas esta entre un rango de fechas
-     * @param string $date
-     * @param string $from
-     * @param string $to
+     * @param string $fecha
+     * @param string $desde
+     * @param string $hasta
      * @return boolean 
      */
     public static function isBetweenDates($date, $from, $to) {
         if ($date == $from || $date == $to) {
             return true;
-        }
-
-        $date = strtotime($date);
-        $from = strtotime($from);
-        $to = strtotime($to);
-
-        if($from <= $date && $to >= $date){
-            return true;
-        }else{
-            return false;
         }
 
         $dagre = false;

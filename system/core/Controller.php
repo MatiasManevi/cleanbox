@@ -53,8 +53,6 @@ class CI_Controller {
 		$this->load->_ci_autoloader();
 
 		log_message('debug', "Controller Class Initialized");
-                
-                User::checkLogin();
 
 	}
 

@@ -5,7 +5,7 @@
     <div class="panel-body">
         <div class="panel panel-default margB33">
             <div class="panel-body">
-                Estado inicial CAJA FISICA: <strong>$ <?php echo $begin_cash; ?></strong>
+                Estado inicial CAJA FISICA: <strong>$ <?php echo $daily_start['caj_saldo']; ?></strong>
             </div>
         </div>
         <div class="panel panel-default margB33">

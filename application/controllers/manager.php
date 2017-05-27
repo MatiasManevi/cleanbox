@@ -24,8 +24,10 @@ class Manager extends CI_Controller {
         $this->basic->repairTables();
 
         $this->data['row_count'] = 0;
- 
+
         Contract::declineContracts();
+
+        Cash::loadMonthlyCash();
 
         $this->loadHomeData();
 
@@ -33,7 +35,7 @@ class Manager extends CI_Controller {
     }
 
     public function loadHomeData() {
-        $this->data['begin_cash'] = Cash::getBeginCash(date('d-m-Y'));
+        $this->data['daily_start'] = $this->basic->get_where('caja_comienza', array('caj_dia' => date('d'), 'caj_mes' => date('m'), 'caj_ano' => date('Y')))->row_array();
 
         $monthly_progressive = Cash::getBalance('Caja');
         $this->data['monthly_progressive'] = $monthly_progressive > 0 ? $monthly_progressive : '0.00';

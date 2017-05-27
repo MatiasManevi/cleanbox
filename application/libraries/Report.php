@@ -43,8 +43,8 @@ class Report {
         if ($cash_type == 'cash') {
             $type = 'Caja';
             $type_show = 'Fisica';
-      
-            $instance->data['begin_cash'] = Cash::getBeginCash($date);
+            $caja_comienza = $instance->basic->get_where('caja_comienza', array('caj_dia' => $date_array[0], 'caj_mes' => $date_array[1], 'caj_ano' => $date_array[2]))->row_array();
+            $instance->data['begin_cash'] = $caja_comienza['caj_saldo'];
 
             $transfers_to_cash = $instance->basic->get_where('debitos', array('is_transfer' => 1, 'deb_fecha' => $date), 'deb_id', 'desc')->result_array();
             $transfers_to_safe = $instance->basic->get_where('creditos', array('is_transfer' => 1, 'cred_fecha' => $date), 'cred_id', 'desc')->result_array();
@@ -106,7 +106,7 @@ class Report {
 
         foreach ($credits as $row) {
             if (isset($row)) {
-                if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses') {
+                if ($row['cred_concepto'] != 'Gestion de Cobro' && $row['cred_concepto'] != 'Gestion de Cobro Sobre Intereses' && strpos($row['cred_concepto'], 'Prestamo') === FALSE) {
                     array_push($instance->data['movements'], array(
                         'id' => $row['cred_id'],
                         'cc' => $row['cred_cc'],
@@ -127,7 +127,7 @@ class Report {
         }
         foreach ($debits as $row) {
             if (isset($row)) {
-                if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses') {
+                if ($row['deb_concepto'] != 'Gestion de Cobro' && $row['deb_concepto'] != 'Gestion de Cobro Sobre Intereses'&& strpos($row['deb_concepto'], 'Prestamo') === FALSE) {
                     array_push($instance->data['movements'], array(
                         'id' => $row['deb_id'],
                         'cc' => $row['deb_cc'],

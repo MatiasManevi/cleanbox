@@ -8,7 +8,7 @@
         <th>Cuenta</th>
         <th>Acciones</th>
     </tr>
-    <?
+    <?php
     if (count($concepts)) {
         foreach ($concepts as $row) {
             ?>
@@ -24,10 +24,10 @@
                     <a title="Eliminar" onclick="modals.deleteEntityModal(<?php echo $row['conc_id']; ?>, 'conceptos', 'conc_id', 'concepto');" href="javascript:;" class="glyphicon glyphicon-trash"></a>
                 </td>
             </tr>
-            <?
+            <?php
         }
     } else {
         ?>
         <tr class="_no_records"><td colspan="100%"> No se encontraron registros </td></tr>
-    <? } ?>
+    <?php } ?>
 </table>

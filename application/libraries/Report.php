@@ -111,6 +111,7 @@ class Report {
                     array_push($instance->data['movements'], array(
                         'id' => $row['cred_id'],
                         'cc' => $row['cred_cc'],
+                        'receive_number' => $row['receive_number'] ? $row['receive_number'] : '',
                         'concept' => $row['cred_concepto'],
                         'month' => $row['cred_mes_alq'],
                         'amount' => $row['cred_monto'],
@@ -132,6 +133,7 @@ class Report {
                     array_push($instance->data['movements'], array(
                         'id' => $row['deb_id'],
                         'cc' => $row['deb_cc'],
+                        'receive_number' => '',
                         'concept' => $row['deb_concepto'],
                         'address' => $row['deb_domicilio'],
                         'amount' => $row['deb_monto'],

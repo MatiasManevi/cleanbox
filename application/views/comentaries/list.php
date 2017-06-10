@@ -6,7 +6,7 @@
         <th>Domicilio</th>
         <th>Acciones</th>
     </tr>
-    <?
+    <?php
     if (count($comentaries)) {
         foreach ($comentaries as $row) {
             ?>
@@ -20,10 +20,10 @@
                     <a title="Eliminar" onclick="modals.deleteEntityModal(<?php echo $row['com_id']; ?>, 'comentarios', 'com_id', 'comentario');" href="javascript:;" class="glyphicon glyphicon-trash"></a>
                 </td>
             </tr>
-            <?
+            <?php
         }
     } else {
         ?>
         <tr class="_no_records"><td colspan="100%"> No se encontraron registros </td></tr>
-    <? } ?>
+    <?php } ?>
 </table>

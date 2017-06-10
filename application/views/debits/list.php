@@ -7,7 +7,7 @@
         <th>Fecha</th>
         <th>Acciones</th>
     </tr>
-    <?
+    <?php
     if (count($debits)) {
         foreach ($debits as $row) {
             ?>
@@ -30,10 +30,10 @@
                     <?php } ?>
                 </td>
             </tr>
-            <?
+            <?php
         }
     } else {
         ?>
         <tr class="_no_records"><td colspan="100%"> No se encontraron registros </td></tr>
-    <? } ?>
+    <?php } ?>
 </table>

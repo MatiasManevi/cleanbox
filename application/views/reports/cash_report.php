@@ -46,7 +46,7 @@
             }
             ?>
             <tr onclick="report.paintRow($(this));" class="_reg_<?php echo $movement['id']; ?>">
-                <td class="cell"><?php echo isset($movement['receive_number']) ? $movement['receive_number'] : $movement['trans']; ?></td>
+                <td class="cell"><?php echo $movement['receive_number']; ?></td>
                 <td class="cell"><?php echo $concept; ?></td>
                 <td class="cell"><?php echo isset($movement['address']) ? $movement['address'] : ''; ?></td>
                 <?php if (!$movement['is_transfer']) { ?>

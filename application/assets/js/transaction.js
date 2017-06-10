@@ -800,11 +800,11 @@ credit.authUnlock = function (auth_code){
 
 credit.saveCredits = function (url) {
     // no va para rima
-    /*if($('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
+    if($('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
         cleanbox_alert.showAlertInfo('Ingresa el numero de recibo que imprimiras!');
         $('#receive_number').focus();
         return false;
-    }*/
+    }
     
     var params = {
         'credits' : [],

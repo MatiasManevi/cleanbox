@@ -56,6 +56,7 @@ class Report {
                     'concept' => $row['deb_concepto'],
                     'amount' => $row['deb_monto'],
                     'type' => 'debito',
+                    'receive_number' => '',
                     'month' => $row['deb_mes'],
                     'trans' => $row['trans'],
                     'is_transfer' => 1
@@ -71,6 +72,7 @@ class Report {
                     'amount' => $row['cred_monto'],
                     'dep' => $row['cred_depositante'],
                     'type' => 'credito',
+                    'receive_number' => '',
                     'trans' => $row['trans'],
                     'is_transfer' => 1
                 ));

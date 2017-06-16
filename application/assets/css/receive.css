@@ -29,6 +29,60 @@ th, td {
     border: 1px dashed black !important;
     padding: 3px !important;
 }
+.receive .receive_header{
+    width: 884px;
+    margin: 0 auto;
+    float: left;
+    margin-bottom: 25px;
+}
+.receive .left_header{
+    float: left;
+}
+.receive .left_header img{
+    width: 100px;
+    margin: 0 auto;
+    display: block;
+}
+.receive .left_header p{
+    width: 325px;
+    font-size: 11px;
+    text-align: center;
+    margin:0px;
+}
+.receive .center_header{
+    float: left;
+    width: 24%;
+}
+.receive .right_header{
+    float: left;
+    margin-left: 21px;
+    text-align: left;
+    margin-top: 110px;
+}
+.receive .right_header p{
+    font-size: 11px;
+    margin: 0;
+}
+.receive .right_header p strong.recibo{
+    margin-left: 138px;
+    font-size: 14px;
+}
+.receive .receive_type{
+    font-weight: bold;
+    font-size: 38px;
+    text-align: center;
+    padding: 1px;
+    border-radius: 6px;
+    border: 1px solid;
+    margin: 0 auto;
+    width: 58px;
+}
+.receive .type_label{
+    font-size: 8px;
+    margin: 0 auto;
+    width: 68px;
+    text-align: center;
+}
 @media all {
     .receive{
         width: 900px;

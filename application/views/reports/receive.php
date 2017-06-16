@@ -5,6 +5,33 @@
     foreach ($receives as $receive) {
         ?>
         <div class="receive">
+            
+            <?php if($settings['build_receive_header']){ ?>
+                <div class="receive_header">
+
+                    <div class="left_header">
+                        <img class="_image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
+                        <p><strong><?php echo $settings['activity']; ?></strong></p>
+                        <p><?php echo $settings['address'] . ' - Tel: ' . $settings['phone'] . ' - Cel: ' . $settings['cel_phone']; ?></p>
+                        <p><?php echo $settings['zip_code'] . ' ' . $settings['city'] . ' - ' . $settings['state'] . ' - ' . $settings['site_url']; ?></p>
+                        <p><?php echo 'e-mail: ' . $settings['email']; ?></p>
+                    </div>
+
+                    <div class="center_header">
+                        <div class="receive_type">X</div>
+                        <div class="type_label">DOCUMENTO NO VALIDO COMO FACTURA</div>
+                    </div>
+
+                    <div class="right_header">
+                        <p><strong><?php echo $settings['fiscal_status']; ?></strong></p>
+                        <p>CUIT: <?php echo $settings['cuit']; ?></p>
+                        <p>Ing. Brutos: <?php echo $settings['iibb_number']; ?></p>
+                        <p>Fecha INIC. ACT.: <?php echo $settings['init_activity_date'] . '       '?><strong class="recibo">RECIBO</strong></p>
+                    </div>
+
+                </div>
+            <?php } ?>
+
             <table id="receive_table">
                 <?php if ($receive['principal_credit']['cred_concepto'] != 'Reserva') { ?>
                     <tr>
@@ -203,36 +230,6 @@
                         <td class="receive_cel"><?php echo '$ ' . $receive['debt']; ?></td>
                     </tr>                       
                 <?php } ?>
-
-
-                <!--
-                                <tr class="dashed">
-                                    <td><?php echo $receive['principal_credit']['cred_concepto'] == 'Alquiler Comercial' ? $receive['principal_credit']['cred_concepto'] : $receive['principal_credit']['cred_concepto'] . '........' ?>:</td>
-                                    <td>$ <?php echo $receive['principal_credit']['cred_monto'] ?></td>
-                                    <td>Neto a cobrar..:</td>
-                                    <td>$ <?php echo $receive['total_principal'] ?></td>
-                                    <td>Gastos.....:</td>
-                                    <td>$ <?php echo $receive['total_secondarys'] ?></td>
-                                </tr>
-                
-                                <tr>
-                                    <td>Punitorios......:</td>
-                                    <td>$ <?php echo $receive['principal_credit']['cred_interes_calculado'] ? $receive['principal_credit']['cred_interes_calculado'] : '0.00' ?></td>
-                                    <td>Efectivo.......:</td>
-                                    <td>$ <?php echo $receive['principal_credit']['cred_forma'] == 'Efectivo' ? $receive['total_principal'] : '0.00' ?></td>
-                                    <td>Adeuda.....:</td>
-                                    <td>$ <?php echo $receive['debt'] ? $receive['debt'] : '0.00'; ?></td>
-                                </tr>
-                
-                                <tr>
-                                    <td>I.V.A...........:</td>
-                                    <td>$ <?php echo $receive['principal_credit']['cred_iva_calculado'] ? $receive['principal_credit']['cred_iva_calculado'] : '0.00' ?></td>
-                                    <td>Cheque..:</td>
-                                    <td>$ <?php echo $receive['principal_credit']['cred_forma'] == 'Efectivo' ? '0.00' : $receive['total_principal'] . ' N° ' . $receive['principal_credit']['cred_nro_cheque'] . ' ' . $receive['principal_credit']['cred_banco'] ?></td>
-                                    <td>Cobrado....:</td>
-                                    <td>$ <?php echo $receive['total'] ?></td>
-                                </tr>
-                -->
 
                 <tr><td></td><tr>
                 <tr><td></td><tr>

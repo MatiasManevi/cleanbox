@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `build_receive_header` INT NOT NULL ;

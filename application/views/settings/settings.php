@@ -17,7 +17,8 @@
             <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
             <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
             <input value="bussines" name="setting_section" type="hidden"/>
-
+            
+            <input style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;" type="checkbox" id="build_receive_header" name="build_receive_header" <?php echo $settings['build_receive_header'] ? 'checked' : ''?> value="<?php echo $settings['build_receive_header']; ?>"/><label for="build_receive_header">Utilizar esta informacion para generar los recibos a inquilinos</label>
             <input required value="<?php echo $settings['name']; ?>" title="Nombre de la empresa" placeholder="Nombre de la empresa" type="text" name="name" class="form-control ui-autocomplete-input section_input _general_letters_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
             <input required value="<?php echo $settings['cuit']; ?>" title="CUIT" placeholder="CUIT" type="text" name="cuit" class="form-control ui-autocomplete-input section_input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
             <input required value="<?php echo $settings['iibb_number']; ?>" title="CUIT IIBB" placeholder="CUIT IIBB" type="text"  name="iibb_number" class="form-control ui-autocomplete-input section_input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">

@@ -184,9 +184,6 @@ button, .button{
     margin-right: 11px;
     margin-left: 11px;
 }
-.center_header{
-    margin-left: 24px;
-}
 ul.nav li:first-child a { border-left: none; }
 ul.nav li:last-child a{ border-right: none; }
 ul.nav li:hover > a { color: #ffffff;text-decoration: none; }

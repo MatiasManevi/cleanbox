@@ -275,7 +275,8 @@ class Credits extends CI_Controller {
 
             $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
             $this->data['contract'] = $contract;
-
+            $this->data['settings'] = User::getUserSettings();
+            
             if (!empty($contract)) {
                 $this->data['propietary'] = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();
             } else {
@@ -311,6 +312,7 @@ class Credits extends CI_Controller {
 
         $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
         $this->data['contract'] = $contract;
+        $this->data['settings'] = User::getUserSettings();
 
         if (!empty($contract)) {
             $this->data['propietary'] = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();

@@ -1,7 +1,7 @@
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>CleanBox</title>
+<title>Cleanbox</title>
 
 <meta property="og:title" content="" />
 <meta property="og:type" content="" />
@@ -16,25 +16,13 @@
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/fancybox/jquery.fancybox-1.3.4.css"/>
 
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap.min.css?<?php echo filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap.min.css') ?>"/>
-<!--<link rel="stylesheet" href="<?php echo base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.css?<?php echo filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.css') ?>"/>
-<link rel="stylesheet" href="<?php echo base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css?<?php echo filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap-theme.min.css') ?>"/>-->
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/bootstrap-3.1.1-dist/css/bootstrap.css?<?php echo filemtime('plugins/bootstrap-3.1.1-dist/css/bootstrap.css') ?>"/>
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/datetimepicker/jquery-ui-timepicker-addon.css"/>
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/jquery/theme_smoothnes.css"/>
 
-<!-- carga por internet-->
-<!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
 <link rel="stylesheet" href="<?php echo asset_url() ?>css/cleanbox_alert.css?<?php echo filemtime('application/assets/css/cleanbox_alert.css') ?>"/>
 <link rel="stylesheet" href="<?php echo asset_url() ?>css/loading.css?<?php echo filemtime('application/assets/css/loading.css') ?>"/>
 <link rel="stylesheet" href="<?php echo asset_url() ?>css/cleanbox.css?<?php echo filemtime('application/assets/css/cleanbox.css') ?>"/>
-
-
-
-<!--<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>-->
-<!-- carga por internet-->
 
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/jquery-1.7.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/jquery-ui-1.8.16.custom.min.js"></script>

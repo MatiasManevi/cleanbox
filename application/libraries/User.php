@@ -114,6 +114,20 @@ class User {
         }
     }
 
+    /**
+     * Especifica si se genera un recibo para imprimir luego de cobrar un alquiler
+     * @return int 
+     */
+    public static function printReceive(){
+        $settings = self::getUserSettings();
+
+        if (!empty($settings)) {
+            return $settings['print_receive'];
+        } else {
+            return false;
+        }
+    }
+
 }
 
 ?>

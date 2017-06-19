@@ -94,8 +94,7 @@ class Credits extends CI_Controller {
                 }
 
                 $response['status'] = true;
-                $response['keep_loading'] = $print_report;
-                $response['print_report'] = $print_report;
+                $response['print_report'] = $response['keep_loading'] = $print_report && User::printReceive();
                 $response['table'] = array(
                     'table' => 'creditos',
                     'table_pk' => 'cred_id',

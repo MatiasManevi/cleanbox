@@ -651,6 +651,14 @@ general_scripts.generateCode = function(url){
     });  
 };
 
+general_scripts.changeValueCheckbox = function ($checkbox){
+    if($checkbox.is(':checked')){
+        $checkbox.val(1);
+    }else{
+        $checkbox.val(0);
+    }
+};
+
 $(function () {
     general_scripts.init();
 });

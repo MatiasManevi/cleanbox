@@ -241,7 +241,7 @@ credit.initSearchers = function(){
                             $('._send_mail_container').fadeOut();
                         }
                         
-                        if(response.print_report){
+                        if(response.print_report && print_receive){
                             $('._receive_number').fadeIn();
                         }
                     }else{
@@ -580,7 +580,7 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
             type: "text",
             readonly: true,
             autocomplete: "off",
-            value: amount != '' ? amount * iva_percentaje : '',      // esto deberia venir de settings el % de iva
+            value: amount != '' ? amount * iva_percentaje : '',
             title: 'Iva calculado sobre el monto de '+concept+' '+date,
             style : "margin-right: 5px;width: 5%;float: left;margin-right: 68px;",
             "class": "form-control ui-autocomplete-input _iva_calculado",
@@ -799,8 +799,7 @@ credit.authUnlock = function (auth_code){
 };
 
 credit.saveCredits = function (url) {
-    // no va para rima
-    /*if($('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
+    /*if(print_receive && $('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
         cleanbox_alert.showAlertInfo('Ingresa el numero de recibo que imprimiras!');
         $('#receive_number').focus();
         return false;

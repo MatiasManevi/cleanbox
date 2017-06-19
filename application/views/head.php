@@ -91,6 +91,7 @@
     var is_admin = <?php echo json_encode($this->session->userdata('username') == 'admin') ?>;
     
     var code_control = <?php echo json_decode(User::codeControl()); ?>;
+    var print_receive = <?php echo json_decode(User::printReceive()); ?>;
     var iva_percentaje = <?php echo json_decode(User::getUserIVATAX()); ?>;
     var BASE_URL = '<?php echo base_url(); ?>';
     var LOADING_HTML ='<div id="loading" style="display:none"><div class="shadow"></div><img src="<?php echo img_url(); ?>ajax-loader.gif"  alt="loading..."/></div>';    

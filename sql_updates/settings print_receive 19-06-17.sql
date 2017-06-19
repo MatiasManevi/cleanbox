@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `print_receive` INT NOT NULL ;

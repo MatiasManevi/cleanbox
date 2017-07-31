@@ -27,7 +27,7 @@ proprietary.init = function () {
     general_scripts.bindInputListSearcher('cuentas_corrientes', 'cc_id', 'cuenta corriente');
 
     // Contratos searchers
-    general_scripts.bindInputAutocomplete(contracts.con_prop, 'clientes', 'client_id', 'client_name', false, function(response){
+    general_scripts.bindInputAutocomplete(contracts.con_prop, 'cuentas_corrientes', 'cc_id', 'cc_prop', false, function(response){
         contracts.cc_id.val(response.id);
         contracts.con_inq.focus();
     });

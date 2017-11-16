@@ -211,15 +211,13 @@ class Transaction {
 
     /**
      * Si una cuenta tiene prestamos de la Inmobilaria
-     * y el credito entrante cubre el monto del prestamo
-     * se cre ala devolucion del mismo desde la cuenta del propietario
+     * se crea la devolucion del mismo desde la cuenta del propietario
      * a la cuenta de la inmobiliaria
      * @param array $credit
      * @param int $transaction_id 
      */
     public static function impactDevolutions($credit, $transaction_id) {
         $instance = &get_instance();
-        General::loadModels($instance);
 
         $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
 
@@ -231,16 +229,90 @@ class Transaction {
             $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => $credit['cred_cc']))->row_array();
         }
 
-        // vemos si hay prestamos a esta cuenta
-        $loans = $instance->basic->get_where('creditos', array('cc_id' => $cc_to_impact['cc_id'], 'cred_concepto' => 'Prestamo'))->result_array();
+        $credit_amount = $credit['cred_monto'];
+
+        if($cc_to_impact['loans'] > 0){
+
+            if($credit_amount <= $cc_to_impact['loans']){
+                $returned_loan = $credit_amount;
+            }else{
+                $returned_loan = $cc_to_impact['loans'];
+            }
+
+            $debito_dev_prestamo = array(
+                'deb_cc' => $cc_to_impact['cc_prop'],
+                'cc_id' => $cc_to_impact['cc_id'],
+                'deb_concepto' => 'Devolucion Prestamo',
+                'deb_monto' => $returned_loan,
+                'deb_tipo_trans' => 'Caja',
+                'deb_mes' => General::getStringMonth(date('m')) . ' ' . Date('Y'),
+                'deb_domicilio' => '',
+                'deb_fecha' => Date('d-m-Y'),
+                'trans' => $transaction_id
+            );
+
+            $credit_dev_prestamo = array(
+                'cred_cc' => $cc_inmo['cc_prop'], // Inmobiliaria
+                'client_id' => $cc_to_impact['client_id'],
+                'cc_id' => $cc_inmo['cc_id'],
+                'cred_depositante' => $cc_to_impact['cc_prop'],
+                'cred_concepto' => 'Devolucion Prestamo',
+                'cred_monto' => $returned_loan,
+                'cred_tipo_trans' => 'Caja',
+                'cred_domicilio' => '',
+                'cred_mes_alq' => General::getStringMonth(date('m')) . ' ' . Date('Y'),
+                'cred_fecha' => Date('d-m-Y'),
+                'trans' => $transaction_id
+            );
+
+            $instance->basic->save('creditos', 'cred_id', $credit_dev_prestamo);
+            $instance->basic->save('debitos', 'deb_id', $debito_dev_prestamo);
+
+            $cc_inmo['cc_saldo'] += $returned_loan;
+            $cc_to_impact['cc_saldo'] -= $returned_loan;
+            $cc_to_impact['loans'] -= $returned_loan;
+
+            $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
+            $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_to_impact);
+        }
+    }
+
+    public static function getAccountLoans($account){
+        $instance = &get_instance();
+
+        $loans = $instance->basic->get_where('creditos', array('cc_id' => $account['cc_id'], 'cred_concepto' => 'Prestamo'))->result_array();
         /* solo para davinia y rima */
-        $loans2 = $instance->basic->get_where('creditos', array('cred_cc' => $cc_to_impact['cc_prop'], 'cred_concepto' => 'Prestamo'))->result_array();
+        $loans2 = $instance->basic->get_where('creditos', array('cred_cc' => $account['cc_prop'], 'cred_concepto' => 'Prestamo'))->result_array();
         foreach ($loans2 as $loan2) {
             if (!in_array($loan2, $loans))
                 array_push($loans, $loan2);
         }
         /* solo para davinia y rima */
 
+        return $loans;
+    }   
+
+    /**
+     * DEPRECATED
+     * @param  [type] $credit         [description]
+     * @param  [type] $transaction_id [description]
+     * @return [type]                 [description]
+     */
+    public static function impactDevolutionsOld($credit, $transaction_id) {
+        $instance = &get_instance();
+
+        $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
+
+        /* solo para davinia y rima */
+        if ($credit['cc_id']) {
+            /* solo para davinia y rima */
+            $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_id' => $credit['cc_id']))->row_array();
+        } else {
+            $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => $credit['cred_cc']))->row_array();
+        }
+
+        $loans = self::getAccountLoans($cc_to_impact);
+        
         $credit_amount = $credit['cred_monto'];
 
         if (count($loans) > 0) {
@@ -434,11 +506,12 @@ class Transaction {
     }
 
     /**
-     * Si el debito no es por rendicion entra a crear un prestamo
+     * Si el debito supera la saldo operativo entra a crear un prestamo
      * el cual creara una migracion de dinero desde la INMOBILIARIA
-     * al Propietario mediante un debito y un credito por la plata
+     * al Propietario mediante un debito y un credito por el dinero
      * que necesita el propietario. Luego esto es devuelto cuando
-     * al propietario le ingresa un credito capaz de cubrir ese prestamo
+     * al propietario le ingresa un credito, aun siendo menor, se devuelve
+     * el dinero que se puede devolver
      * @param array $debit
      * @param string $account_type
      * @param array $cc_to_impact 
@@ -487,6 +560,7 @@ class Transaction {
 
                 $cc_inmo['cc_saldo'] -= $loan;
                 $cc_to_impact[$account_type] += $loan;
+                $cc_to_impact['loans'] += $loan;
 
                 $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
             }
@@ -497,24 +571,27 @@ class Transaction {
         $instance = &get_instance();
         General::loadModels($instance);
 
-        $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
-
         $iibb_tax_percentaje = User::getUserIIBBTAX();
 
-        $debit_tax = array(
-            'deb_cc' => $cc_inmo['cc_prop'], // INMOBILIARIA
-            'cc_id' => $cc_inmo['cc_id'],
-            'deb_concepto' => 'Ingresos Brutos/Credito Bancario',
-            'deb_monto' => $bank_transaction_amount * $iibb_tax_percentaje,
-            'deb_mes' => $bank_transaction_month,
-            'deb_tipo_trans' => 'Bancaria',
-            'deb_fecha' => Date('d-m-Y'),
-            'trans' => $transaction_id
-        );
+        if($iibb_tax_percentaje > 0){
 
-        self::createDebit($debit_tax, 'cc_saldo', $cc_inmo);
+            $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
 
-        $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
+            $debit_tax = array(
+                'deb_cc' => $cc_inmo['cc_prop'], // INMOBILIARIA
+                'cc_id' => $cc_inmo['cc_id'],
+                'deb_concepto' => 'Ingresos Brutos/Credito Bancario',
+                'deb_monto' => $bank_transaction_amount * $iibb_tax_percentaje,
+                'deb_mes' => $bank_transaction_month,
+                'deb_tipo_trans' => 'Bancaria',
+                'deb_fecha' => Date('d-m-Y'),
+                'trans' => $transaction_id
+            );
+
+            self::createDebit($debit_tax, 'cc_saldo', $cc_inmo);
+
+            $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
+        }
     }
 
     /**
@@ -1499,8 +1576,7 @@ class Transaction {
 
         $account_type = General::getAccountType($debit, 'Salida', 'deb_concepto');
 
-        if ($debit['deb_concepto'] != 'Rendicion' && $cc_to_impact['cc_prop'] != 'INMOBILIARIA') {
-            // Crea prestamo si no es por rendicion
+        if ($debit['deb_concepto'] != 'Rendicion' || User::loanRendition() && $cc_to_impact['cc_prop'] != 'INMOBILIARIA') {
             self::createLoan($debit, $account_type, $cc_to_impact);
         }
 

@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `loan_rendition` INT NOT NULL DEFAULT '0' ;

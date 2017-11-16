@@ -90,6 +90,7 @@
     var transfer_to_safebox = '<?php echo site_url('transferToSafeBox') ?>';
     var is_admin = <?php echo json_encode($this->session->userdata('username') == 'admin') ?>;
     
+    var loan_rendition = <?php echo json_decode(User::loanRendition()); ?>;
     var code_control = <?php echo json_decode(User::codeControl()); ?>;
     var print_receive = <?php echo json_decode(User::printReceive()); ?>;
     var iva_percentaje = <?php echo json_decode(User::getUserIVATAX()); ?>;

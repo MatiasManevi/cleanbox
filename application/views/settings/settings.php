@@ -85,6 +85,14 @@
                 </select>
             </div> 
 
+            <div class="section_selects">
+                <label>Prestamos a Rendiciones</label>
+                <select title="Especifica si se permite que debitos de Rendiciones dejen en negativo la cuenta, por lo cual se generara un prestamo de la Inmobiliaria para solventar la Rendicion en la cuenta sin fondos del propietario" class="form-control ui-autocomplete-input" name="loan_rendition">
+                    <option <?php echo $settings['loan_rendition'] ? 'selected' : '' ?> value="1">Activado</option>
+                    <option <?php echo!$settings['loan_rendition'] ? 'selected' : '' ?> value="0">Desactivado</option>
+                </select>
+            </div> 
+
             <button class="btn btn-primary submit_button" type="submit">Guardar</button>
         </form>
     </div>

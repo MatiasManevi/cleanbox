@@ -989,18 +989,22 @@ debit.recalculateAccountAmount = function () {
 debit.renditionAmountOk = function () {
     debit.account_amount.val();
     
-    var rendition = false;
-    $('._debit_block').each(function(){
-        if($(this).find('._concepto').val() == 'Rendicion'){
-            rendition = true;
+    if(loan_rendition){
+        return true;
+    }else{
+        var rendition = false;
+        $('._debit_block').each(function(){
+            if($(this).find('._concepto').val() == 'Rendicion'){
+                rendition = true;
+            }
+        });
+        
+        if(Number(debit.account_amount.val()) < 0 && rendition){
+            cleanbox_alert.showAlertError('Las rendiciones no pueden superar el saldo disponible en la Cta. Cte. del propietario')    
+            return false;
         }
-    });
-    
-    if(Number(debit.account_amount.val()) < 0 && rendition){
-        cleanbox_alert.showAlertError('Las rendiciones no pueden superar el saldo disponible en la Cta. Cte. del propietario')    
-        return false;
     }
-    
+
     return true;
 };
 

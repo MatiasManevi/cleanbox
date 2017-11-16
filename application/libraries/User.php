@@ -128,6 +128,21 @@ class User {
         }
     }
 
+    /**
+     * Especifica si se permite que Rendiciones dejen en negativo la cuenta, por lo cual
+     * se generara un prestamo de la Inmobiliaria para solventar la Rendicion en la cuenta sin fondos * en la cuenta del propietario
+     * @return int 
+     */
+    public static function loanRendition(){
+        $settings = self::getUserSettings();
+
+        if (!empty($settings)) {
+            return $settings['loan_rendition'];
+        } else {
+            return false;
+        }
+    }
+
 }
 
 ?>

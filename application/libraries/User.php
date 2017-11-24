@@ -143,6 +143,34 @@ class User {
         }
     }
 
+    /**
+     * Especifica si al generar un recibo por alquiler sera con su copia al lado en la misma hoja
+     * @return int 
+     */
+    public static function printCopy(){
+        $settings = self::getUserSettings();
+
+        if (!empty($settings)) {
+            return $settings['print_copy'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Esoecifica si al crear un debito se generara un recibo para imprimir
+     * @return int 
+     */
+    public static function printDebit(){
+        $settings = self::getUserSettings();
+
+        if (!empty($settings)) {
+            return $settings['print_debit'];
+        } else {
+            return false;
+        }
+    }
+
 }
 
 ?>

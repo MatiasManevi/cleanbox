@@ -17,9 +17,6 @@
             <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
             <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
             <input value="bussines" name="setting_section" type="hidden"/>
-            
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;" type="checkbox" id="print_receive" name="print_receive" <?php echo $settings['print_receive'] ? 'checked' : ''?> value="<?php echo $settings['print_receive']; ?>"/><label for="print_receive">Imprimir recibo al cobrar alquileres a inquilinos</label>
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="build_receive_header" name="build_receive_header" <?php echo $settings['build_receive_header'] ? 'checked' : ''?> value="<?php echo $settings['build_receive_header']; ?>"/><label for="build_receive_header">Construir cuerpo de recibos con la informacion del presente formulario</label>
             <input required value="<?php echo $settings['name']; ?>" title="Nombre de la empresa" placeholder="Nombre de la empresa" type="text" name="name" class="form-control ui-autocomplete-input section_input _general_letters_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
             <input required value="<?php echo $settings['cuit']; ?>" title="CUIT" placeholder="CUIT" type="text" name="cuit" class="form-control ui-autocomplete-input section_input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
             <input required value="<?php echo $settings['iibb_number']; ?>" title="CUIT IIBB" placeholder="CUIT IIBB" type="text"  name="iibb_number" class="form-control ui-autocomplete-input section_input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
@@ -41,11 +38,11 @@
                 <label>Logo de la empresa</label>
                 <div class="logo _logo">
                     <?php if (isset($settings) && $settings['logo'] != '') { ?>
-                        <img class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
-                        <input type="hidden" name="logo" id="image" value="<?php echo $settings['logo'] ?>"/>
-                        <a class="close _remove_image" href="javascript:;" onclick="general_scripts.removeImage('bussines_logos', '._logo');" title="Eliminar">[&times;]</a>
+                    <img class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
+                    <input type="hidden" name="logo" id="image" value="<?php echo $settings['logo'] ?>"/>
+                    <a class="close _remove_image" href="javascript:;" onclick="general_scripts.removeImage('bussines_logos', '._logo');" title="Eliminar">[&times;]</a>
                     <?php } else { ?>
-                        <img height="200" width="200" class="img_shadow _no_image" src="<?php echo img_url() . 'no-image.png' ?>" alt="logo"/>
+                    <img height="200" width="200" class="img_shadow _no_image" src="<?php echo img_url() . 'no-image.png' ?>" alt="logo"/>
                     <?php } ?>
                 </div>
                 <div class="button_uploader">
@@ -68,6 +65,14 @@
             <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
             <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
             <input value="system" name="setting_section" type="hidden"/>
+            
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;" type="checkbox" id="print_receive" name="print_receive" <?php echo $settings['print_receive'] ? 'checked' : ''?> value="<?php echo $settings['print_receive']; ?>"/><label for="print_receive">Imprimir recibo al cobrar alquileres a inquilinos</label>
+
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="build_receive_header" name="build_receive_header" <?php echo $settings['build_receive_header'] ? 'checked' : ''?> value="<?php echo $settings['build_receive_header']; ?>"/><label for="build_receive_header">Construir cuerpo de recibos con la informacion del presente formulario</label>
+
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_copy" name="print_copy" <?php echo $settings['print_copy'] ? 'checked' : ''?> value="<?php echo $settings['print_copy']; ?>"/><label for="print_copy">Imprimir copia de recibo de alquileres</label>
+
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_debit" name="print_debit" <?php echo $settings['print_debit'] ? 'checked' : ''?> value="<?php echo $settings['print_debit']; ?>"/><label for="print_debit">Imprimir recibo para debitos</label>
 
             <div class="section_selects">
                 <label>Control por codigo de autorizacion</label>

@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `print_copy` TINYINT NOT NULL DEFAULT '0' ;

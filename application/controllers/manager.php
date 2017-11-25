@@ -22,17 +22,24 @@ class Manager extends CI_Controller {
 
     public function index() {
         // $cuentas = $this->basic->get_all('cuentas_corrientes')->result_array();
-        // foreach ($cuentas as $cuenta) {
-        //     $loans = Transaction::getAccountLoans($cuenta);
-        //     $loan_sum = 0;
-        //     foreach ($loans as $row) {
-        //         $loan_sum += $row['cred_monto'];
-        //     }
-        //     if($loan_sum > 0){
+        //  foreach ($cuentas as $cuenta) {
+        //      $loans = Transaction::getAccountLoans($cuenta);
+        //      $loan_sum = 0;
+        //      foreach ($loans as $row) {
+        //          $loan_sum += $row['cred_monto'];
+        //      }
+        //      if($loan_sum > 0){
+        //         echo '<pre>';
         //         echo $cuenta['cc_prop'] . ' tiene que devolver $ ' . $loan_sum . '<br><br>';
-        //     }
-        // }
-        // die;
+        //         echo '<br>';
+        //         echo 'devuelto';
+        //         echo '<br>';
+        //         $cuenta['loans'] = $loan_sum;
+        //         $this->basic->save('cuentas_corrientes', 'cc_id', $cuenta);
+        //         print_r($cuenta);
+        //      }
+        //  }
+        //  die;
 
         $this->basic->repairTables();
 

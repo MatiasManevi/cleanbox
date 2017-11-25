@@ -102,10 +102,11 @@ class General {
                 );
                 break;
             case 'debitos':
+                $print = false;
                 if (strpos($entity['deb_concepto'], 'Rendicion') !== false) {
                     $print = true;
                 } else {
-                    $print = false;
+                    $print = Report::mustPrintDebit($entity['deb_concepto']);
                 }
                 $entity = array(
                     'id' => $entity['deb_id'],

@@ -427,7 +427,11 @@ general_scripts.getPrintAction = function (table, entity){
             return 'report.buildReportFromList(\'' + show_credit_report_list + '\',' + entity.transaction_id + ')';
             break;
         case 'debitos':
-            return 'report.buildReportFromList(\'' + show_debit_report_list + '\',' + entity.id + ')';
+            if(entity['deb_concepto'] === 'Rendicion'){
+                return 'report.buildReportFromList(\'' + show_debit_report_list + '\',' + entity.id + ')';
+            }else{
+                return 'report.buildReportFromList(\'' + print_debit_receive + '\',' + entity.trans + ')';
+            }
             break;
     }
 };

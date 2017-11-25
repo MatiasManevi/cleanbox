@@ -1044,12 +1044,21 @@ debit.saveDebits = function (url) {
                 }
             
                 general_scripts.cleanAddTab(response.table.table);
-            
+
+                if(response.print_report){
+                    transaction.printDebitReport(response.transaction_id);
+                }
             }else{
                 cleanbox_alert.showAlertError(response.error);
             }
         });
     }
+};
+
+transaction.printDebitReport = function (transaction_id) {
+    loading.show();
+    cookie.setCookie('debits_receive', JSON.stringify(transaction_id), 1);
+    window.location.href = print_debit_receive;
 };
 
 transaction.deleteTransaction = function (transaction_id, table) {

@@ -115,6 +115,8 @@ $route['sendTransactionNotification'] = 'credits/sendTransactionNotification';
 $route['debits'] = 'debits';
 $route['saveDebit'] = 'debits/save';
 $route['showDebitReportList/(:num)'] = 'debits/showDebitReportList/$1';
+$route['printDebitReceiveList/(:num)'] = 'debits/printDebitReceiveList/$1';
+$route['printDebitReceive'] = 'debits/printDebitReceive';
 
 $route['buildCashReport'] = 'reports/buildCashReport';
 $route['cashReport'] = 'reports/cashReport';

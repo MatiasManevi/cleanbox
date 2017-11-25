@@ -83,6 +83,8 @@
     var show_credit_report = '<?php echo site_url('showCreditReport') ?>';
     var show_credit_report_list = '<?php echo site_url('showCreditReportList') ?>';
     var show_debit_report_list = '<?php echo site_url('showDebitReportList') ?>';
+    var print_debit_receive = '<?php echo site_url('printDebitReceive') ?>';
+    var print_debit_receive_list = '<?php echo site_url('printDebitReceiveList') ?>';
     var search_credit_concept = '<?php echo site_url('searchCreditConcept') ?>';
     var validate_contract_parts = '<?php echo site_url('validateContractParts') ?>';
     var delete_transaction = '<?php echo site_url('deleteTransaction') ?>';

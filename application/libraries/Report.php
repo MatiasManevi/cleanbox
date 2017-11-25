@@ -29,6 +29,15 @@ class Report {
         return false;
     }
 
+    public static function mustPrintDebit($concept) {
+        if (strpos($concept, 'Gestion de Cobro') !== false ||
+                strpos($concept, 'Prestamo') !== false) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static function buildCashReport($date, $cash_type) {
         $instance = &get_instance();
         General::loadModels($instance);

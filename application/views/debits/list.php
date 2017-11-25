@@ -20,13 +20,15 @@
                 <td>    
                     <a title="Eliminar" onclick="modals.deleteTransactionModal(<?php echo $row['trans']; ?>, 'debitos');" href="javascript:;" class="glyphicon glyphicon-trash"></a>
                     <?php
-                    $must_print = false;
+                    $is_rendition = false;
                     if (strpos($row['deb_concepto'], 'Rendicion') !== false) {
-                        $must_print = true;
+                        $is_rendition = true;
                     }
                     ?>
-                    <?php if ($must_print) { ?>
+                    <?php if ($is_rendition) { ?>
                         &nbsp;<a title="Imprimir" onclick="report.buildReportFromList(show_debit_report_list, <?php echo $row['deb_id']; ?>);" href="javascript:;" class="glyphicon glyphicon-print"></a>
+                    <?php } elseif(User::printDebit() && Report::mustPrintDebit($row['deb_concepto'])) { ?>
+                        &nbsp;<a title="Imprimir" onclick="report.buildReportFromList(print_debit_receive_list, <?php echo $row['trans']; ?>);" href="javascript:;" class="glyphicon glyphicon-print"></a>
                     <?php } ?>
                 </td>
             </tr>

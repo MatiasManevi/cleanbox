@@ -1,0 +1,117 @@
+body {
+    background-color: white;
+    padding-top: 60px;
+}
+#receive_table {
+    font-size: 13px;
+    font-family: monospace !important;
+/*    letter-spacing: 2px;*/
+}
+#receive_table .dashed{
+    border-top: 1px dashed black;
+}
+th, td {
+    padding: 5px;
+}
+.receive{
+    background: none repeat scroll 0 0 window;
+    border: medium none;
+    margin: 0 auto;
+    margin-top: 90px;
+    width: 800px;
+}
+.total_receive{
+    font-size: 18px;
+    font-weight: bold;
+}
+.receive_cel{
+    text-align: center !important;
+    border: 1px dashed black !important;
+    padding: 3px !important;
+}
+.receive .receive_header{
+    width: 884px;
+    margin: 0 auto;
+    float: left;
+    margin-bottom: 25px;
+}
+.receive .left_header{
+    float: left;
+}
+.receive .left_header img{
+    width: 100px;
+    margin: 0 auto;
+    display: block;
+}
+.receive .left_header p{
+    width: 325px;
+    font-size: 11px;
+    text-align: center;
+    margin:0px;
+}
+.receive .center_header{
+    float: left;
+    width: 24%;
+}
+.receive .right_header{
+    float: left;
+    margin-left: 21px;
+    text-align: left;
+    margin-top: 81px;
+}
+.receive .right_header p{
+    font-size: 11px;
+    margin: 0;
+}
+.receive .right_header p strong.recibo{
+    margin-left: 138px;
+    font-size: 14px;
+}
+.receive .receive_type{
+    font-weight: bold;
+    font-size: 38px;
+    text-align: center;
+    padding: 1px;
+    border-radius: 6px;
+    border: 1px solid;
+    margin: 0 auto;
+    width: 58px;
+}
+.receive .type_label{
+    font-size: 8px;
+    margin: 0 auto;
+    width: 68px;
+    text-align: center;
+}
+@media all {
+    .receive{
+        width: 900px;
+    }
+}
+@media screen{
+    .receive{
+        background: none repeat scroll 0 0 window;
+        border: medium none;
+        margin: 0 auto;
+        margin-top: 60px;
+        width: 900px;
+    }
+}
+@media print
+{
+    .container-fluid{
+        margin-top: -130px;
+    }
+    .receive{
+        margin-bottom: 75px;
+        position: relative;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        background: none repeat scroll 0 0 window;
+        border: medium none;
+        width: 900px;
+    }
+    .receive:last-child{
+        page-break-after: always;
+    }
+}

@@ -57,6 +57,8 @@ class Debits extends CI_Controller {
                     Transaction::incrementTransactionId();
 
                     $response['status'] = true;
+                    $response['transaction_id'] = $transaction_id;
+                    $response['print_report'] = $response['keep_loading'] = User::printDebit();
                     $response['table'] = array(
                         'table' => 'debitos',
                         'table_pk' => 'deb_id',
@@ -77,6 +79,41 @@ class Debits extends CI_Controller {
         }
 
         echo json_encode($response);
+    }
+
+    public function printDebitReceive(){
+        $transaction_id = json_decode(stripslashes(get_cookie('debits_receive')), true);
+
+        if ($transaction_id) {
+            delete_cookie('debits_receive');
+            $this->printDebitReceiveList($transaction_id);
+        } else {
+            // Error no existe la info.
+            redirect(site_url('debits'));
+        }
+    }
+
+    public function printDebitReceiveList($transaction_id) {
+        $debits = $this->basic->get_where('debitos', array('trans' => $transaction_id))->result_array();
+        
+        if ($debits[0]['cc_id']) {
+            $account = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $debits[0]['cc_id']))->row_array();
+        } else {
+            $account = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => $debits[0]['deb_cc']))->row_array();
+        }
+
+        $receive_elements = array(
+            'debits' => $debits,
+            'total' => 0,
+            'account' => $account
+        );
+
+        $this->data['receives'] = Transaction::parseForDebitReceives($receive_elements);
+        $this->data['settings'] = User::getUserSettings();
+
+        $this->data['content'] = $this->load->view('reports/debit_receive', $this->data, TRUE);
+
+        $this->load->view('layout', $this->data);
     }
 
     public function showDebitReportList($id) {

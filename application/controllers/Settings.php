@@ -40,7 +40,7 @@ class Settings extends CI_Controller {
             }
 
             foreach ($settings as $key => $setting_value) {
-                if ($this->input->post($key) || !$this->input->post($key) && $key == 'print_receive' || $key == 'build_receive_header' || $key == 'begin_cash_zero' || $key == 'code_control' || $key == 'loan_rendition' || $key == 'print_debit' || $key == 'print_copy') {
+                if ($this->input->post($key) || !$this->input->post($key) && $key == 'print_receive' || $key == 'build_receive_header' || $key == 'begin_cash_zero' || $key == 'code_control' || $key == 'loan_rendition' || $key == 'print_debit' || $key == 'print_copy' || $key == 'return_loan_in_dues') {
                     if ($setting_value !== $this->input->post($key)) {
                         $settings[$key] = $this->input->post($key);
                     }

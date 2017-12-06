@@ -66,13 +66,25 @@
             <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
             <input value="system" name="setting_section" type="hidden"/>
             
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;" type="checkbox" id="print_receive" name="print_receive" <?php echo $settings['print_receive'] ? 'checked' : ''?> value="<?php echo $settings['print_receive']; ?>"/><label for="print_receive">Imprimir recibo al cobrar alquileres a inquilinos</label>
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;" type="checkbox" id="print_receive" name="print_receive" <?php echo $settings['print_receive'] ? 'checked' : ''?> value="<?php echo $settings['print_receive']; ?>"/><label for="print_receive">Imprimir recibo al cobrar alquileres o servicios a inquilinos</label>
 
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="build_receive_header" name="build_receive_header" <?php echo $settings['build_receive_header'] ? 'checked' : ''?> value="<?php echo $settings['build_receive_header']; ?>"/><label for="build_receive_header">Construir cuerpo de recibos con la informacion del presente formulario</label>
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="build_receive_header" name="build_receive_header" <?php echo $settings['build_receive_header'] ? 'checked' : ''?> value="<?php echo $settings['build_receive_header']; ?>"/><label for="build_receive_header">Construir cabecera de recibos automaticamente con la informacion de la empresa</label>
 
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_copy" name="print_copy" <?php echo $settings['print_copy'] ? 'checked' : ''?> value="<?php echo $settings['print_copy']; ?>"/><label for="print_copy">Imprimir copia de recibo de alquileres</label>
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_copy" name="print_copy" <?php echo $settings['print_copy'] ? 'checked' : ''?> value="<?php echo $settings['print_copy']; ?>"/><label for="print_copy">Imprimir copia de recibos</label>
 
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_debit" name="print_debit" <?php echo $settings['print_debit'] ? 'checked' : ''?> value="<?php echo $settings['print_debit']; ?>"/><label for="print_debit">Imprimir recibo para debitos</label>
+            
+            <div class="section_selects">
+                <label>Tipo de devolucion de prestamos</label>
+                <select title="Esoecifica si para devolver prestamos se utilizara una devolucion flexible o estricta.
+                     La devolucion flexible permite devolver en cuotas, es decir no es necesario que el monto
+                     del credito cubra completamente el saldo prestado para realizar la devolucion.
+                     La devolucion estricta implica que el credito si o si debe cubrir el monto del prestamo
+                     para realizarse la devolucion" class="form-control ui-autocomplete-input" name="return_loan_in_dues">
+                    <option <?php echo $settings['return_loan_in_dues'] ? 'selected' : '' ?> value="1">Flexible</option>
+                    <option <?php echo!$settings['return_loan_in_dues'] ? 'selected' : '' ?> value="0">Estricta</option>
+                </select>
+            </div> 
 
             <div class="section_selects">
                 <label>Control por codigo de autorizacion</label>
@@ -93,8 +105,8 @@
             <div class="section_selects">
                 <label>Prestamos a Rendiciones</label>
                 <select title="Especifica si se permite que debitos de Rendiciones dejen en negativo la cuenta, por lo cual se generara un prestamo de la Inmobiliaria para solventar la Rendicion en la cuenta sin fondos del propietario" class="form-control ui-autocomplete-input" name="loan_rendition">
-                    <option <?php echo $settings['loan_rendition'] ? 'selected' : '' ?> value="1">Activado</option>
-                    <option <?php echo!$settings['loan_rendition'] ? 'selected' : '' ?> value="0">Desactivado</option>
+                    <option <?php echo $settings['loan_rendition'] ? 'selected' : '' ?> value="1">Generar prestamo por Rendicion</option>
+                    <option <?php echo!$settings['loan_rendition'] ? 'selected' : '' ?> value="0">No generar prestamo por Rendicion</option>
                 </select>
             </div> 
 

@@ -24,8 +24,11 @@ class Transaction {
             $impacted_credits = self::impactCommonCredit($credit, $transaction_id, $contract);
         }
 
-        // Verificamos si con ese credito se deben devolver montos prestados por la inmo
-        self::impactDevolutions($credit, $transaction_id);
+        if (User::returnLoanInDues()) {
+            self::impactDevolutionsFlexible($credit, $transaction_id);
+        } else {
+            self::impactDevolutionsStrict($credit, $transaction_id);
+        }
 
         return $impacted_credits;
     }
@@ -212,11 +215,11 @@ class Transaction {
     /**
      * Si una cuenta tiene prestamos de la Inmobilaria
      * se crea la devolucion del mismo desde la cuenta del propietario
-     * a la cuenta de la inmobiliaria
+     * a la cuenta de la inmobiliaria por el monto que el credito pueda cubrir del prestamo
      * @param array $credit
      * @param int $transaction_id 
      */
-    public static function impactDevolutions($credit, $transaction_id) {
+    public static function impactDevolutionsFlexible($credit, $transaction_id) {
         $instance = &get_instance();
 
         $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
@@ -293,12 +296,15 @@ class Transaction {
     }
 
     /**
-     * DEPRECATED
+     * Si una cuenta tiene prestamos de la Inmobilaria
+     * se crea la devolucion del mismo desde la cuenta del propietario
+     * a la cuenta de la inmobiliaria si es que el monto de el credito cubre el monto
+     * del prestamo en cuestion
      * @param  [type] $credit         [description]
      * @param  [type] $transaction_id [description]
      * @return [type]                 [description]
      */
-    public static function impactDevolutionsOld($credit, $transaction_id) {
+    public static function impactDevolutionsStrict($credit, $transaction_id) {
         $instance = &get_instance();
 
         $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
@@ -560,7 +566,9 @@ class Transaction {
 
                 $cc_inmo['cc_saldo'] -= $loan;
                 $cc_to_impact[$account_type] += $loan;
-                $cc_to_impact['loans'] += $loan;
+                if (User::returnLoanInDues()) {
+                    $cc_to_impact['loans'] += $loan;
+                }
 
                 $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_inmo);
             }
@@ -673,7 +681,7 @@ class Transaction {
         $return_array['debits'] = array();
 
         foreach ($debits as $key => $debit) {
-            if (strpos($debit['deb_concepto'], 'Prestamo') === FALSE) {
+            if (strpos($debit['deb_concepto'], 'Prestamo') === false) {
                 $return_array['total'] += $debit['deb_monto'];
                 array_push($return_array['debits'], $debit);
             }
@@ -704,13 +712,15 @@ class Transaction {
         $receives[0]['exist_rent_credit'] = false;
 
         foreach ($receive_elements['credits'] as $key => $credit) {
-            if($key == 0){
-                $receives[0]['principal_credit'] = $credit;
-            }else{
-                $receives[0]['secondary_credits'][] = $credit;
-            }
+            if(strpos($credit['cred_concepto'], 'Prestamo') === FALSE){
+                if($key == 0){
+                    $receives[0]['principal_credit'] = $credit;
+                }else{
+                    $receives[0]['secondary_credits'][] = $credit;
+                }
 
-            $receives[0]['total'] += $credit['cred_monto'];
+                $receives[0]['total'] += $credit['cred_monto'];
+            }
         }
         
         $receives[0]['total_letters'] = self::getTotalInLetters($receives[0]['total']);

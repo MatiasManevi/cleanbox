@@ -171,6 +171,24 @@ class User {
         }
     }
 
+    /**
+     * Esoecifica si para devolver prestamos se utilizara una devolucion flexible o estricta.
+     * La devolucion flexible permite devolver en cuotas, es decir no es necesario que el monto
+     * del credito cubra completamente el saldo prestado para realizar la devolucion.
+     * La devolucion estricta implica que el credito si o si debe cubrir el monto del prestamo
+     * para realizarse la devolucion
+     * @return int 
+     */
+    public static function returnLoanInDues(){
+        $settings = self::getUserSettings();
+
+        if (!empty($settings)) {
+            return $settings['return_loan_in_dues'];
+        } else {
+            return false;
+        }
+    }
+
 }
 
 ?>

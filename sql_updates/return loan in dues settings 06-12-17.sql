@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `return_loan_in_dues` TINYINT NOT NULL ;

@@ -231,11 +231,11 @@ class Transaction {
 
         $credit_amount = $credit['cred_monto'];
 
-        if($cc_to_impact['loans'] > 0){
+        if ($cc_to_impact['loans'] > 0) {
 
-            if($credit_amount <= $cc_to_impact['loans']){
+            if ($credit_amount <= $cc_to_impact['loans']) {
                 $returned_loan = $credit_amount;
-            }else{
+            } else {
                 $returned_loan = $cc_to_impact['loans'];
             }
 
@@ -277,7 +277,7 @@ class Transaction {
         }
     }
 
-    public static function getAccountLoans($account){
+    public static function getAccountLoans($account) {
         $instance = &get_instance();
 
         $loans = $instance->basic->get_where('creditos', array('cc_id' => $account['cc_id'], 'cred_concepto' => 'Prestamo'))->result_array();
@@ -290,7 +290,7 @@ class Transaction {
         /* solo para davinia y rima */
 
         return $loans;
-    }   
+    }
 
     /**
      * DEPRECATED
@@ -454,56 +454,56 @@ class Transaction {
                     'trans' => $transaction_id
                 );
 
-            $credit_iva['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit_iva);
+                $credit_iva['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit_iva);
+            }
         }
+
+        return $credit_iva;
     }
 
-    return $credit_iva;
-}
+    public static function createInteresMovements($instance, $credit, &$cc_to_impact, $transaction_id) {
+        $credit_intereses = array();
 
-public static function createInteresMovements($instance, $credit, &$cc_to_impact, $transaction_id) {
-    $credit_intereses = array();
+        if (is_numeric($credit['cred_interes']) && json_decode($credit['cred_interes_calculado']) > 0 && Contract::conceptPerceiveInteres($credit['cred_concepto'])) {
 
-    if (is_numeric($credit['cred_interes']) && json_decode($credit['cred_interes_calculado']) > 0 && Contract::conceptPerceiveInteres($credit['cred_concepto'])) {
-
-        if (json_decode($credit['paga_intereses'])) {
-            $credit_intereses = array(
-                'cred_depositante' => $credit['cred_depositante'],
-                'cred_cc' => $cc_to_impact['cc_prop'],
-                'con_id' => $credit['con_id'],
-                'client_id' => $credit['client_id'],
-                'cc_id' => $credit['cc_id'],
-                'cred_concepto' => 'Intereses',
-                'cred_mes_alq' => $credit['cred_mes_alq'],
-                'cred_monto' => $credit['cred_interes_calculado'],
-                'cred_fecha' => $credit['cred_fecha'],
-                'cred_forma' => $credit['cred_forma'],
-                'cred_interes' => '',
-                'cred_banco' => $credit['cred_banco'],
-                'receive_number' => $credit['receive_number'],
-                'cred_nro_cheque' => $credit['cred_nro_cheque'],
-                'cred_tipo_trans' => $credit['cred_tipo_trans'],
-                'cred_domicilio' => $credit['cred_domicilio'],
-                'trans' => $transaction_id
-            );
-            $credit_intereses['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit_intereses);
-        } else {
+            if (json_decode($credit['paga_intereses'])) {
+                $credit_intereses = array(
+                    'cred_depositante' => $credit['cred_depositante'],
+                    'cred_cc' => $cc_to_impact['cc_prop'],
+                    'con_id' => $credit['con_id'],
+                    'client_id' => $credit['client_id'],
+                    'cc_id' => $credit['cc_id'],
+                    'cred_concepto' => 'Intereses',
+                    'cred_mes_alq' => $credit['cred_mes_alq'],
+                    'cred_monto' => $credit['cred_interes_calculado'],
+                    'cred_fecha' => $credit['cred_fecha'],
+                    'cred_forma' => $credit['cred_forma'],
+                    'cred_interes' => '',
+                    'cred_banco' => $credit['cred_banco'],
+                    'receive_number' => $credit['receive_number'],
+                    'cred_nro_cheque' => $credit['cred_nro_cheque'],
+                    'cred_tipo_trans' => $credit['cred_tipo_trans'],
+                    'cred_domicilio' => $credit['cred_domicilio'],
+                    'trans' => $transaction_id
+                );
+                $credit_intereses['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit_intereses);
+            } else {
                 //Si tiene intereses pero no pagara hoy, se le genera un registro de constancia
-            $interes_debt = array(
-                'int_depositante' => $credit['cred_depositante'],
-                'int_cc' => $cc_to_impact['cc_prop'],
-                'cc_id' => $credit['cc_id'],
-                'client_id' => $credit['client_id'],
-                'con_id' => $credit['con_id'],
-                'int_fecha_pago' => $credit['cred_fecha'],
-                'int_amount' => $credit['cred_interes_calculado']
-            );
-            $instance->basic->save('intereses_mora', 'int_id', $interes_debt);
+                $interes_debt = array(
+                    'int_depositante' => $credit['cred_depositante'],
+                    'int_cc' => $cc_to_impact['cc_prop'],
+                    'cc_id' => $credit['cc_id'],
+                    'client_id' => $credit['client_id'],
+                    'con_id' => $credit['con_id'],
+                    'int_fecha_pago' => $credit['cred_fecha'],
+                    'int_amount' => $credit['cred_interes_calculado']
+                );
+                $instance->basic->save('intereses_mora', 'int_id', $interes_debt);
+            }
         }
-    }
 
-    return $credit_intereses;
-}
+        return $credit_intereses;
+    }
 
     /**
      * Si el debito supera la saldo operativo entra a crear un prestamo
@@ -573,7 +573,7 @@ public static function createInteresMovements($instance, $credit, &$cc_to_impact
 
         $iibb_tax_percentaje = User::getUserIIBBTAX();
 
-        if($iibb_tax_percentaje > 0){
+        if ($iibb_tax_percentaje > 0) {
 
             $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
 
@@ -660,252 +660,294 @@ public static function createInteresMovements($instance, $credit, &$cc_to_impact
 
     public static function paymentSamePrincipal($principal_credit, $credit) {
         if ($principal_credit['cred_mes_alq'] == $credit['cred_mes_alq'] &&
-            $principal_credit['cred_concepto'] == $credit['cred_concepto']) {
+                $principal_credit['cred_concepto'] == $credit['cred_concepto']) {
             return true;
-    } else {
-        return false;
-    }
-}
-
-public static function parseForDebitReceives($receive_elements) {
-    $return_array = $receive_elements;
-    $debits = $receive_elements['debits'];
-    $return_array['debits'] = array();
-
-    foreach ($debits as $key => $debit) {
-        if(strpos($debit['deb_concepto'], 'Prestamo') === FALSE){
-            $return_array['total'] += $debit['deb_monto'];
-            array_push($return_array['debits'], $debit);
+        } else {
+            return false;
         }
     }
 
-    return $return_array;
-}
+    public static function parseForDebitReceives($receive_elements) {
+        $return_array = $receive_elements;
+        $debits = $receive_elements['debits'];
+        $return_array['debits'] = array();
 
-public static function parseForReceives($receive_elements, $contract) {
-    $receive_reports = array();
-    $receives = array();
-    $principals = array();
-
-    $credits = $receive_elements['credits'];
-    $services_control = $receive_elements['services_control'];
-
-        // Identificamos creditos principales unicos
-    foreach ($credits as $key => $credit) {
-        $is_in_principals = false;
-
-        foreach ($principals as $principal) {
-            if ($principal['cred_mes_alq'] == $credit['cred_mes_alq'] &&
-                $principal['cred_concepto'] == $credit['cred_concepto']) {
-                $is_in_principals = true;
-            break;
-        }
-    }
-
-    if (Report::mustPrintReport($credit['cred_concepto']) && !$is_in_principals) {
-        $credit['other_principal'] = array();
-        array_push($principals, $credit);
-        unset($credits[$key]);
-    }
-}
-
-        // Adosamos a creditos principales unicos sus creditos principales consecutivos
-$principals_with_consecutives = array();
-foreach ($principals as $principal) {
-    if (Report::mustPrintReport($principal['cred_concepto'])) {
-        foreach ($credits as $key => $credit) {
-            if (self::paymentSamePrincipal($principal, $credit)) {
-                array_push($principal['other_principal'], $credit);
-                unset($credits[$key]);
+        foreach ($debits as $key => $debit) {
+            if (strpos($debit['deb_concepto'], 'Prestamo') === FALSE) {
+                $return_array['total'] += $debit['deb_monto'];
+                array_push($return_array['debits'], $debit);
             }
         }
-        array_push($principals_with_consecutives, $principal);
+
+        return $return_array;
     }
-}
 
-foreach ($principals_with_consecutives as $credit) {
+    public static function existsRentCredit($credits) {
+        
+        foreach ($credits as $credit) {
+            if ($credit['cred_concepto'] == 'Loteo' ||
+                $credit['cred_concepto'] == 'Honorarios' ||
+                strpos($credit['cred_concepto'], 'Reserva') !== false ||
+                strpos($credit['cred_concepto'], 'Alquiler') !== false) {
+                return true;
+            }
+        }
 
-    $receive = array(
-        'principal_credit' => $credit,
-        'total_principal' => 0,
-        'total_secondarys' => 0,
-        'total' => 0,
-        'debt' => 0,
-        'total_letters' => '',
-        'secondary_credits' => array(),
-        'services_control' => array(),
-        'services_no_control' => array()
-    );
+        return false;
+    }
 
-            // se adosan creditos secundarios
-    foreach ($credits as $key => $secondary_credit) {
-        if ($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq'] && $credit['cred_concepto'] != $secondary_credit['cred_concepto'] && strpos($secondary_credit['cred_concepto'], 'Prestamo') === FALSE) {
-            if (!Report::mustPrintReport($secondary_credit['cred_concepto'])) {
-                if (!self::isAlreadyAdded($receive_reports, $secondary_credit, 'secondary_credits')) {
-                    array_push($receive['secondary_credits'], $secondary_credit);
+    public static function parseSeconaryCredits($receive_elements) {
+        $receives = array();
+        $receives[0]['secondary_credits'] = array();
+        $receives[0]['total'] = 0;
+        $receives[0]['debt'] = 0;
+        $receives[0]['exist_rent_credit'] = false;
+
+        foreach ($receive_elements['credits'] as $key => $credit) {
+            if($key == 0){
+                $receives[0]['principal_credit'] = $credit;
+            }else{
+                $receives[0]['secondary_credits'][] = $credit;
+            }
+
+            $receives[0]['total'] += $credit['cred_monto'];
+        }
+        
+        $receives[0]['total_letters'] = self::getTotalInLetters($receives[0]['total']);
+
+        return $receives;
+    }
+    
+    public static function parseForReceives($receive_elements, $contract) {
+
+        $receives = array();
+
+        if(!self::existsRentCredit($receive_elements['credits'])){
+            $receives = self::parseSeconaryCredits($receive_elements);
+        } else {
+            $principals = array();
+            $receive_reports = array();
+
+            $credits = $receive_elements['credits'];
+            $services_control = $receive_elements['services_control'];
+
+            // Identificamos creditos principales unicos
+            foreach ($credits as $key => $credit) {
+                $is_in_principals = false;
+
+                foreach ($principals as $principal) {
+                    if ($principal['cred_mes_alq'] == $credit['cred_mes_alq'] && $principal['cred_concepto'] == $credit['cred_concepto']) {
+                        $is_in_principals = true;
+                        break;
+                    }
+                }
+
+                if (Report::isPrincipal($credit['cred_concepto']) && !$is_in_principals) {
+                    $credit['other_principal'] = array();
+                    array_push($principals, $credit);
                     unset($credits[$key]);
                 }
             }
-        }
-    }
 
-            // se adosan controles de servicios
-    foreach ($services_control as $key => $service_control) {
-        if (isset($service_control['status'])) {
-            $status = true;
-            if (!$service_control['status']) {
-                $status = false;
+            // Adosamos a creditos principales unicos sus creditos principales consecutivos
+            $principals_with_consecutives = array();
+            foreach ($principals as $principal) {
+                if (Report::isPrincipal($principal['cred_concepto'])) {
+                    foreach ($credits as $key => $credit) {
+                        if (self::paymentSamePrincipal($principal, $credit)) {
+                            array_push($principal['other_principal'], $credit);
+                            unset($credits[$key]);
+                        }
+                    }
+                    array_push($principals_with_consecutives, $principal);
+                }
             }
-        } else {
-            $status = true;
-        }
-        if ($status && $credit['cred_mes_alq'] == $service_control['month_checked'] && $credit['cred_concepto']) {
-            array_push($receive['services_control'], $service_control);
-            unset($services_control[$key]);
-        }
-    }
 
-            // se adosan no-controles de servicios
-    foreach ($services_control as $key => $service_control) {
-        if (isset($service_control['status'])) {
-            $status = true;
-            if (!$service_control['status']) {
-                $status = false;
+            foreach ($principals_with_consecutives as $credit) {
+
+                $receive = array(
+                    'principal_credit' => $credit,
+                    'total_principal' => 0,
+                    'exist_rent_credit' => true,
+                    'total_secondarys' => 0,
+                    'total' => 0,
+                    'debt' => 0,
+                    'total_letters' => '',
+                    'secondary_credits' => array(),
+                    'services_control' => array(),
+                    'services_no_control' => array()
+                );
+
+                // se adosan creditos secundarios
+                foreach ($credits as $key => $secondary_credit) {
+                    if ($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq'] && $credit['cred_concepto'] != $secondary_credit['cred_concepto'] && strpos($secondary_credit['cred_concepto'], 'Prestamo') === FALSE) {
+                        if (!Report::isPrincipal($secondary_credit['cred_concepto'])) {
+                            if (!self::isAlreadyAdded($receive_reports, $secondary_credit, 'secondary_credits')) {
+                                array_push($receive['secondary_credits'], $secondary_credit);
+                                unset($credits[$key]);
+                            }
+                        }
+                    }
+                }
+
+                // se adosan controles de servicios
+                foreach ($services_control as $key => $service_control) {
+                    if (isset($service_control['status'])) {
+                        $status = true;
+                        if (!$service_control['status']) {
+                            $status = false;
+                        }
+                    } else {
+                        $status = true;
+                    }
+                    if ($status && $credit['cred_mes_alq'] == $service_control['month_checked'] && $credit['cred_concepto']) {
+                        array_push($receive['services_control'], $service_control);
+                        unset($services_control[$key]);
+                    }
+                }
+
+                // se adosan no-controles de servicios
+                foreach ($services_control as $key => $service_control) {
+                    if (isset($service_control['status'])) {
+                        $status = true;
+                        if (!$service_control['status']) {
+                            $status = false;
+                        }
+                    } else {
+                        $status = true;
+                    }
+
+                    if (!$status && $credit['cred_mes_alq'] == $service_control['month_checked'] && $credit['cred_concepto']) {
+                        array_push($receive['services_no_control'], $service_control);
+                        unset($services_control[$key]);
+                    }
+                }
+
+                array_push($receive_reports, $receive);
             }
+
+            // Cuando un servicio u otro concepto secundario no coincide en el mes de pago o control
+            // con algun alquiler se verifica si fue adosado a alguno de ellos y sino
+            // se agrega al primero por defecto
+            foreach ($credits as $credit) {
+                if (!Report::isPrincipal($credit['cred_concepto']) && strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
+                    if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {
+
+                        array_push($receive_reports[0]['secondary_credits'], $credit);
+                    }
+                }
+            }
+            foreach ($services_control as $service_control) {
+                if (isset($service_control['status'])) {
+                    $status = true;
+                    if (!$service_control['status']) {
+                        $status = false;
+                    }
+                } else {
+                    $status = true;
+                }
+                if (!self::isAlreadyAdded($receive_reports, $service_control, 'services_control') && $status) {
+                    array_push($receive_reports[0]['services_control'], $service_control);
+                }
+                if (!self::isAlreadyAdded($receive_reports, $service_control, 'services_no_control') && !$status) {
+                    array_push($receive_reports[0]['services_no_control'], $service_control);
+                }
+            }
+
+            // Calcula totales y deuda
+            foreach ($receive_reports as $receive_report) {
+                // neto a cobrar alquileres | honorarios } reserva
+                $receive_report['total_principal'] = self::getTotalPrincipal($receive_report['principal_credit']);
+
+                // total servicios y gastos
+                $receive_report['total_secondarys'] = self::getTotalSecondarys($receive_report['secondary_credits']);
+
+                $receive_report['total'] = $receive_report['total_principal'] + $receive_report['total_secondarys'];
+                $receive_report['total_letters'] = self::getTotalInLetters($receive_report['total']);
+
+                // se debe
+                if ($receive_report['principal_credit']['cred_concepto'] != 'Loteo') {
+                    $receive_report['debt'] = self::getReceiveDebt($receive_report['principal_credit'], $contract);
+                }
+
+                array_push($receives, $receive_report);
+            }
+        }
+
+        return $receives;
+    }
+
+    public static function calculateCreditAmount($credit) {
+        $credit_amount = 0;
+        $credit_amount += $credit['cred_monto'];
+        $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
+        if (self::payIntereses($credit)) {
+            $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
+        }
+
+        return $credit_amount;
+    }
+
+    public static function getTotalPrincipal($receive_report) {
+        $total = self::calculateCreditAmount($receive_report);
+
+        if (!empty($receive_report['other_principal'])) {
+            foreach ($receive_report['other_principal'] as $other_principal) {
+                $total += self::calculateCreditAmount($other_principal);
+            }
+        }
+
+        return $total;
+    }
+
+    public static function payIntereses($credit) {
+        $instance = &get_instance();
+        General::loadModels($instance);
+
+        $intereses_debt = $instance->basic->get_where('intereses_mora', array('cc_id' => $credit['cc_id'], 'client_id' => $credit['client_id'], 'int_fecha_pago' => $credit['cred_fecha']))->row_array();
+        /* solo para davinia y rima */
+        $intereses_debt2 = $instance->basic->get_where('intereses_mora', array('int_cc' => $credit['cred_cc'], 'int_depositante' => $credit['cred_depositante'], 'int_fecha_pago' => $credit['cred_fecha']))->row_array();
+        foreach ($intereses_debt2 as $interese_debt2) {
+            if (!in_array($interese_debt2, $intereses_debt))
+                array_push($intereses_debt, $interese_debt2);
+        }
+        /* solo para davinia y rima */
+
+        if (empty($intereses_debt)) {
+            return true;
         } else {
-            $status = true;
-        }
-
-        if (!$status && $credit['cred_mes_alq'] == $service_control['month_checked'] && $credit['cred_concepto']) {
-            array_push($receive['services_no_control'], $service_control);
-            unset($services_control[$key]);
+            return false;
         }
     }
 
-    array_push($receive_reports, $receive);
-}
+    public static function getTotalSecondarys($secondary_credits) {
+        $total_secondarys = 0;
 
-        // Cuando un servicio u otro concepto secundario no coincide en el mes de pago o control
-        // con algun alquiler se verifica si fue adosado a alguno de ellos y sino
-        // se agrega al primero por defecto
-foreach ($credits as $credit) {
-    if (!Report::mustPrintReport($credit['cred_concepto']) && strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
-        if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {
-
-            array_push($receive_reports[0]['secondary_credits'], $credit);
+        foreach ($secondary_credits as $secondary_credit) {
+            $total_secondarys += $secondary_credit['cred_monto'];
+            $total_secondarys += $secondary_credit['cred_interes_calculado'];
         }
-    }
-}
-foreach ($services_control as $service_control) {
-    if (isset($service_control['status'])) {
-        $status = true;
-        if (!$service_control['status']) {
-            $status = false;
-        }
-    } else {
-        $status = true;
-    }
-    if (!self::isAlreadyAdded($receive_reports, $service_control, 'services_control') && $status) {
-        array_push($receive_reports[0]['services_control'], $service_control);
-    }
-    if (!self::isAlreadyAdded($receive_reports, $service_control, 'services_no_control') && !$status) {
-        array_push($receive_reports[0]['services_no_control'], $service_control);
-    }
-}
 
-        // Calcula totales y deuda
-foreach ($receive_reports as $receive_report) {
-            // neto a cobrar alquileres | honorarios } reserva
-    $receive_report['total_principal'] = self::getTotalPrincipal($receive_report['principal_credit']);
-
-            // total servicios y gastos
-    $receive_report['total_secondarys'] = self::getTotalSecondarys($receive_report['secondary_credits']);
-
-    $receive_report['total'] = $receive_report['total_principal'] + $receive_report['total_secondarys'];
-    $receive_report['total_letters'] = self::getTotalInLetters($receive_report['total']);
-
-            // se debe
-    if ($receive_report['principal_credit']['cred_concepto'] != 'Loteo') {
-        $receive_report['debt'] = self::getReceiveDebt($receive_report['principal_credit'], $contract);
+        return $total_secondarys;
     }
 
-    array_push($receives, $receive_report);
-}
+    public static function getTotalInLetters($xcifra) {
+        $xarray = array(0 => "Cero",
+            1 => "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE",
+            "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISEIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE",
+            "VEINTI", 30 => "TREINTA", 40 => "CUARENTA", 50 => "CINCUENTA", 60 => "SESENTA", 70 => "SETENTA", 80 => "OCHENTA", 90 => "NOVENTA",
+            100 => "CIENTO", 200 => "DOSCIENTOS", 300 => "TRESCIENTOS", 400 => "CUATROCIENTOS", 500 => "QUINIENTOS", 600 => "SEISCIENTOS", 700 => "SETECIENTOS", 800 => "OCHOCIENTOS", 900 => "NOVECIENTOS"
+        );
 
-return $receives;
-}
-
-public static function calculateCreditAmount($credit) {
-    $credit_amount = 0;
-    $credit_amount += $credit['cred_monto'];
-    $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
-    if (self::payIntereses($credit)) {
-        $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
-    }
-
-    return $credit_amount;
-}
-
-public static function getTotalPrincipal($receive_report) {
-    $total = self::calculateCreditAmount($receive_report);
-
-    if (!empty($receive_report['other_principal'])) {
-        foreach ($receive_report['other_principal'] as $other_principal) {
-            $total += self::calculateCreditAmount($other_principal);
-        }
-    }
-
-    return $total;
-}
-
-public static function payIntereses($credit) {
-    $instance = &get_instance();
-    General::loadModels($instance);
-
-    $intereses_debt = $instance->basic->get_where('intereses_mora', array('cc_id' => $credit['cc_id'], 'client_id' => $credit['client_id'], 'int_fecha_pago' => $credit['cred_fecha']))->row_array();
-    /* solo para davinia y rima */
-    $intereses_debt2 = $instance->basic->get_where('intereses_mora', array('int_cc' => $credit['cred_cc'], 'int_depositante' => $credit['cred_depositante'], 'int_fecha_pago' => $credit['cred_fecha']))->row_array();
-    foreach ($intereses_debt2 as $interese_debt2) {
-        if (!in_array($interese_debt2, $intereses_debt))
-            array_push($intereses_debt, $interese_debt2);
-    }
-    /* solo para davinia y rima */
-
-    if (empty($intereses_debt)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-public static function getTotalSecondarys($secondary_credits) {
-    $total_secondarys = 0;
-
-    foreach ($secondary_credits as $secondary_credit) {
-        $total_secondarys += $secondary_credit['cred_monto'];
-        $total_secondarys += $secondary_credit['cred_interes_calculado'];
-    }
-
-    return $total_secondarys;
-}
-
-public static function getTotalInLetters($xcifra) {
-    $xarray = array(0 => "Cero",
-        1 => "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE",
-        "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISEIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE",
-        "VEINTI", 30 => "TREINTA", 40 => "CUARENTA", 50 => "CINCUENTA", 60 => "SESENTA", 70 => "SETENTA", 80 => "OCHENTA", 90 => "NOVENTA",
-        100 => "CIENTO", 200 => "DOSCIENTOS", 300 => "TRESCIENTOS", 400 => "CUATROCIENTOS", 500 => "QUINIENTOS", 600 => "SEISCIENTOS", 700 => "SETECIENTOS", 800 => "OCHOCIENTOS", 900 => "NOVECIENTOS"
-    );
-
-    $xcifra = trim($xcifra);
-    $xpos_punto = strpos($xcifra, ".");
-    $xaux_int = $xcifra;
-    $xdecimales = "00";
-    if (!($xpos_punto === false)) {
-        if ($xpos_punto == 0) {
-            $xcifra = "0" . $xcifra;
-            $xpos_punto = strpos($xcifra, ".");
-        }
+        $xcifra = trim($xcifra);
+        $xpos_punto = strpos($xcifra, ".");
+        $xaux_int = $xcifra;
+        $xdecimales = "00";
+        if (!($xpos_punto === false)) {
+            if ($xpos_punto == 0) {
+                $xcifra = "0" . $xcifra;
+                $xpos_punto = strpos($xcifra, ".");
+            }
             $xaux_int = substr($xcifra, 0, $xpos_punto); // obtengo el entero de la cifra a covertir
             $xdecimales = substr($xcifra . "00", $xpos_punto + 1, 2); // obtengo los valores decimales
         }
@@ -947,26 +989,26 @@ public static function getTotalInLetters($xcifra) {
                             } // ENDIF (substr($xaux, 0, 3) < 100)
                             break;
                         case 2: // checa las decenas (con la misma lógica que las centenas)
-                        if (substr($xaux, 1, 2) < 10) {
-
-                        } else {
-                            $key = (int) substr($xaux, 1, 2);
-                            if (TRUE === array_key_exists($key, $xarray)) {
-                                $xseek = $xarray[$key];
-                                $xsub = self::subfijo($xaux);
-                                if (substr($xaux, 1, 2) == 20)
-                                    $xcadena = " " . $xcadena . " VEINTE " . $xsub;
-                                else
-                                    $xcadena = " " . $xcadena . " " . $xseek . " " . $xsub;
-                                $xy = 3;
-                            }
-                            else {
-                                $key = (int) substr($xaux, 1, 1) * 10;
-                                $xseek = $xarray[$key];
-                                if (20 == substr($xaux, 1, 1) * 10)
-                                    $xcadena = " " . $xcadena . " " . $xseek;
-                                else
-                                    $xcadena = " " . $xcadena . " " . $xseek . " Y ";
+                            if (substr($xaux, 1, 2) < 10) {
+                                
+                            } else {
+                                $key = (int) substr($xaux, 1, 2);
+                                if (TRUE === array_key_exists($key, $xarray)) {
+                                    $xseek = $xarray[$key];
+                                    $xsub = self::subfijo($xaux);
+                                    if (substr($xaux, 1, 2) == 20)
+                                        $xcadena = " " . $xcadena . " VEINTE " . $xsub;
+                                    else
+                                        $xcadena = " " . $xcadena . " " . $xseek . " " . $xsub;
+                                    $xy = 3;
+                                }
+                                else {
+                                    $key = (int) substr($xaux, 1, 1) * 10;
+                                    $xseek = $xarray[$key];
+                                    if (20 == substr($xaux, 1, 1) * 10)
+                                        $xcadena = " " . $xcadena . " " . $xseek;
+                                    else
+                                        $xcadena = " " . $xcadena . " " . $xseek . " Y ";
                                 } // ENDIF ($xseek)
                             } // ENDIF (substr($xaux, 1, 2) < 10)
                             break;
@@ -985,34 +1027,34 @@ public static function getTotalInLetters($xcifra) {
             } // ENDDO
 
             if (substr(trim($xcadena), -5, 5) == "ILLON") // si la cadena obtenida termina en MILLON o BILLON, entonces le agrega al final la conjuncion DE
-            $xcadena.= " DE";
+                $xcadena.= " DE";
 
             if (substr(trim($xcadena), -7, 7) == "ILLONES") // si la cadena obtenida en MILLONES o BILLONES, entoncea le agrega al final la conjuncion DE
-            $xcadena.= " DE";
+                $xcadena.= " DE";
 
             // ----------- esta línea la puedes cambiar de acuerdo a tus necesidades o a tu país -------
             if (trim($xaux) != "") {
                 switch ($xz) {
                     case 0:
-                    if (trim(substr($XAUX, $xz * 6, 6)) == "1")
-                        $xcadena.= "UN BILLON ";
-                    else
-                        $xcadena.= " BILLONES ";
-                    break;
+                        if (trim(substr($XAUX, $xz * 6, 6)) == "1")
+                            $xcadena.= "UN BILLON ";
+                        else
+                            $xcadena.= " BILLONES ";
+                        break;
                     case 1:
-                    if (trim(substr($XAUX, $xz * 6, 6)) == "1")
-                        $xcadena.= "UN MILLON ";
-                    else
-                        $xcadena.= " MILLONES ";
-                    break;
+                        if (trim(substr($XAUX, $xz * 6, 6)) == "1")
+                            $xcadena.= "UN MILLON ";
+                        else
+                            $xcadena.= " MILLONES ";
+                        break;
                     case 2:
-                    if ($xcifra < 1) {
-                        $xcadena = "CERO PESOS CON $xdecimales/100 CENTAVOS";
-                    }
-                    if ($xcifra >= 1 && $xcifra < 2) {
-                        $xcadena = "UN PESO CON $xdecimales/100 CENTAVOS ";
-                    }
-                    if ($xcifra >= 2) {
+                        if ($xcifra < 1) {
+                            $xcadena = "CERO PESOS CON $xdecimales/100 CENTAVOS";
+                        }
+                        if ($xcifra >= 1 && $xcifra < 2) {
+                            $xcadena = "UN PESO CON $xdecimales/100 CENTAVOS ";
+                        }
+                        if ($xcifra >= 2) {
                             $xcadena.= " PESOS CON $xdecimales/100 CENTAVOS "; //
                         }
                         break;
@@ -1301,7 +1343,6 @@ public static function getTotalInLetters($xcifra) {
                     $instance->basic->save('cuentas_corrientes', 'cc_id', $safe_box);
                 }
             }
-
         } else if (self::isImpactableCredit($credit) && $credit['cred_tipo_trans'] == 'Bancaria') {
             self::recalculateTaxDebit($credit);
         }
@@ -1612,12 +1653,12 @@ public static function getTotalInLetters($xcifra) {
      */
     public static function isImpactableCredit($credit) {
         if (strpos($credit['cred_concepto'], 'Gestion de Cobro') === FALSE &&
-            strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
+                strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
             return true;
-    } else {
-        return false;
+        } else {
+            return false;
+        }
     }
-}
 
     /**
      * Un debito es impactable cuando su valor impacta en la caja fisica o bancaria
@@ -1628,71 +1669,71 @@ public static function getTotalInLetters($xcifra) {
      */
     public static function isImpactabledebit($debit) {
         if (strpos($debit['deb_concepto'], 'Gestion de Cobro') === FALSE &&
-            strpos($debit['deb_concepto'], 'Prestamo') === FALSE) {
+                strpos($debit['deb_concepto'], 'Prestamo') === FALSE) {
             return true;
-    } else {
-        return false;
-    }
-}
-
-public static function sendNotification($credits) {
-    $instance = &get_instance();
-    General::loadModels($instance);
-
-    $settings = User::getUserSettings();
-
-    $propietary_client = $instance->basic->get_where('clientes', array('client_name' => $credits[0]['cred_cc']))->row_array();
-
-    $contract = Contract::getContract($credits);
-
-    $headers = 'MIME-Version: 1.0' . "\r\n";
-    $headers .= 'Content-type: text/html; charset = iso - 8859 - 1' . "\r\n";
-    $headers .= 'From: ' . $settings['name'] . ' <' . $settings['email'] . '>' . "\r\n";
-
-    $total_amount = 0;
-
-    $msg = '<h2>Ya puede pasar por ' . $settings['name'] . '  a cobrar su alquiler</h2>';
-    $msg .= "<br>";
-    $msg .= "<h3>Alquiler y/o servicios pagados por contrato con:</h3> " . $contract['con_inq'];
-    $msg .= "<br>";
-
-    foreach ($credits as $credit) {
-        if ($credit['cred_concepto'] != 'Honorarios') {
-            $msg .= "<br>";
-            $msg .= "------------------------------------------------------------------------------------------------";
-            $msg .= "<br>";
-            $msg .= "<strong>Concepto Abonado: </strong>" . $credit['cred_concepto'] . ' ' . $credit['cred_mes_alq'] . ". <br><strong>Fecha de pago: </strong>" . $credit['cred_fecha'];
-            $msg .= "<br>";
-            $msg .= "<strong>Monto Abonado: </strong>$ " . $credit['cred_monto'];
-
-            if (Contract::conceptPerceiveGestion($credit['cred_concepto'])) {
-                $total_amount += $credit['cred_monto'] - ($credit['cred_monto'] * $contract['con_porc']);
-            } else {
-                $total_amount += $credit['cred_monto'];
-            }
-
-            if ($credit['cred_interes'] > 0 && $credit['cred_interes_calculado'] > 0) {
-                if (Contract::conceptPerceiveGestion($credit['cred_concepto'])) {
-                    $total_amount += $credit['cred_interes_calculado'] - ($credit['cred_interes_calculado'] * $contract['con_porc']);
-                } else {
-                    $total_amount += $credit['cred_interes_calculado'];
-                }
-                $msg .= "<br>";
-                $msg .= "<strong>Intereses abonados por " . $credit['cred_interes'] . " dia/s de mora: </strong>$ " . $credit['cred_interes_calculado'];
-            }
-            if ($credit['cred_iva_calculado'] > 0) {
-                $total_amount += $credit['cred_iva_calculado'];
-                $msg .= "<br>";
-                $msg .= "<strong>Monto Abonados IVA: </strong>$ " . $credit['cred_iva_calculado'];
-            }
+        } else {
+            return false;
         }
     }
 
-    $msg .= "<br>";
-    $msg .= '<h2>Monto total: $ ' . round($total_amount, 2) . '</h2>';
+    public static function sendNotification($credits) {
+        $instance = &get_instance();
+        General::loadModels($instance);
 
-    mail($propietary_client['client_email'], 'Han Pagado su Alquiler!', $msg, $headers);
-}
+        $settings = User::getUserSettings();
+
+        $propietary_client = $instance->basic->get_where('clientes', array('client_name' => $credits[0]['cred_cc']))->row_array();
+
+        $contract = Contract::getContract($credits);
+
+        $headers = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset = iso - 8859 - 1' . "\r\n";
+        $headers .= 'From: ' . $settings['name'] . ' <' . $settings['email'] . '>' . "\r\n";
+
+        $total_amount = 0;
+
+        $msg = '<h2>Ya puede pasar por ' . $settings['name'] . '  a cobrar su alquiler</h2>';
+        $msg .= "<br>";
+        $msg .= "<h3>Alquiler y/o servicios pagados por contrato con:</h3> " . $contract['con_inq'];
+        $msg .= "<br>";
+
+        foreach ($credits as $credit) {
+            if ($credit['cred_concepto'] != 'Honorarios') {
+                $msg .= "<br>";
+                $msg .= "------------------------------------------------------------------------------------------------";
+                $msg .= "<br>";
+                $msg .= "<strong>Concepto Abonado: </strong>" . $credit['cred_concepto'] . ' ' . $credit['cred_mes_alq'] . ". <br><strong>Fecha de pago: </strong>" . $credit['cred_fecha'];
+                $msg .= "<br>";
+                $msg .= "<strong>Monto Abonado: </strong>$ " . $credit['cred_monto'];
+
+                if (Contract::conceptPerceiveGestion($credit['cred_concepto'])) {
+                    $total_amount += $credit['cred_monto'] - ($credit['cred_monto'] * $contract['con_porc']);
+                } else {
+                    $total_amount += $credit['cred_monto'];
+                }
+
+                if ($credit['cred_interes'] > 0 && $credit['cred_interes_calculado'] > 0) {
+                    if (Contract::conceptPerceiveGestion($credit['cred_concepto'])) {
+                        $total_amount += $credit['cred_interes_calculado'] - ($credit['cred_interes_calculado'] * $contract['con_porc']);
+                    } else {
+                        $total_amount += $credit['cred_interes_calculado'];
+                    }
+                    $msg .= "<br>";
+                    $msg .= "<strong>Intereses abonados por " . $credit['cred_interes'] . " dia/s de mora: </strong>$ " . $credit['cred_interes_calculado'];
+                }
+                if ($credit['cred_iva_calculado'] > 0) {
+                    $total_amount += $credit['cred_iva_calculado'];
+                    $msg .= "<br>";
+                    $msg .= "<strong>Monto Abonados IVA: </strong>$ " . $credit['cred_iva_calculado'];
+                }
+            }
+        }
+
+        $msg .= "<br>";
+        $msg .= '<h2>Monto total: $ ' . round($total_amount, 2) . '</h2>';
+
+        mail($propietary_client['client_email'], 'Han Pagado su Alquiler!', $msg, $headers);
+    }
 
 }
 

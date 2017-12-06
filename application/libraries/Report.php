@@ -14,15 +14,54 @@
 
 class Report {
 
-    public static function mustPrintReport($concept, $print_report = false) {
+    public static function wasDelivered($report_name, $month) {
+        $instance = &get_instance();
+        
+        $report_delivery = $instance->basic->get_where('reports_delivery', array('report_name' => $report_name, 'month' => $month))->row_array();
+        
+        if (empty($report_delivery)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static function saveDelivery($report_name, $month) {
+        $instance = &get_instance();
+
+        $instance->basic->save('reports_delivery', 'id', array(
+            'report_name' => $report_name,
+            'month' => $month,
+            'date' => date('d-m-Y')
+        ));
+    }
+    
+    public static function isPrincipal($concept, $print_report = false){
         if ($print_report) {
             return $print_report;
         }
 
         if ($concept == 'Loteo' ||
-                $concept == 'Honorarios' ||
-                strpos($concept, 'Reserva') !== false ||
-                strpos($concept, 'Alquiler') !== false) {
+            $concept == 'Honorarios' ||
+            strpos($concept, 'Reserva') !== false ||
+            strpos($concept, 'Alquiler') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function mustPrintReport($concept, $print_report = false) {
+        if ($print_report) {
+            return $print_report;
+        }
+
+        if (strpos($concept, 'Gestion de Cobro') === false &&
+            strpos($concept, 'Prestamo') === false ||
+            $concept == 'Loteo' ||
+            $concept == 'Honorarios' ||
+            strpos($concept, 'Reserva') !== false ||
+            strpos($concept, 'Alquiler') !== false) {
             return true;
         }
 
@@ -36,6 +75,53 @@ class Report {
         }
 
         return true;
+    }
+
+    public static function getAccountsBalance($month) {
+        $instance = &get_instance();
+
+        $current_accounts = $instance->basic->get_all('cuentas_corrientes')->result_array();
+        $accounts_balance = array();
+
+        $year = preg_replace('/[^0-9]/', '', $month);
+        $month = preg_replace('/[0-9]/', '', $month);
+
+        $from = '00-' . General::getMonthNumber($month) . '-' . $year;
+        $to = '31-' . General::getMonthNumber($month) . '-' . $year;
+
+        foreach ($current_accounts as $current_account) {
+            if (strpos($current_account['cc_prop'], 'INMOBILIARIA') === FALSE && strpos($current_account['cc_prop'], 'CAJA FUERTE') === FALSE) {
+
+                $debits = CurrentAccount::getDebits($current_account);
+                $credits = CurrentAccount::getCredits($current_account);
+
+                $ins = CurrentAccount::getCreditsSum($credits, $from, $to, false);
+                $outs = CurrentAccount::getDebitsSum($debits, $from, $to, false);
+                $balance = round($ins - $outs, 2);
+
+                if($balance != 0) {
+                    $propietary_account = array(
+                        'name' => $current_account['cc_prop'],
+                        'ins' => $ins,
+                        'outs' => $outs,
+                        'balance' => $balance
+                    );
+
+                    array_push($accounts_balance, $propietary_account);
+                }
+            }
+        }
+
+        return $accounts_balance;
+    }
+
+    public static function buildAccountsBalanceReport($month) {
+        $instance = &get_instance();
+
+        $instance->data['month'] = $month;
+        $instance->data['accounts'] = self::getAccountsBalance($month);
+
+        return $instance->load->view('reports/accounts_balance_report', $instance->data, TRUE);
     }
 
     public static function buildCashReport($date, $cash_type) {
@@ -532,21 +618,8 @@ class Report {
 
             if (strpos($account['cc_prop'], 'INMOBILIARIA') === FALSE && strpos($account['cc_prop'], 'CAJA FUERTE') === FALSE) {
 
-                $debits = $instance->basic->get_where('debitos', array('cc_id' => $account['cc_id']))->result_array();
-                $credits = $instance->basic->get_where('creditos', array('cc_id' => $account['cc_id']))->result_array();
-
-                /* solo para davinia y rima */
-                $debits2 = $instance->basic->get_where('debitos', array('deb_cc' => $account['cc_prop']))->result_array();
-                $credits2 = $instance->basic->get_where('creditos', array('cred_cc' => $account['cc_prop']))->result_array();
-                foreach ($debits2 as $debit2) {
-                    if (!in_array($debit2, $debits))
-                        array_push($debits, $debit2);
-                }
-                foreach ($credits2 as $credit2) {
-                    if (!in_array($credit2, $credits))
-                        array_push($credits, $credit2);
-                }
-                /* solo para davinia y rima */
+                $debits = CurrentAccount::getDebits($account);
+                $credits = CurrentAccount::getCredits($account);
 
                 // Suma las rendiciones extraidas por el propietario en la fecha
                 foreach ($debits as $row) {
@@ -557,20 +630,8 @@ class Report {
                     }
                 }
 
-                $ins = 0;
-                $outs = 0;
-
-                // Suma movimiento de la cuenta en la fecha dada
-                foreach ($credits as $row) {
-                    if (General::isBetweenDates($row['cred_fecha'], $from, $to)) {
-                        $ins += $row['cred_monto'];
-                    }
-                }
-                foreach ($debits as $row) {
-                    if (General::isBetweenDates($row['deb_fecha'], $from, $to)) {
-                        $outs += $row['deb_monto'];
-                    }
-                }
+                $ins = CurrentAccount::getCreditsSum($credits, $from, $to, true);
+                $outs = CurrentAccount::getDebitsSum($debits, $from, $to, true);
 
                 $propietary_account = array(
                     'id' => $account['cc_id'],

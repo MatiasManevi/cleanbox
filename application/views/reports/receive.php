@@ -44,7 +44,7 @@
                 <?php } ?>
 
                 <table id="receive_table">
-                    <?php if ($receive['principal_credit']['cred_concepto'] != 'Reserva') { ?>
+                    <?php if ($receive['principal_credit']['cred_concepto'] != 'Reserva' && $receive['exist_rent_credit']) { ?>
                         <tr>
                             <td colspan="5">Ref.: contrato de <?php echo $contract['con_tipo'] ?> del inmueble <?php echo $contract['con_domi'] ?></td>
                             <td colspan="2" class="alignRight"><?php echo Date('d-m-Y') ?></td>
@@ -63,6 +63,25 @@
                             </td>
                         </tr>
 
+                        <tr>
+                            <td colspan="4"><?php echo $contract['con_tipo'] == 'Loteo' ? 'Vendedor/es' : 'Locador/es' ?>: <?php echo $propietary['client_name'] ?></td>
+                            <td colspan="2">CUIT: <?php echo $propietary['client_cuit'] ?></td>
+                            <td colspan="1">Fin de Contrato: <?php echo $contract['con_venc'] ?></td>
+                        </tr>
+                   
+                    <?php } else if (!$receive['exist_rent_credit']) { ?>
+                        <tr>
+                            <td colspan="4">Ref.: Inmueble <?php echo $receive['principal_credit']['cred_domicilio'] ?> </td>
+                            <td colspan="2" class="alignRight"><?php echo Date('d-m-Y') ?></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="7">
+                                Recibimos de <?php echo $receive['principal_credit']['cred_depositante'] ?>, la cantidad de
+                                $ <?php echo $receive['total'] . ' ' . $receive['total_letters'] ?> en conceptos detallados a continuación.
+                            </td>
+                        </tr>
+                        
                         <tr>
                             <td colspan="4"><?php echo $contract['con_tipo'] == 'Loteo' ? 'Vendedor/es' : 'Locador/es' ?>: <?php echo $propietary['client_name'] ?></td>
                             <td colspan="2">CUIT: <?php echo $propietary['client_cuit'] ?></td>

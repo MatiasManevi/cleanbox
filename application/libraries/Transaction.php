@@ -1107,10 +1107,12 @@ class Transaction {
                     }
                 }
             } else {
-                $min_debt += self::getPrincipalPaymentDebt($receive_report, $contract);
-                if (!empty($receive_report['other_principal'])) {
-                    foreach ($receive_report['other_principal'] as $other_principal) {
-                        $debt += $other_principal['cred_monto'];
+                if($receive_report['cred_concepto'] != 'Honorarios' && $receive_report['cred_concepto'] != 'Reserva'){
+                    $min_debt += self::getPrincipalPaymentDebt($receive_report, $contract);
+                    if (!empty($receive_report['other_principal'])) {
+                        foreach ($receive_report['other_principal'] as $other_principal) {
+                            $debt += $other_principal['cred_monto'];
+                        }
                     }
                 }
             }

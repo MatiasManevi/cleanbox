@@ -278,6 +278,8 @@ class Credits extends CI_Controller {
                 $this->data['propietary'] = General::getPropietaryClientByCredit($credits_info['credits'][0]);
             }
 
+            $this->data['mail_receive'] = true;
+
             $this->data['content'] = $this->load->view('reports/receive', $this->data, TRUE);
 
             if ($credits_info['send_notification']) {

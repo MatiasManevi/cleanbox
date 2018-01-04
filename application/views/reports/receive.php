@@ -1120,7 +1120,10 @@ a.delete:hover{
 
 <script type="text/javascript">
     $(function(){
-        if(email_receive_renter){
+        // solo estara TRUE al momento de la creacion del credito
+        var mail_receive = <?php echo isset($mail_receive) ? json_decode($mail_receive) : 0; ?>;
+
+        if(mail_receive && email_receive_renter){
             $('.original').css('background', 'white');
 
             var div_content = document.querySelectorAll(".original");

@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `email_receive_renter` TINYINT NOT NULL DEFAULT '0' AFTER `print_copy`;

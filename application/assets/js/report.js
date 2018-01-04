@@ -23,7 +23,13 @@ report.buildReportFromList = function (url, param) {
 };
 
 report.buildReport = function (url, form, container){
-    general_scripts.ajaxSubmit(url, $(form).serialize(), function(response){
+    var params = {};
+    
+    if(typeof form !== 'undefined'){
+        params = $(form).serialize();
+    }
+    
+    general_scripts.ajaxSubmit(url, params, function(response){
         
         if(typeof container === 'undefined'){
             container = '._container';

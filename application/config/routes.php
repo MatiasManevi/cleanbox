@@ -121,6 +121,9 @@ $route['printDebitReceive'] = 'debits/printDebitReceive';
 $route['buildCashReport'] = 'reports/buildCashReport';
 $route['cashReport'] = 'reports/cashReport';
 
+$route['deliveryReports'] = 'reports_delivery/index';
+$route['emailReceiveRenter'] = 'reports_delivery/emailReceiveRenter';
+
 $route['buildAccountReport'] = 'reports/buildAccountReport';
 $route['accountReport'] = 'reports/accountReport';
 
@@ -162,6 +165,8 @@ $route['endedMaintenancesReport'] = 'reports/endedMaintenancesReport';
 
 $route['buildRentersPaymentPercentReport'] = 'reports/buildRentersPaymentPercentReport';
 $route['rentersPaymentPercentReport'] = 'reports/rentersPaymentPercentReport';
+
+$route['buildHonoraryPaymentsReport'] = 'reports/buildHonoraryPaymentsReport';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

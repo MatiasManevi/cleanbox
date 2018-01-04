@@ -41,42 +41,14 @@ class Manager extends CI_Controller {
         //  }
         //  die;
 
-        // $this->sendReports();
 
         $this->basic->repairTables();
 
         $this->data['row_count'] = 0;
- 
-        Contract::declineContracts();
 
         $this->loadHomeData();
 
         $this->load->view('layout', $this->data);
-    }
-
-    public function sendReports() {
-        $settings = User::getUserSettings();
-        $headers = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset = iso - 8859 - 1' . "\r\n";
-        $headers .= 'From: Cleanbox <' . $settings['email'] . '>' . "\r\n";
-
-        $this->sendAccountsBalanceReport($headers, $settings);
-        $this->sendHonoraryDuesReport($headers, $settings);          
-    }
-
-    public function sendAccountsBalanceReport($headers, $settings) {
-        $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-        
-        // Se envia solo si es el ultimo dia del mes, y no se envio antes
-        if(date('d') == date('t') && !Report::wasDelivered('accounts_balance_report', $month)) {
-            $message = Report::buildAccountsBalanceReport($month);
-            mail($settings['email'], 'Reporte mensual de saldos: ' . $month, $message, $headers);
-            Report::saveDelivery('accounts_balance_report', $month);
-        }
-    }
-
-    public function sendHonoraryDuesReport($headers, $settings) {
-
     }
 
     public function loadHomeData() {

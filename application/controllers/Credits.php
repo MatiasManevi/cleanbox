@@ -262,15 +262,10 @@ class Credits extends CI_Controller {
                 $contract = Contract::getContract($credits_info['credits']);
             }
 
-
             $receive_elements = array(
                 'credits' => $credits_info['credits'],
                 'services_control' => $credits_info['services_control']
             );
-
-            if ($credits_info['send_notification']) {
-                Transaction::sendNotification($credits_info['credits']);
-            }
 
             $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
             $this->data['contract'] = $contract;
@@ -284,6 +279,10 @@ class Credits extends CI_Controller {
             }
 
             $this->data['content'] = $this->load->view('reports/receive', $this->data, TRUE);
+
+            if ($credits_info['send_notification']) {
+                Transaction::sendNotification($credits_info['credits']);
+            }
 
             delete_cookie('credits_receive');
 

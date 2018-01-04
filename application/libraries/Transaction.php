@@ -1696,10 +1696,6 @@ class Transaction {
 
         $contract = Contract::getContract($credits);
 
-        $headers = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset = iso - 8859 - 1' . "\r\n";
-        $headers .= 'From: ' . $settings['name'] . ' <' . $settings['email'] . '>' . "\r\n";
-
         $total_amount = 0;
 
         $msg = '<h2>Ya puede pasar por ' . $settings['name'] . '  a cobrar su alquiler</h2>';
@@ -1714,12 +1710,14 @@ class Transaction {
                 $msg .= "<br>";
                 $msg .= "<strong>Concepto Abonado: </strong>" . $credit['cred_concepto'] . ' ' . $credit['cred_mes_alq'] . ". <br><strong>Fecha de pago: </strong>" . $credit['cred_fecha'];
                 $msg .= "<br>";
-                $msg .= "<strong>Monto Abonado: </strong>$ " . $credit['cred_monto'];
-
+                
                 if (Contract::conceptPerceiveGestion($credit['cred_concepto'])) {
-                    $total_amount += $credit['cred_monto'] - ($credit['cred_monto'] * $contract['con_porc']);
+                    $discounted = $credit['cred_monto'] - ($credit['cred_monto'] * $contract['con_porc']);
+                    $total_amount += $discounted;
+                    $msg .= "<strong>Monto Abonado: </strong>$ " . $discounted;
                 } else {
                     $total_amount += $credit['cred_monto'];
+                    $msg .= "<strong>Monto Abonado: </strong>$ " . $credit['cred_monto'];
                 }
 
                 if ($credit['cred_interes'] > 0 && $credit['cred_interes_calculado'] > 0) {
@@ -1731,6 +1729,7 @@ class Transaction {
                     $msg .= "<br>";
                     $msg .= "<strong>Intereses abonados por " . $credit['cred_interes'] . " dia/s de mora: </strong>$ " . $credit['cred_interes_calculado'];
                 }
+
                 if ($credit['cred_iva_calculado'] > 0) {
                     $total_amount += $credit['cred_iva_calculado'];
                     $msg .= "<br>";
@@ -1742,7 +1741,12 @@ class Transaction {
         $msg .= "<br>";
         $msg .= '<h2>Monto total: $ ' . round($total_amount, 2) . '</h2>';
 
-        mail($propietary_client['client_email'], 'Han Pagado su Alquiler!', $msg, $headers);
+        Mailing::send(array(
+            'subject' => "Han Pagado su Alquiler!",
+            'body' => $msg,
+            'is_html' => true,
+            'address' => $propietary_client['client_email']
+        ));
     }
 
 }

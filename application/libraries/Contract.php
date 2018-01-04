@@ -14,6 +14,21 @@
 
 class Contract {
 
+    public static function getHonoraryPayments($contract) {
+        $instance = &get_instance();
+
+        $honorary_payments = $instance->basic->get_where('creditos', array('cred_concepto' => 'Honorarios', 'con_id' => $contract['con_id']))->result_array();
+
+        $honorary_payments2 = $instance->basic->get_where('creditos', array('cred_concepto' => 'Honorarios', 'cred_depositante' => $contract['con_inq']))->result_array();
+
+        foreach ($honorary_payments2 as $honorary_payment2) {
+            if (!in_array($honorary_payment2, $honorary_payments))
+                array_push($honorary_payments, $honorary_payment2);
+        }
+
+        return $honorary_payments;
+    }
+
     public static function contractMustBeMarkedUsed($credit, $use_contract) {
         if ($use_contract) {
             return $use_contract;

@@ -14,6 +14,22 @@
 
 class Report {
 
+    public static function buildHonoraryPaymentsReport() {
+        $instance = &get_instance();
+
+        $contracts = $instance->basic->get_all('contratos', 'con_id')->result_array();
+        $honorary_payments = array();
+        
+        foreach ($contracts as $contract) {
+            $honorary_payments[$contract['con_id']]['honoraries'] = Contract::getHonoraryPayments($contract);
+            $honorary_payments[$contract['con_id']]['contract'] = $contract;
+        }
+        
+        $instance->data['honorary_payments'] = $honorary_payments;
+
+        return $instance->load->view('reports/honorary_payments_report', $instance->data, TRUE);
+    }
+
     public static function wasDelivered($report_name, $month) {
         $instance = &get_instance();
         

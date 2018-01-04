@@ -60,6 +60,7 @@
 <script type="text/javascript" src="<?php echo asset_url() ?>js/cleanbox_alert.js?<?php echo filemtime('application/assets/js/cleanbox_alert.js') ?>"></script>
 <script type="text/javascript" src="<?php echo asset_url() ?>js/report.js?<?php echo filemtime('application/assets/js/report.js') ?>"></script>
 <script type="text/javascript" src="<?php echo asset_url() ?>js/transfers.js?<?php echo filemtime('application/assets/js/transfers.js') ?>"></script>
+<script type="text/javascript" src="<?php echo asset_url() ?>js/html2canvas.js?<?php echo filemtime('application/assets/js/html2canvas.js') ?>"></script>
 
 <script>
     var list_autocomplete = '<?php echo site_url('manager/autocomplete'); ?>';
@@ -84,6 +85,7 @@
     var show_credit_report_list = '<?php echo site_url('showCreditReportList') ?>';
     var show_debit_report_list = '<?php echo site_url('showDebitReportList') ?>';
     var print_debit_receive = '<?php echo site_url('printDebitReceive') ?>';
+    var email_receive_renter_url = '<?php echo site_url('emailReceiveRenter') ?>';
     var print_debit_receive_list = '<?php echo site_url('printDebitReceiveList') ?>';
     var search_credit_concept = '<?php echo site_url('searchCreditConcept') ?>';
     var validate_contract_parts = '<?php echo site_url('validateContractParts') ?>';
@@ -98,6 +100,7 @@
     var code_control = <?php echo json_decode(User::codeControl()); ?>;
     var print_receive = <?php echo json_decode(User::printReceive()); ?>;
     var iva_percentaje = <?php echo json_decode(User::getUserIVATAX()); ?>;
+    var email_receive_renter = <?php echo json_decode(User::emailReceiveRenter()); ?>;
     var BASE_URL = '<?php echo base_url(); ?>';
     var LOADING_HTML ='<div id="loading" style="display:none"><div class="shadow"></div><img src="<?php echo img_url(); ?>ajax-loader.gif"  alt="loading..."/></div>';    
     var LOADING_LIST_HTML ='<div id="loading_list" style="display:none"><div class="shadow"></div><img src="<?php echo img_url(); ?>ajax-loader.gif"  alt="loading..."/></div>';    

@@ -15,6 +15,12 @@
 
 class Reports extends CI_Controller {
 
+    public function buildHonoraryPaymentsReport() {
+        $response['status'] = true;
+        $response['html'] = Report::buildHonoraryPaymentsReport();
+        echo json_encode($response);
+    }
+
     public function accountsBalanceReport() {
         $this->data['content'] = $this->load->view('reports/accounts_balance', '', TRUE);
         $this->load->view('layout', $this->data);
@@ -29,7 +35,7 @@ class Reports extends CI_Controller {
                 $response['html'] = Report::buildAccountsBalanceReport($month);
             } else {
                 $response['status'] = false;
-                $response['error'] = 'Elegi un mes :)';
+                $response['error'] = 'Debes elegir un mes';
             }
         } catch (Exception $exc) {
             $response['status'] = false;

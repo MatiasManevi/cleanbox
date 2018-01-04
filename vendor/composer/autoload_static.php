@@ -8,9 +8,11 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
 {
     public static $files = array (
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        'ddc0a4d7e61c0286f0f8593b1903e894' => __DIR__ . '/..' . '/clue/stream-filter/src/functions.php',
-        '8cff32064859f4559445b89279f3199c' => __DIR__ . '/..' . '/php-http/message/src/filters.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -22,23 +24,22 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
-        'H' => 
+        'I' => 
         array (
-            'Http\\Promise\\' => 13,
-            'Http\\Message\\MultipartStream\\' => 29,
-            'Http\\Message\\' => 13,
-            'Http\\Discovery\\' => 15,
-            'Http\\Client\\Curl\\' => 17,
-            'Http\\Client\\' => 12,
+            'Intervention\\Image\\' => 19,
+            'Illuminate\\Support\\' => 19,
+            'Illuminate\\Contracts\\' => 21,
         ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
         ),
         'C' => 
         array (
-            'Clue\\StreamFilter\\' => 18,
             'Carbon\\' => 7,
         ),
     );
@@ -56,38 +57,33 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Http\\Promise\\' => 
+        'PHPMailer\\PHPMailer\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-http/promise/src',
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
-        'Http\\Message\\MultipartStream\\' => 
+        'Intervention\\Image\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-http/multipart-stream-builder/src',
+            0 => __DIR__ . '/..' . '/intervention/image/src/Intervention/Image',
         ),
-        'Http\\Message\\' => 
+        'Illuminate\\Support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
-            1 => __DIR__ . '/..' . '/php-http/message/src',
+            0 => __DIR__ . '/..' . '/illuminate/support',
         ),
-        'Http\\Discovery\\' => 
+        'Illuminate\\Contracts\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-http/discovery/src',
-        ),
-        'Http\\Client\\Curl\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/curl-client/src',
-        ),
-        'Http\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/httplug/src',
+            0 => __DIR__ . '/..' . '/illuminate/contracts',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'Clue\\StreamFilter\\' => 
+        'GuzzleHttp\\Promise\\' => 
         array (
-            0 => __DIR__ . '/..' . '/clue/stream-filter/src',
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
         'Carbon\\' => 
         array (
@@ -96,11 +92,18 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
     );
 
     public static $prefixesPsr0 = array (
-        'M' => 
+        'S' => 
         array (
-            'Mailgun' => 
+            'Spatie\\Browsershot' => 
             array (
-                0 => __DIR__ . '/..' . '/mailgun/mailgun-php/src',
+                0 => __DIR__ . '/..' . '/spatie/browsershot/src',
+            ),
+        ),
+        'D' => 
+        array (
+            'Doctrine\\Common\\Inflector\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/inflector/lib',
             ),
         ),
     );

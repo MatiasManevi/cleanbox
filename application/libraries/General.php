@@ -14,6 +14,11 @@
 
 class General {
 
+    public static function isLastDayInMonth() {
+        return true;
+        return date('d') == date('t');
+    }
+
     public static function loadModels($instance) {
         $instance->load->model('basic');
     }
@@ -717,6 +722,14 @@ class General {
             $propietary = $instance->basic->get_where('clientes', array('client_name' => $credit['cred_cc']))->row_array();
         }
         /* solo para davinia y rima */
+
+        return $propietary;
+    }
+
+    public static function getRenterClientByCredit($credit) {
+        $instance = &get_instance();
+
+        $propietary = $instance->basic->get_where('clientes', array('client_name' => $credit['cred_depositante']))->row_array();
 
         return $propietary;
     }

@@ -54,7 +54,9 @@ class CI_Controller {
 
 		log_message('debug', "Controller Class Initialized");
                 
-                User::checkLogin();
+        User::checkLogin();
+
+        Contract::declineContracts();
 
 	}
 

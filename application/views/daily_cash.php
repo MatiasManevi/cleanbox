@@ -58,6 +58,16 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
+
+<script>
+    $(function(){
+        $.ajax({
+            url: '<?php echo site_url("deliveryReports"); ?>',
+            type:'POST',
+            dataType: 'json'
+        });
+    });
+</script>
+

@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Mailgun' => array($vendorDir . '/mailgun/mailgun-php/src'),
+    'Spatie\\Browsershot' => array($vendorDir . '/spatie/browsershot/src'),
+    'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib'),
 );

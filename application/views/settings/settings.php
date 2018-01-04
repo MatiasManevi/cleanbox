@@ -73,6 +73,8 @@
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_copy" name="print_copy" <?php echo $settings['print_copy'] ? 'checked' : ''?> value="<?php echo $settings['print_copy']; ?>"/><label for="print_copy">Imprimir copia de recibos</label>
 
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_debit" name="print_debit" <?php echo $settings['print_debit'] ? 'checked' : ''?> value="<?php echo $settings['print_debit']; ?>"/><label for="print_debit">Imprimir recibo para debitos</label>
+
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="email_receive_renter" name="email_receive_renter" <?php echo $settings['email_receive_renter'] ? 'checked' : ''?> value="<?php echo $settings['email_receive_renter']; ?>"/><label for="email_receive_renter">Enviar recibos por email a Inquilinos</label>
             
             <div class="section_selects">
                 <label>Tipo de devolucion de prestamos</label>

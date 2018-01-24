@@ -19,8 +19,8 @@ if (!defined('BASEPATH'))
  */
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
     $config['base_url'] = "http://localhost/cleanbox";
-} elseif (strpos($_SERVER['SERVER_NAME'], 'pc-admin') !== FALSE) {
-    $config['base_url'] = "http://pc-admin/cleanbox";
+} elseif (strpos($_SERVER['SERVER_NAME'], 'hackzeit') !== FALSE) {
+    $config['base_url'] = "http://hackzeit.co/projects/";
 }
 
 /*

@@ -46,8 +46,8 @@ if(strpos($_SERVER['SERVER_NAME'],'localhost') !== FALSE){
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'cleanbox';
-$db['default']['password'] = 'cleanbox';
+$db['default']['username'] = 'root';
+$db['default']['password'] = '';
 $db['default']['database'] = 'cleanbox';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';

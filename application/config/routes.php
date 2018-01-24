@@ -48,7 +48,7 @@ $route['(\w{2})'] = 'manager';
 
 //$route['(.*)'] = 'manager/$1';
 
-$route['default_controller'] = "manager";
+$route['default_controller'] = "Manager";
 $route['scaffolding_trigger'] = "";
 
 $route['login'] = 'manager/login';
@@ -60,103 +60,103 @@ $route['getTransactionItems'] = 'manager/getTransactionItems';
 $route['generateCode'] = 'manager/generateCode';
 $route['authorizeCode'] = 'manager/authorizeCode';
 
-$route['settings'] = 'settings';
-$route['saveSettings'] = 'settings/save';
+$route['settings'] = 'Settings';
+$route['saveSettings'] = 'Settings/save';
 
-$route['clients'] = 'clients';
-$route['saveClient'] = 'clients/save';
+$route['clients'] = 'Clients';
+$route['saveClient'] = 'Clients/save';
 
-$route['users'] = 'users';
-$route['saveUser'] = 'users/save';
+$route['users'] = 'Users';
+$route['saveUser'] = 'Users/save';
 
 $route['accounts'] = 'Accounts';
-$route['saveAccount'] = 'accounts/save';
+$route['saveAccount'] = 'Accounts/save';
 
-$route['properties'] = 'properties';
-$route['saveProperty'] = 'properties/save';
+$route['properties'] = 'Properties';
+$route['saveProperty'] = 'Properties/save';
 
-$route['comentaries'] = 'comentaries';
-$route['saveComentary'] = 'comentaries/save';
+$route['comentaries'] = 'Comentaries';
+$route['saveComentary'] = 'Comentaries/save';
 
-$route['contracts'] = 'contracts';
-$route['saveContract'] = 'contracts/save';
-$route['validateContractParts'] = 'contracts/validateContractParts';
+$route['contracts'] = 'Contracts';
+$route['saveContract'] = 'Contracts/save';
+$route['validateContractParts'] = 'Contracts/validateContractParts';
 
 $route['concepts'] = 'concepts';
 $route['saveConcept'] = 'concepts/save';
 
-$route['providers'] = 'providers';
-$route['saveProvider'] = 'providers/save';
-$route['getProviders'] = 'providers/getProviders';
+$route['providers'] = 'Providers';
+$route['saveProvider'] = 'Providers/save';
+$route['getProviders'] = 'Providers/getProviders';
 
 $route['getEntitiesOnScrollDown'] = 'manager/getEntitiesOnScrollDown';
 
-$route['providersRols'] = 'providers_rols';
-$route['saveProviderRol'] = 'providers_rols/save';
+$route['providersRols'] = 'Providers_rols';
+$route['saveProviderRol'] = 'Providers_rols/save';
 
-$route['maintenances'] = 'maintenances';
-$route['saveMaintenance'] = 'maintenances/save';
-$route['maintenanceReport/(:num)'] = 'maintenances/maintenanceReport/$1';
+$route['maintenances'] = 'Maintenances';
+$route['saveMaintenance'] = 'Maintenances/save';
+$route['maintenanceReport/(:num)'] = 'Maintenances/maintenanceReport/$1';
 
-$route['migrations'] = 'migrations';
-$route['saveMigration'] = 'migrations/save';
+$route['migrations'] = 'Migrations';
+$route['saveMigration'] = 'Migrations/save';
 
-$route['transfers'] = 'transfers';
-$route['transferToSafeBox'] = 'transfers/transferToSafeBox';
-$route['transferToCash'] = 'transfers/transferToCash';
+$route['transfers'] = 'Transfers';
+$route['transferToSafeBox'] = 'Transfers/transferToSafeBox';
+$route['transferToCash'] = 'Transfers/transferToCash';
 
-$route['credits'] = 'credits';
-$route['saveCredit'] = 'credits/save';
-$route['searchCreditConcept'] = 'credits/searchCreditConcept';
-$route['showCreditReport'] = 'credits/showCreditReport';
-$route['showCreditReportList/(:num)'] = "credits/showCreditReportList/$1";
-$route['sendTransactionNotification'] = 'credits/sendTransactionNotification';
+$route['credits'] = 'Credits';
+$route['saveCredit'] = 'Credits/save';
+$route['searchCreditConcept'] = 'Credits/searchCreditConcept';
+$route['showCreditReport'] = 'Credits/showCreditReport';
+$route['showCreditReportList/(:num)'] = "Credits/showCreditReportList/$1";
+$route['sendTransactionNotification'] = 'Credits/sendTransactionNotification';
 
-$route['debits'] = 'debits';
-$route['saveDebit'] = 'debits/save';
-$route['showDebitReportList/(:num)'] = 'debits/showDebitReportList/$1';
+$route['debits'] = 'Debits';
+$route['saveDebit'] = 'Debits/save';
+$route['showDebitReportList/(:num)'] = 'Debits/showDebitReportList/$1';
 
-$route['buildCashReport'] = 'reports/buildCashReport';
-$route['cashReport'] = 'reports/cashReport';
+$route['buildCashReport'] = 'Reports/buildCashReport';
+$route['cashReport'] = 'Reports/cashReport';
 
-$route['buildAccountReport'] = 'reports/buildAccountReport';
-$route['accountReport'] = 'reports/accountReport';
+$route['buildAccountReport'] = 'Reports/buildAccountReport';
+$route['accountReport'] = 'Reports/accountReport';
 
-$route['buildPropietaryRenditionsReport'] = 'reports/buildPropietaryRenditionsReport';
-$route['propietaryRenditionsReport'] = 'reports/propietaryRenditionsReport';
+$route['buildPropietaryRenditionsReport'] = 'Reports/buildPropietaryRenditionsReport';
+$route['propietaryRenditionsReport'] = 'Reports/propietaryRenditionsReport';
 
-$route['buildpropietaryLoansReport'] = 'reports/buildpropietaryLoansReport';
-$route['propietaryLoansReport'] = 'reports/propietaryLoansReport';
+$route['buildpropietaryLoansReport'] = 'Reports/buildpropietaryLoansReport';
+$route['propietaryLoansReport'] = 'Reports/propietaryLoansReport';
 
-$route['buildRenterPaymentHistorialReport'] = 'reports/buildRenterPaymentHistorialReport';
-$route['renterPaymentHistorialReport'] = 'reports/renterPaymentHistorialReport';
+$route['buildRenterPaymentHistorialReport'] = 'Reports/buildRenterPaymentHistorialReport';
+$route['renterPaymentHistorialReport'] = 'Reports/renterPaymentHistorialReport';
 
-$route['buildRentersInDefaultReport'] = 'reports/buildRentersInDefaultReport';
-$route['rentersInDefaultReport'] = 'reports/rentersInDefaultReport';
+$route['buildRentersInDefaultReport'] = 'Reports/buildRentersInDefaultReport';
+$route['rentersInDefaultReport'] = 'Reports/rentersInDefaultReport';
 
-$route['buildPendingRenditionsReport'] = 'reports/buildPendingRenditionsReport';
-$route['pendingRenditionsReport'] = 'reports/pendingRenditionsReport';
+$route['buildPendingRenditionsReport'] = 'Reports/buildPendingRenditionsReport';
+$route['pendingRenditionsReport'] = 'Reports/pendingRenditionsReport';
 
-$route['buildRenditionsPercentReport'] = 'reports/buildRenditionsPercentReport';
-$route['renditionsPercentReport'] = 'reports/renditionsPercentReport';
+$route['buildRenditionsPercentReport'] = 'Reports/buildRenditionsPercentReport';
+$route['renditionsPercentReport'] = 'Reports/renditionsPercentReport';
 
-$route['buildContractsDeclinationReport'] = 'reports/buildContractsDeclinationReport';
-$route['contractsDeclinationReport'] = 'reports/contractsDeclinationReport';
+$route['buildContractsDeclinationReport'] = 'Reports/buildContractsDeclinationReport';
+$route['contractsDeclinationReport'] = 'Reports/contractsDeclinationReport';
 
-$route['buildAllConceptsMovementsReport'] = 'reports/buildAllConceptsMovementsReport';
-$route['allConceptsMovementsReport'] = 'reports/allConceptsMovementsReport';
+$route['buildAllConceptsMovementsReport'] = 'Reports/buildAllConceptsMovementsReport';
+$route['allConceptsMovementsReport'] = 'Reports/allConceptsMovementsReport';
 
-$route['buildBankTransactionsReport'] = 'reports/buildBankTransactionsReport';
-$route['bankTransactionsReport'] = 'reports/bankTransactionsReport';
+$route['buildBankTransactionsReport'] = 'Reports/buildBankTransactionsReport';
+$route['bankTransactionsReport'] = 'Reports/bankTransactionsReport';
 
-$route['buildGeneralBalanceReport'] = 'reports/buildGeneralBalanceReport';
-$route['generalBalanceReport'] = 'reports/generalBalanceReport';
+$route['buildGeneralBalanceReport'] = 'Reports/buildGeneralBalanceReport';
+$route['generalBalanceReport'] = 'Reports/generalBalanceReport';
 
-$route['buildEndedMaintenancesReport'] = 'reports/buildEndedMaintenancesReport';
-$route['endedMaintenancesReport'] = 'reports/endedMaintenancesReport';
+$route['buildEndedMaintenancesReport'] = 'Reports/buildEndedMaintenancesReport';
+$route['endedMaintenancesReport'] = 'Reports/endedMaintenancesReport';
 
-$route['buildRentersPaymentPercentReport'] = 'reports/buildRentersPaymentPercentReport';
-$route['rentersPaymentPercentReport'] = 'reports/rentersPaymentPercentReport';
+$route['buildRentersPaymentPercentReport'] = 'Reports/buildRentersPaymentPercentReport';
+$route['rentersPaymentPercentReport'] = 'Reports/rentersPaymentPercentReport';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

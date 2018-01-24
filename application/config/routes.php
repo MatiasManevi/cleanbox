@@ -69,7 +69,7 @@ $route['saveClient'] = 'clients/save';
 $route['users'] = 'users';
 $route['saveUser'] = 'users/save';
 
-$route['accounts'] = 'accounts';
+$route['accounts'] = 'Accounts';
 $route['saveAccount'] = 'accounts/save';
 
 $route['properties'] = 'properties';

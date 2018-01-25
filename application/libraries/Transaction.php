@@ -1362,7 +1362,6 @@ class Transaction {
 
     public static function createDebit($debit, $account_type, &$cc_to_impact) {
         $instance = &get_instance();
-        General::loadModels($instance);
 
         // Impacta debito puro en la cuenta corriente del propietario
         $cc_to_impact[$account_type] -= $debit['deb_monto'];
@@ -1638,7 +1637,6 @@ class Transaction {
 
     public static function impactDebit($debit) {
         $instance = &get_instance();
-        General::loadModels($instance);
 
         $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => $debit['deb_cc']))->row_array();
 

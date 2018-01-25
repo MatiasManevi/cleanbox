@@ -29,6 +29,7 @@ class Transfers extends CI_Controller {
 
         try {
             $amount = $this->input->post('amount');
+            $reason = $this->input->post('reason');
 
             if ($amount) {
                 $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
@@ -40,7 +41,7 @@ class Transfers extends CI_Controller {
                     $debit = array(
                         'deb_cc' => $safe_box['cc_prop'],
                         'cc_id' => $safe_box['cc_id'],
-                        'deb_concepto' => 'Transferencia a CAJA FISICA',
+                        'deb_concepto' => 'Transferencia a CAJA FISICA: ' . $reason,
                         'deb_monto' => $amount,
                         'deb_mes' => General::getStringMonth(date('m')) . ' ' . Date('Y'),
                         'deb_fecha' => Date('d-m-Y'),
@@ -78,6 +79,8 @@ class Transfers extends CI_Controller {
 
         try {
             $amount = $this->input->post('amount');
+            $reason = $this->input->post('reason');
+            
             if ($amount) {
                 $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
 
@@ -92,7 +95,7 @@ class Transfers extends CI_Controller {
                         'cc_id' => $safe_box['cc_id'],
                         'cred_mes_alq' => General::getStringMonth(date('m')) . ' ' . Date('Y'),
                         'cred_fecha' => Date('d-m-Y'),
-                        'cred_concepto' => 'Transferencia a CAJA FUERTE',
+                        'cred_concepto' => 'Transferencia a CAJA FUERTE: ' . $reason,
                         'cred_monto' => $amount,
                         'is_transfer' => 1,
                         'trans' => Transaction::getLastTransactionId()

@@ -129,6 +129,20 @@ class User {
     }
 
     /**
+     * Devuelve el email de la inmobiliaria
+     * @return string 
+     */
+    public static function getReportsEmail() {
+        $settings = self::getUserSettings();
+
+        if (!empty($settings)) {
+            return $settings['reports_email'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Especifica si se genera un recibo para imprimir luego de cobrar un alquiler
      * @return int 
      */

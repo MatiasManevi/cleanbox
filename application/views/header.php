@@ -54,7 +54,7 @@
                             <li><a href="<?php echo site_url('contractsDeclinationReport') ?>">Vencimientos de Contratos</a></li>
                             <li><a href="<?php echo site_url('allConceptsMovementsReport') ?>">General de Conceptos</a></li>              
                             <li><a href="<?php echo site_url('bankTransactionsReport') ?>">Transacciones Bancarias</a></li>              
-                            <li><a href="javascript:;" onclick="report.buildReport('<?php echo site_url('buildHonoraryPaymentsReport') ?>');">Reporte Estado Honorarios</a></li>              
+                            <li><a href="javascript:;" onclick="report.buildReport('<?php echo site_url('buildHonoraryPaymentsReport') ?>');">Reporte Pago Honorarios</a></li>              
                         </ul>
                     </li>  
                     <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>                                  

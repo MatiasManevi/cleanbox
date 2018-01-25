@@ -16,6 +16,8 @@ class Settings extends CI_Controller {
 
     public function index() {
         $this->data['settings'] = User::getUserSettings();
+        $this->data['reports_config'] = $this->basic->get_all('reports_config')->result_array();
+        $this->data['current_accounts'] = $this->basic->get_where('cuentas_corrientes', array(), 'cc_prop', '')->result_array();
         $this->data['content'] = $this->load->view('settings/settings', $this->data, TRUE);
         
         $this->load->view('layout', $this->data);
@@ -26,6 +28,7 @@ class Settings extends CI_Controller {
 
         try {
             $settings = $this->basic->get_where('settings', array('id' => $this->input->post('id')))->row_array();
+            $reports_config = $this->input->post('reports_config');
 
             switch ($this->input->post('setting_section')) {
                 case 'bussines':
@@ -36,6 +39,9 @@ class Settings extends CI_Controller {
                     break;
                 case 'tax':
                     $success = 'Configuracion de porcentajes impositivos guardada!';
+                    break;
+                case 'report_delivery':
+                    $success = 'Configuracion de envio de reportes guardada!';
                     break;
             }
 
@@ -48,6 +54,14 @@ class Settings extends CI_Controller {
             }
 
             $this->basic->save('settings', 'id', $settings);
+
+            foreach ($reports_config as $report_config) {
+                if(isset($report_config['current_accounts'])){
+                    $report_config['data'] = serialize($report_config['current_accounts']);
+                    unset($report_config['current_accounts']);
+                }
+                $this->basic->save('reports_config', 'id', $report_config);
+            }
 
             $response['status'] = true;
             $response['success'] = $success;

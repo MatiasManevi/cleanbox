@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `reports_email` VARCHAR(500) NOT NULL ;

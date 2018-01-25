@@ -2,6 +2,7 @@
 <ul id="ccnav" class="nav nav-tabs">
     <li class="active _add_tab_button"><a href="#bussines" data-toggle="tab">La empresa</a></li>
     <li><a href="#system" data-toggle="tab">Sistema</a></li>
+    <li><a href="#report_delivery" data-toggle="tab">Envio de Reportes</a></li>
     <li><a href="#tax" data-toggle="tab">Porcentajes impositivos</a></li>
 </ul>
 
@@ -38,7 +39,7 @@
                 <label>Logo de la empresa</label>
                 <div class="logo _logo">
                     <?php if (isset($settings) && $settings['logo'] != '') { ?>
-                    <img class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
+                    <img height="200" width="200" class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
                     <input type="hidden" name="logo" id="image" value="<?php echo $settings['logo'] ?>"/>
                     <a class="close _remove_image" href="javascript:;" onclick="general_scripts.removeImage('bussines_logos', '._logo');" title="Eliminar">[&times;]</a>
                     <?php } else { ?>
@@ -59,7 +60,7 @@
         <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;" enctype="multipart/form-data"> 
 
             <div class="section_description">
-                <label>Registra configuraciones relacionadas al funcionamiento del sistema, adaptalo a tu necesidad!</label>
+                <label>COnfigura el funcionamiento del sistema, adáptalo a tu necesidad</label>
             </div>
 
             <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
@@ -73,8 +74,8 @@
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_copy" name="print_copy" <?php echo $settings['print_copy'] ? 'checked' : ''?> value="<?php echo $settings['print_copy']; ?>"/><label for="print_copy">Imprimir copia de recibos</label>
 
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_debit" name="print_debit" <?php echo $settings['print_debit'] ? 'checked' : ''?> value="<?php echo $settings['print_debit']; ?>"/><label for="print_debit">Imprimir recibo para debitos</label>
-
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="email_receive_renter" name="email_receive_renter" <?php echo $settings['email_receive_renter'] ? 'checked' : ''?> value="<?php echo $settings['email_receive_renter']; ?>"/><label for="email_receive_renter">Enviar recibos por email a Inquilinos</label>
+<!-- 
+            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="email_receive_renter" name="email_receive_renter" <?php echo $settings['email_receive_renter'] ? 'checked' : ''?> value="<?php echo $settings['email_receive_renter']; ?>"/><label for="email_receive_renter">Enviar recibos por email a Inquilinos</label> -->
             
             <div class="section_selects">
                 <label>Tipo de devolucion de prestamos</label>
@@ -115,7 +116,47 @@
             <button class="btn btn-primary submit_button" type="submit">Guardar</button>
         </form>
     </div>
+    
+    <div class="tab-pane fade" id="report_delivery">
+        <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;"> 
 
+            <div class="section_description">
+                <label>Configura el envio automatico de reportes a tu email</label>
+            </div>
+
+            <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
+            <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
+            <input value="report_delivery" name="setting_section" type="hidden"/>
+            
+            
+            <input value="<?php echo $settings['reports_email']; ?>" placeholder="Email al que se enviaran los reportes" required name="reports_email" type="email" class="form-control section_input ui-autocomplete-input"/>
+            
+            <?php foreach($reports_config as $report_config) {?>
+                <?php $id = isset($report_config) ? $report_config['id'] : 'no' ?>
+                <div class="section_selects">
+                    <label><?php echo $report_config['report_name'] ?></label>
+                    <input value="<?php echo $report_config['id']; ?>" name="reports_config[<?php echo $id ?>][id]" type="hidden"/>
+                    <select title="Elija la frecuencia" class="form-control ui-autocomplete-input" name="reports_config[<?php echo $id ?>][frequency]" id="accounts_balance_report_freq">
+                        <option <?php echo $report_config['frequency'] == 'no_send' ? 'selected' : '' ?> value="no_send">No enviar</option>
+                        <option <?php echo $report_config['frequency'] == 'monthly' ? 'selected' : '' ?> value="monthly">Enviar mensualmente</option>
+                    </select>
+                
+                    <?php if ($report_config['report_name'] == 'Reporte de Cuentas Corrientes especificas') {?>
+                        <select style="height: 200px;margin-top: 5px" name="reports_config[<?php echo $id ?>][current_accounts][]" id="current_accounts" multiple class="form-control ui-autocomplete-input">     
+                            <?php foreach ($current_accounts as $current_account) {?>
+                                <?php $accounts = unserialize($report_config['data']); ?>
+                                <option <?php echo is_array($accounts) && in_array($current_account['cc_id'], $accounts) ? 'selected' : '' ?> value="<?php echo $current_account['cc_id'] ?>"><?php echo $current_account['cc_prop'] ?></option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
+
+                </div> 
+            <?php } ?>
+
+            <button class="btn btn-primary submit_button" type="submit">Guardar</button>
+        </form>
+    </div>
+    
     <div class="tab-pane fade" id="tax">
         <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;" enctype="multipart/form-data"> 
 

@@ -15,31 +15,36 @@
 class Reports_delivery extends CI_Controller {
 
     public function index() {
-        $reports_config = $this->basic->get_all('reports_config')->result_array();
+        $reports_email = User::getReportsEmail();
 
-        ini_set('memory_limit', '256M');
+        if (filter_var($reports_email, FILTER_VALIDATE_EMAIL)) {
+ 
+            $reports_config = $this->basic->get_all('reports_config')->result_array();
 
-        foreach ($reports_config as $report_config) {
-            if($report_config['frequency'] != 'no_send'){
-                switch ($report_config['report_name']) {
-                    case 'Reporte mensual de balances':
-                        $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-                        $this->sendAccountsBalanceReport($month);
-                        break;
-                    case 'Reporte Pago de Honorarios':
-                        $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-                        $this->sendHonoraryDuesReport($month);
-                        break;
-                    case 'Reporte de Cuentas Corrientes especificas':
-                        $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-                        $this->sendCurrentAccountsReport($month, unserialize($report_config['data']));
-                        break;    
-                }
-            }    
+            ini_set('memory_limit', '256M');
+
+            foreach ($reports_config as $report_config) {
+                if($report_config['frequency'] != 'no_send'){
+                    switch ($report_config['report_name']) {
+                        case 'Reporte mensual de balances':
+                            $month = General::getStringMonth(date('m')) . ' ' . date('Y');
+                            $this->sendAccountsBalanceReport($reports_email, $month);
+                            break;
+                        case 'Reporte Pago de Honorarios':
+                            $month = General::getStringMonth(date('m')) . ' ' . date('Y');
+                            $this->sendHonoraryDuesReport($reports_email, $month);
+                            break;
+                        case 'Reporte de Cuentas Corrientes especificas':
+                            $month = General::getStringMonth(date('m')) . ' ' . date('Y');
+                            $this->sendCurrentAccountsReport($reports_email, $month, unserialize($report_config['data']));
+                            break;    
+                    }
+                }    
+            }
         }
     }
 
-    public function sendCurrentAccountsReport($month, $current_accounts) {
+    public function sendCurrentAccountsReport($reports_email, $month, $current_accounts) {
         $month_string = trim(preg_replace("/[^^A-Za-z (),.]/", "", $month));
         $month_number = General::getMonthNumber($month_string);
         $year = trim(preg_replace("/[^0-9 (),.]/", "", $month));
@@ -68,7 +73,7 @@ class Reports_delivery extends CI_Controller {
                     'report_root' => $report_root,
                     'report_file_name' => $report_file_name,
                     'is_html' => false,
-                    'address' => User::getReportsEmail()
+                    'address' => $reports_email
                 ));
 
                 if ($status) {
@@ -78,7 +83,7 @@ class Reports_delivery extends CI_Controller {
         }
     }
 
-    public function sendAccountsBalanceReport($month) {
+    public function sendAccountsBalanceReport($reports_email, $month) {
 
         if(General::isLastDayInMonth() && !Report::wasDelivered('accounts_balance_report', $month)) {
             $html = Report::buildAccountsBalanceReport($month);
@@ -97,7 +102,7 @@ class Reports_delivery extends CI_Controller {
                 'report_root' => $report_root,
                 'report_file_name' => $report_file_name,
                 'is_html' => false,
-                'address' => User::getBussinesEmail()
+                'address' => $reports_email
             ));
 
             if ($status) {
@@ -106,7 +111,7 @@ class Reports_delivery extends CI_Controller {
         }
     }
 
-    public function sendHonoraryDuesReport($month) {
+    public function sendHonoraryDuesReport($reports_email, $month) {
 
         if(General::isLastDayInMonth() && !Report::wasDelivered('honorary_payments_report', $month)) {
             $html = Report::buildHonoraryPaymentsReport();
@@ -124,7 +129,7 @@ class Reports_delivery extends CI_Controller {
                 'report_root' => $report_root,
                 'report_file_name' => $report_file_name,
                 'is_html' => false,
-                'address' => User::getBussinesEmail()
+                'address' => $reports_email
             ));
 
             if ($status) {
@@ -142,7 +147,7 @@ class Reports_delivery extends CI_Controller {
 
             $renter = General::getRenterClientByCredit($credits_info['credits'][0]);
 
-            if($renter && strlen($renter['client_email']) > 0){ 
+            if($renter && strlen($renter['client_email']) > 0 && filter_var($renter['client_email'], FILTER_VALIDATE_EMAIL)){ 
 
                 $report_file_name = "Recibo_".$renter['client_id'].".jpeg";
 

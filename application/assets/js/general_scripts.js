@@ -22,6 +22,7 @@ general_scripts.init = function (){
     general_scripts.disableEnterKeyInForms();
     general_scripts.preventLoseUnsavedForms();
     general_scripts.bindDatepicker($('._datepicker_filter'));
+    general_scripts.bindDatepickerMonth($('._datepicker_filter_month'));
 };
 
 users.initComponents = function () {
@@ -629,6 +630,24 @@ general_scripts.bindDatepicker = function ($input, min_date) {
         duration: "slow",
         maxDate: max_date,
         minDate: min_date
+    });
+};
+
+general_scripts.bindDatepickerMonth = function ($input, min_date) {
+    var max_date = "+15y";
+
+    $input.datepicker({
+        monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+        monthNamesShort: [ "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" ],
+        changeMonth: true,
+        changeYear: true,
+        duration: "fast",
+        maxDate: "+15y",
+        dateFormat: 'MM yy',
+        onClose: function(dateText, inst) { 
+            // $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            // $input.blur();
+        }
     });
 };
 

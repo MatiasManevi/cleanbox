@@ -104,7 +104,7 @@ credit.initSearchers = function(){
    
     general_scripts.bindInputAutocomplete($('._filter_renter'), 'clientes', 'client_id', 'client_name');
    
-    general_scripts.bindInputAutocomplete($('._filter_concept'), 'conceptos', 'conc_id', 'conc_desc', 'Entrada');
+    general_scripts.bindInputAutocomplete($('._filter_concept'), 'conceptos', 'conc_id', 'conc_desc', 'both');
       
     general_scripts.bindInputAutocomplete(credit.cred_depositante, 'clientes', 'client_id', 'client_name', false, function(response){
         $.ajax({

@@ -88,6 +88,18 @@ Class Basic extends CI_Model {
         return $this->db->get_where($table, $where_array);
     }
 
+    function like_and_where($table, $where_like = false, $where = false) {
+        if($where_like){
+            $this->db->like($where_like);
+        }
+
+        if($where){
+            $this->db->where($where);
+        }
+        
+        return $this->db->get($table);
+    }
+
     function del($table, $id_field, $id) {
         return $this->db->delete($table, array($id_field => $id));
     }

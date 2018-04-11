@@ -42,7 +42,7 @@ class Manager extends CI_Controller {
         //  die;
 
 
-        $this->basic->repairTables();
+        // $this->basic->repairTables();
 
         $this->data['row_count'] = 0;
 
@@ -404,7 +404,15 @@ class Manager extends CI_Controller {
         return $maintenances;
     }
 
-    public function getDebitsFiltered($account, $concept) {
+    public function getDebitsFiltered($account, $concept, $month) {
+        return $this->basic->like_and_where('debitos', array(
+            'deb_cc' => $account,
+            'deb_mes' => $month,
+            'deb_concepto' => $concept
+        ), array(
+            'is_transfer' => 0
+        ))->result_array();
+
         if ($account && $concept)
             return $this->basic->get_where('debitos', array('deb_cc' => $account, 'deb_concepto' => $concept, 'is_transfer' => 0), 'deb_id')->result_array();
         if ($account && !$concept)
@@ -415,7 +423,16 @@ class Manager extends CI_Controller {
             return $this->basic->get_where('debitos', array('is_transfer' => 0), 'deb_id')->result_array();
     }
 
-    public function getCreditsFiltered($account, $renter, $concept) {
+    public function getCreditsFiltered($account, $renter, $concept, $month) {
+        return $this->basic->like_and_where('creditos', array(
+            'cred_cc' => $account,
+            'cred_depositante' => $renter,
+            'cred_mes_alq' => $month,
+            'cred_concepto' => $concept
+        ), array(
+            'is_transfer' => 0
+        ))->result_array();
+
         if ($account && $renter && $concept)
             return $this->basic->get_where('creditos', array('cred_cc' => $account, 'is_transfer' => 0, 'cred_depositante' => $renter, 'cred_concepto' => $concept), 'cred_id')->result_array();
         if ($account && $renter && !$concept)
@@ -512,8 +529,9 @@ class Manager extends CI_Controller {
                     $propietary = $this->input->post('propietary');
                     $renter = $this->input->post('renter');
                     $concept = $this->input->post('concept');
+                    $month = $this->input->post('month');
 
-                    $credits = $this->getCreditsFiltered($propietary, $renter, $concept);
+                    $credits = $this->getCreditsFiltered($propietary, $renter, $concept, $month);
 
                     if ($from && $to) {
                         foreach ($credits as $row) {
@@ -538,8 +556,9 @@ class Manager extends CI_Controller {
                 case 'debitos':
                     $propietary = $this->input->post('propietary');
                     $concept = $this->input->post('concept');
+                    $month = $this->input->post('month');
 
-                    $debits = $this->getDebitsFiltered($propietary, $concept);
+                    $debits = $this->getDebitsFiltered($propietary, $concept, $month);
 
                     if ($from && $to) {
                         foreach ($debits as $row) {

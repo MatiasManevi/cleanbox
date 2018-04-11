@@ -57,6 +57,7 @@
                 <input autocomplete="off" title="Cta. Cte" name="propietary" placeholder="Cta. Cte" type="text" class="form-control filter_input ui-autocomplete-input _filter_propietary">
                 <input autocomplete="off" name="from" placeholder="Desde" type="text" class="form-control filter_input _datepicker_filter">
                 <input autocomplete="off" name="to" placeholder="Hasta" type="text" class="form-control filter_input _datepicker_filter">      
+                <input autocomplete="off" name="month" placeholder="Mes" type="text" class="form-control filter_input _datepicker_filter_month">
                 <input autocomplete="off" title="Concepto" name="concept" placeholder="Concepto" type="text" class="form-control filter_input ui-autocomplete-input _filter_concept">         
                 <input name="table" type="hidden" value="debitos">      
                 <button class="btn btn-primary" type="submit">Filtrar</button>

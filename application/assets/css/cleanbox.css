@@ -357,7 +357,7 @@ ul.nav ul li:last-child a { border: none; }
 .section .filter_container .filter_input{
     margin-right: 5px;
     font-size: 13px;
-    width: 18%;
+    width: 15%;
     float: left;
 }
 .section .filter_container .refresh{

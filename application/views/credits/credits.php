@@ -61,10 +61,11 @@
 
         <div class="filter_container _creditos_filter">
             <form action="javascript:;" onsubmit="general_scripts.filterByValues(this);" enctype="multipart/form-data">  
-                <input autocomplete="off" title="Cta. Cte" name="propietary" placeholder="Cta. Cte" type="text" class="form-control filter_input ui-autocomplete-input _filter_propietary">
                 <input autocomplete="off" title="Depositante" name="renter" placeholder="Depositante" type="text" class="form-control filter_input ui-autocomplete-input _filter_renter">
+                <input autocomplete="off" title="Cta. Cte" name="propietary" placeholder="Cta. Cte" type="text" class="form-control filter_input ui-autocomplete-input _filter_propietary">
                 <input autocomplete="off" name="from" placeholder="Desde" type="text" class="form-control filter_input _datepicker_filter">
                 <input autocomplete="off" name="to" placeholder="Hasta" type="text" class="form-control filter_input _datepicker_filter">      
+                <input autocomplete="off" name="month" placeholder="Mes" type="text" class="form-control filter_input _datepicker_filter_month">
                 <input autocomplete="off" title="Concepto" name="concept" placeholder="Concepto" type="text" class="form-control filter_input ui-autocomplete-input _filter_concept">         
                 <input name="table" type="hidden" value="creditos">      
                 <button class="btn btn-primary" type="submit">Filtrar</button>

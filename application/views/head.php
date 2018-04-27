@@ -22,6 +22,7 @@
 
 <link rel="stylesheet" href="<?php echo asset_url() ?>css/cleanbox_alert.css?<?php echo filemtime('application/assets/css/cleanbox_alert.css') ?>"/>
 <link rel="stylesheet" href="<?php echo asset_url() ?>css/loading.css?<?php echo filemtime('application/assets/css/loading.css') ?>"/>
+<link rel="stylesheet" href="<?php echo asset_url() ?>css/notification.css?<?php echo filemtime('application/assets/css/notification.css') ?>"/>
 <link rel="stylesheet" href="<?php echo asset_url() ?>css/cleanbox.css?<?php echo filemtime('application/assets/css/cleanbox.css') ?>"/>
 
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/jquery-1.7.min.js"></script>
@@ -61,6 +62,7 @@
 <script type="text/javascript" src="<?php echo asset_url() ?>js/report.js?<?php echo filemtime('application/assets/js/report.js') ?>"></script>
 <script type="text/javascript" src="<?php echo asset_url() ?>js/transfers.js?<?php echo filemtime('application/assets/js/transfers.js') ?>"></script>
 <script type="text/javascript" src="<?php echo asset_url() ?>js/html2canvas.js?<?php echo filemtime('application/assets/js/html2canvas.js') ?>"></script>
+<script type="text/javascript" src="<?php echo asset_url() ?>js/notification.js?<?php echo filemtime('application/assets/js/notification.js') ?>"></script>
 
 <script>
     var list_autocomplete = '<?php echo site_url('manager/autocomplete'); ?>';

@@ -816,7 +816,6 @@ class Report {
      */
     public static function buildRentersInDefaultReport($date) {
         $instance = &get_instance();
-        General::loadModels($instance);
 
         $alive_contracts = $instance->basic->get_where('contratos', array('con_enabled' => 1), 'con_tipo')->result_array();
 
@@ -900,7 +899,9 @@ class Report {
 
         $instance->data['date'] = $date;
         $instance->data['renters'] = General::msort($instance->data['renters'], 'client_name');
-
+echo '<pre>';
+print_r($instance->data);
+die;
         return $instance->load->view('reports/renters_in_default_report', $instance->data, TRUE);
     }
 

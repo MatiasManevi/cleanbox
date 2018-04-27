@@ -187,7 +187,7 @@ button, .button{
 ul.nav li:first-child a { border-left: none; }
 ul.nav li:last-child a{ border-right: none; }
 ul.nav li:hover > a { color: #ffffff;text-decoration: none; }
-ul.nav ul {
+ul.nav .sub {
     background: none repeat scroll 0 0 #1B1B1B;
     margin-left: 2px;
     padding-left: 6px;
@@ -220,7 +220,7 @@ ul.nav li:hover > ul li {
     overflow: visible;
     padding: 0;
 }
-ul.nav ul li a {
+ul.nav .sub li a {
     width: 244px;
     padding: 0 10px;
     line-height: 32px;
@@ -229,7 +229,7 @@ ul.nav ul li a {
     color:#999999;
     border: none;
 }
-ul.nav ul li:last-child a { border: none; }
+ul.nav .sub li:last-child a { border: none; }
 /* HEADER MENU DESPLEGABLE*/
 .home_maintenances{
     float: left;

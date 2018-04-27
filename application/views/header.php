@@ -10,7 +10,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav center_header">
                     <li><a href="javascript:;">Propietarios</a>
-                        <ul>
+                        <ul class="sub">
                             <li><a href="<?php echo site_url('accounts') ?>">Cuentas Corrientes</a></li>                                  
                             <li><a href="<?php echo site_url('contracts') ?>">Contratos</a></li>                                  
                             <li><a href="<?php echo site_url('properties') ?>">Propiedades</a></li>                                  
@@ -24,14 +24,14 @@
                     </li>
                     <li><a href="<?php echo site_url('clients') ?>">Clientes</a></li>              
                     <li><a href="javascript:;">Mantenimiento</a>
-                        <ul>
+                        <ul class="sub">
                             <li><a href="<?php echo site_url('providers') ?>">Proveedores</a></li>              
                             <li><a href="<?php echo site_url('maintenances') ?>">Mantenimientos</a></li>              
                             <li><a href="<?php echo site_url('providersRols') ?>">Areas de Proveedores</a></li>              
                         </ul>
                     </li>
                     <li><a href="javascript:;">Transacciones</a>
-                        <ul>
+                        <ul class="sub">
                             <li><a href="<?php echo site_url('credits') ?>">Creditos</a></li>                                   
                             <li><a href="<?php echo site_url('debits') ?>">Debitos</a></li>              
                             <li><a href="<?php echo site_url('migrations') ?>">Migrar</a></li>   
@@ -39,7 +39,7 @@
                         </ul>
                     </li>
                     <li><a href="javascript:;">Reportes</a>
-                        <ul>
+                        <ul class="sub">
                             <li><a href="<?php echo site_url('cashReport') ?>">Caja Diaria Detallada</a></li> 
                             <li><label class="reports_header_separator">Mantenimientos</label></li>
                             <li><a href="<?php echo site_url('endedMaintenancesReport') ?>">Historial Mantenimientos</a></li>              
@@ -60,8 +60,22 @@
                     <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>                                  
                     <li><a href="<?php echo site_url('users') ?>">Usuarios</a></li> 
                     <li style="margin-left: 170px;"><a style="color:white;padding: 0px;"><span style="float: right;margin-top: 15px;">En sesion: <strong><?php echo $this->session->userdata('username'); ?></strong></span></a></li>  
+                    <li style="width: 35px;" id="notifications">
+                        <a title="Notificaciones" href="javascript:;" style="color:white;padding: 0px;"><i class="glyphicon glyphicon-bell header_user_icon"></i></a>
+                        <div class="notifications _notifications">
+                            <div class="notification">
+                                <div class="col-lg-12"><small>ADRIAN HEREDIA debe Alquiler</small></div>
+                                <div class="col-lg-12">
+                                    <div class="input-group">
+                                        <small>Telefono: 3764831903</small>
+                                    </div>
+                                </div>
+                                <a class="closing" href="javascript:;" onclick="$(this).parent().remove()"><i class="glyphicon glyphicon-trash"></i></a>
+                            </div>
+                        </div>
+                    </li>
                     <?php if ($this->session->userdata('username') == 'admin') { ?>
-                        <li style="width: 35px;"><a href="<?php echo site_url('settings') ?>" style="color:white;padding: 0px;"><i title="Configuraciones" class="glyphicon glyphicon-cog header_user_icon"></i></a></li>
+                    <li style="width: 35px;"><a href="<?php echo site_url('settings') ?>" style="color:white;padding: 0px;"><i title="Configuraciones" class="glyphicon glyphicon-cog header_user_icon"></i></a></li>
                     <?php } ?>
                     <li><a href="<?php echo site_url('logout') ?>" style="color:white;padding: 0px;" title="Salir"><i class="glyphicon glyphicon-log-out header_user_icon"></i></a></li>
                 </ul>

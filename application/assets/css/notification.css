@@ -1,0 +1,29 @@
+.notifications{
+    display: none;
+    margin-left: -220px;
+    background: Menu;
+    margin-top: 6px;
+    width: 270px;
+    max-height: 350px;
+    height: auto;
+    border: 1px solid black;
+    overflow-y: scroll;
+    padding-left: 0px;
+    position: absolute;
+    border-radius: 0 0 3px 4px;
+    transition: opacity .25s ease .1s;
+}
+
+.notification{
+    padding: 10px;
+    background: Menu;
+    height: 58px;
+}
+
+.notification:nth-child(odd) { background: #ddd; }
+
+.closing{
+    position: absolute;
+    right: 10px;
+    margin-top: 11px;
+}

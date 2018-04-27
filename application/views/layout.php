@@ -7,7 +7,9 @@
         <?php echo $this->load->view('modals', '', TRUE); ?>
         <?php echo $this->load->view('alerts', '', TRUE); ?>
         <?php echo $this->load->view('header', '', TRUE); ?>
+        
         <div class="container-fluid _container">
+
             <?php echo isset($content) ? $content : ''; ?>
             
             <div class="_loading_list"></div>

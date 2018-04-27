@@ -41,6 +41,7 @@
                     <li><a href="javascript:;">Reportes</a>
                         <ul class="sub">
                             <li><a href="<?php echo site_url('cashReport') ?>">Caja Diaria Detallada</a></li> 
+                            <li><a href="<?php echo site_url('outmonthTransactionsReport') ?>">Transacciones Outmonth</a></li> 
                             <li><label class="reports_header_separator">Mantenimientos</label></li>
                             <li><a href="<?php echo site_url('endedMaintenancesReport') ?>">Historial Mantenimientos</a></li>              
                             <li><label class="reports_header_separator">Inquilinos</label></li>

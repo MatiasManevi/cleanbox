@@ -15,6 +15,30 @@
 
 class Reports extends CI_Controller {
 
+    public function outmonthTransactionsReport() {
+        $this->data['content'] = $this->load->view('reports/outmonth_transactions', '', TRUE);
+        $this->load->view('layout', $this->data);
+    }
+
+    public function buildOutmonthTransactionsReport() {
+        $month = $this->input->post('month');
+
+        try {
+            if ($month) {
+                $response['status'] = true;
+                $response['html'] = Report::buildOutmonthTransactionsReport($month);
+            } else {
+                $response['status'] = false;
+                $response['error'] = 'Debes elegir un mes';
+            }
+        } catch (Exception $exc) {
+            $response['status'] = false;
+            $response['error'] = 'Ups! Ocurrio un error, intente nuevamente por favor. Detalle: ' . $exc->getMessage();
+        }
+
+        echo json_encode($response);
+    }
+
     public function buildHonoraryPaymentsReport() {
         $response['status'] = true;
         $response['html'] = Report::buildHonoraryPaymentsReport();

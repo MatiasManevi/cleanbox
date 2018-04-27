@@ -121,6 +121,9 @@ $route['printDebitReceive'] = 'debits/printDebitReceive';
 $route['buildCashReport'] = 'reports/buildCashReport';
 $route['cashReport'] = 'reports/cashReport';
 
+$route['buildOutmonthTransactionsReport'] = 'reports/buildOutmonthTransactionsReport';
+$route['outmonthTransactionsReport'] = 'reports/outmonthTransactionsReport';
+
 $route['deliveryReports'] = 'reports_delivery/index';
 $route['emailReceiveRenter'] = 'reports_delivery/emailReceiveRenter';
 

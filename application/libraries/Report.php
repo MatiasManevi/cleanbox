@@ -14,6 +14,60 @@
 
 class Report {
 
+    public static function buildOutmonthTransactionsReport($month) {
+        $instance = &get_instance();
+
+        $transactions = self::getOutmonthTransactions($month);
+
+        $instance->data['month'] = $month;
+        $instance->data['credits'] = $transactions['credits'];
+        $instance->data['debits'] = $transactions['debits'];
+
+        return $instance->load->view('reports/outmonth_transactions_report', $instance->data, TRUE);
+    }
+    
+    public static function getOutmonthTransactions($month) {
+        $instance = &get_instance();
+
+        $response = array('credits' => array(), 'debits' => array());
+
+        $year_only = preg_replace('/[^0-9]/', '', $month);
+        $month_only = preg_replace('/[0-9]/', '', $month);
+
+        $from = '01-' . General::getMonthNumber($month_only) . '-' . $year_only;
+        $to = '31-' . General::getMonthNumber($month_only) . '-' . $year_only;
+
+        $credits = $instance->basic->get_where('creditos', array('is_transfer' => 0))->result_array();
+        $debits = $instance->basic->get_where('debitos', array('is_transfer' => 0))->result_array();
+
+        foreach ($credits as $credit) {
+            if (strpos($credit['cred_concepto'], 'Gestion de Cobro') === FALSE && 
+                strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
+                if($credit['cred_mes_alq'] != $month) {
+                    if(General::isBetweenDates($credit['cred_fecha'], $from, $to)) {
+                        array_push($response['credits'], $credit);
+                    }
+                }
+            }
+        }
+
+        foreach ($debits as $debit) {
+            if (strpos($debit['deb_concepto'], 'Gestion de Cobro') === FALSE &&
+                strpos($debit['deb_concepto'], 'Prestamo') === FALSE) {
+                if($debit['deb_mes'] != $month) {
+                    if(General::isBetweenDates($debit['deb_fecha'], $from, $to)) {
+                        array_push($response['debits'], $debit);
+                    }
+                }
+            }
+        }
+
+        $response['credits'] = General::msort($response['credits'], 'trans');
+        $response['debits'] = General::msort($response['debits'], 'trans');
+
+        return $response;
+    }
+
     public static function buildHonoraryPaymentsReport() {
         $instance = &get_instance();
 

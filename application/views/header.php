@@ -19,6 +19,7 @@
                             <li><a href="<?php echo site_url('accountReport') ?>">Reporte Cta. Cte. Propietario</a></li>
                             <!-- <li><a href="<?php echo site_url('propietaryRenditionsReport') ?>">Reporte Rendiciones a Propietarios</a></li>               -->
                             <li><a href="<?php echo site_url('accountsBalanceReport') ?>">Reporte Mensual de Balances</a></li>              
+                            <!-- <li><a href="<?php echo site_url('accountsAnualBalanceReport') ?>">Reporte Anual de Balances</a></li>               -->
                             <!-- <li><a href="<?php echo site_url('propietaryLoansReport') ?>">Reporte Prestamos a Propietarios</a></li> --> 
                         </ul>
                     </li>

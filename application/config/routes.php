@@ -136,6 +136,9 @@ $route['propietaryRenditionsReport'] = 'reports/propietaryRenditionsReport';
 $route['buildAccountsBalanceReport'] = 'reports/buildAccountsBalanceReport';
 $route['accountsBalanceReport'] = 'reports/accountsBalanceReport';
 
+$route['buildAccountsAnualBalanceReport'] = 'reports/buildAccountsAnualBalanceReport';
+$route['accountsAnualBalanceReport'] = 'reports/accountsAnualBalanceReport';
+
 $route['buildpropietaryLoansReport'] = 'reports/buildpropietaryLoansReport';
 $route['propietaryLoansReport'] = 'reports/propietaryLoansReport';
 

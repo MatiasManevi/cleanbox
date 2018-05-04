@@ -14,6 +14,22 @@
 
 class Report {
 
+    public static function buildAccountsAnualBalanceReport($year) {
+        $months = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
+        $instance->data['balances'] = array();
+
+
+        foreach ($months as $value) {
+            $month = $value . ' ' . $year;
+            $instance->data['balances'][$month] = self::getAccountsBalance($month);
+        }
+
+        echo '<pre>';
+        print_r($instance->data['balances']);
+        die;
+
+    }
+
     public static function buildOutmonthTransactionsReport($month) {
         $instance = &get_instance();
 

@@ -15,6 +15,30 @@
 
 class Reports extends CI_Controller {
 
+    public function accountsAnualBalanceReport() {
+        $this->data['content'] = $this->load->view('reports/accounts_anual_balance', '', TRUE);
+        $this->load->view('layout', $this->data);
+    }
+
+    public function buildAccountsAnualBalanceReport() {
+        $year = $this->input->post('year');
+
+        try {
+            if ($year) {
+                $response['status'] = true;
+                $response['html'] = Report::buildAccountsAnualBalanceReport($year);
+            } else {
+                $response['status'] = false;
+                $response['error'] = 'Debes elegir un año';
+            }
+        } catch (Exception $exc) {
+            $response['status'] = false;
+            $response['error'] = 'Ups! Ocurrio un error, intente nuevamente por favor. Detalle: ' . $exc->getMessage();
+        }
+
+        echo json_encode($response);
+    }
+
     public function outmonthTransactionsReport() {
         $this->data['content'] = $this->load->view('reports/outmonth_transactions', '', TRUE);
         $this->load->view('layout', $this->data);

@@ -38,6 +38,8 @@ class Report {
         $instance->data['month'] = $month;
         $instance->data['credits'] = $transactions['credits'];
         $instance->data['debits'] = $transactions['debits'];
+        $instance->data['months_ins'] = $transactions['months_ins'];
+        $instance->data['months_outs'] = $transactions['months_outs'];
 
         return $instance->load->view('reports/outmonth_transactions_report', $instance->data, TRUE);
     }
@@ -56,12 +58,19 @@ class Report {
         $credits = $instance->basic->get_where('creditos', array('is_transfer' => 0))->result_array();
         $debits = $instance->basic->get_where('debitos', array('is_transfer' => 0))->result_array();
 
+        $months_ins = array();
+        $months_outs = array();
+
         foreach ($credits as $credit) {
             if (strpos($credit['cred_concepto'], 'Gestion de Cobro') === FALSE && 
                 strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
                 if($credit['cred_mes_alq'] != $month) {
                     if(General::isBetweenDates($credit['cred_fecha'], $from, $to)) {
                         array_push($response['credits'], $credit);
+                        if(!isset($months_ins[$credit['cred_mes_alq']])){
+                            $months_ins[$credit['cred_mes_alq']] = 0;
+                        }
+                        $months_ins[$credit['cred_mes_alq']] += $credit['cred_monto'];
                     }
                 }
             }
@@ -73,6 +82,10 @@ class Report {
                 if($debit['deb_mes'] != $month) {
                     if(General::isBetweenDates($debit['deb_fecha'], $from, $to)) {
                         array_push($response['debits'], $debit);
+                        if(!isset($months_outs[$debit['deb_mes']])){
+                            $months_outs[$debit['deb_mes']] = 0;
+                        }
+                        $months_outs[$debit['deb_mes']] += $debit['deb_monto'];
                     }
                 }
             }
@@ -80,6 +93,8 @@ class Report {
 
         $response['credits'] = General::msort($response['credits'], 'trans');
         $response['debits'] = General::msort($response['debits'], 'trans');
+        $response['months_ins'] = $months_ins;
+        $response['months_outs'] = $months_outs;
 
         return $response;
     }

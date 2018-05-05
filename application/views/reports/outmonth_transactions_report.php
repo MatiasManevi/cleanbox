@@ -6,7 +6,7 @@
     
     <h4>Transacciones Outmonth  <?php echo '(' . $month . ')' ?></h4>
 
-    <table style="margin-bottom: 54px" class="table">
+    <table class="table">
         <tr><th class="cell" colspan="5">Créditos</th></tr>
         <tr>    
             <th class="cell">Fecha</th>
@@ -35,10 +35,23 @@
         </tr>
         <tr>
             <td></td>
-            <td></td>
         </tr>
     </table>
-
+    
+    <?php if (!empty($months_ins)) { ?>
+        <table style="margin-bottom: 54px;width: 50%;" class="table">
+            <tr><th class="cell" colspan="4">Totales mensuales</th></tr>
+            <?php foreach ($months_ins as $month => $month_value) {
+                ?>
+                    <tr>
+                        <th class="cell"><?php echo 'Ingreso de ' . $month ?></th>
+                        <td class="cell"><?php echo '$ ' . $month_value ?></td>
+                    </tr>
+                <?php
+            }?>
+        </table>
+    <?php } ?>
+    
     <table class="table">
         <tr><th class="cell" colspan="4">Débitos</th></tr>
         <tr>    
@@ -62,10 +75,23 @@
         </tr>
         <tr>
             <td></td>
-            <td></td>
         </tr>
     </table>
 
+    <?php if (!empty($months_outs)) { ?>
+        <table class="table" style="width: 50%">
+            <tr><th class="cell" colspan="4">Totales mensuales</th></tr>
+            <?php foreach ($months_outs as $month => $month_value) {
+                ?>
+                    <tr>
+                        <th class="cell"><?php echo 'Egreso de ' . $month ?></th>
+                        <td class="cell"><?php echo '$ ' . $month_value ?></td>
+                    </tr>
+                <?php
+            }?>
+        </table>
+    <?php } ?>
+    
     <table class="table">
         <tr>    
             <td class="cell">Balance final</td>

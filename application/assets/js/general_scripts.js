@@ -19,8 +19,10 @@ general_scripts.init = function (){
     users.initComponents();
     notifications.getRenterDebts();
     general_scripts.bindControlFields();
-    general_scripts.calculateBeginCash();
-    general_scripts.calculateProgressiveCash();
+    if(window.location.pathname.indexOf('home') !== -1){
+        general_scripts.calculateBeginCash();
+        general_scripts.calculateProgressiveCash();
+    }
     general_scripts.initTooltips();
     general_scripts.disableEnterKeyInForms();
     general_scripts.preventLoseUnsavedForms();

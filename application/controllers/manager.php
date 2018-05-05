@@ -52,11 +52,6 @@ class Manager extends CI_Controller {
     }
 
     public function loadHomeData() {
-        $this->data['begin_cash'] = Cash::getBeginCash(date('d-m-Y'));
-
-        $monthly_progressive = Cash::getBalance('Caja');
-        $this->data['monthly_progressive'] = $monthly_progressive > 0 ? $monthly_progressive : '0.00';
-
         $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
         $this->data['safe_box'] = $safe_box ? $safe_box['cc_saldo'] : '0.00';
 
@@ -67,6 +62,22 @@ class Manager extends CI_Controller {
         }
 
         $this->data['home_maintenances'] = $this->getHomeMaintenances();
+    }
+
+    public function calculateBeginCash() {
+        $response['status'] = true;
+        $response['amount'] = Cash::getBeginCash(date('d-m-Y'));
+
+        echo json_encode($response);
+    }
+
+    public function calculateProgressiveCash() {
+        $response['status'] = true;
+        $monthly_progressive = Cash::getBalance('Caja');
+        $monthly_progressive = $monthly_progressive > 0 ? $monthly_progressive : '0.00';
+        $response['amount'] = $monthly_progressive;
+
+        echo json_encode($response);   
     }
 
     public function getHomeMaintenances() {

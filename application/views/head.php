@@ -77,6 +77,8 @@
     var authorize_code = '<?php echo site_url('manager/authorizeCode') ?>';
     var upload_image_from_file = '<?php echo site_url('manager/uploadImageFromFile') ?>';
     var delete_image = '<?php echo site_url('manager/deleteImage') ?>';
+    var calculate_begin_cash = '<?php echo site_url('calculate_begin_cash') ?>';
+    var calculate_progressive_cash = '<?php echo site_url('calculate_progressive_cash') ?>';
     
     var send_transaction_notfication = '<?php echo site_url('sendTransactionNotification') ?>';
     var get_entities_on_scroll_down = '<?php echo site_url('getEntitiesOnScrollDown') ?>';

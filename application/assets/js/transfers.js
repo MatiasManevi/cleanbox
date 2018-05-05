@@ -24,7 +24,12 @@ transfers.transferToSafeBox = function (){
         $('._transfer_to_safebox').val('');
         $('._reason_transfer_to_safebox').val('');
         $('._safebox').html(response.safebox);
-        $('._cash').html(response.cash);
+        
+        var cash = $('._cash').html();
+        cash = parseFloat(cash.substr(2));
+        cash = Number(cash) - Number(amount);
+        $('._cash').html('$ ' + cash);
+
         cleanbox_alert.showAlertSuccess(response.success);
     });
 };
@@ -40,7 +45,12 @@ transfers.transferToCash = function (){
         $('._transfer_to_cash').val('');
         $('._reason_transfer_to_cash').val('');
         $('._safebox').html(response.safebox);
-        $('._cash').html(response.cash);
+        
+        var cash = $('._cash').html();
+        cash = parseFloat(cash.substr(2));
+        cash = Number(cash) + Number(amount);
+        $('._cash').html('$ ' + cash);
+
         cleanbox_alert.showAlertSuccess(response.success);
     });
 };

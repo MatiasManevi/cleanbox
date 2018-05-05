@@ -31,7 +31,7 @@ class Transfers extends CI_Controller {
             $amount = $this->input->post('amount');
             $reason = $this->input->post('reason');
 
-            if ($amount) {
+            if ($amount > 0) {
                 $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
 
                 if ($amount <= $safe_box['cc_saldo']) {
@@ -56,7 +56,6 @@ class Transfers extends CI_Controller {
 
                     $response['status'] = true;
                     $response['success'] = 'Transferencia realizada!!';
-                    $response['cash'] = Cash::getBalance('Caja');
                     $response['safebox'] = $safe_box['cc_saldo'];
                 } else {
                     $response['status'] = false;
@@ -81,7 +80,7 @@ class Transfers extends CI_Controller {
             $amount = $this->input->post('amount');
             $reason = $this->input->post('reason');
             
-            if ($amount) {
+            if ($amount > 0) {
                 $safe_box = $this->basic->get_where('cuentas_corrientes', array('cc_prop' => 'CAJA FUERTE'))->row_array();
 
                 $actual_balance = Cash::getBalance('Caja');
@@ -108,7 +107,6 @@ class Transfers extends CI_Controller {
 
                     $response['status'] = true;
                     $response['success'] = 'Transferencia realizada!!';
-                    $response['cash'] = Cash::getBalance('Caja');
                     $response['safebox'] = $safe_box['cc_saldo'];
                 } else {
                     $response['status'] = false;

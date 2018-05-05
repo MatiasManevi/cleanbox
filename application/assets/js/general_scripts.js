@@ -19,6 +19,8 @@ general_scripts.init = function (){
     users.initComponents();
     notifications.getRenterDebts();
     general_scripts.bindControlFields();
+    general_scripts.calculateBeginCash();
+    general_scripts.calculateProgressiveCash();
     general_scripts.initTooltips();
     general_scripts.disableEnterKeyInForms();
     general_scripts.preventLoseUnsavedForms();
@@ -37,6 +39,18 @@ users.loadFormData = function (entity) {
     users.id.val(entity.id);
     users.username.val(entity.username);
     users.password.val(entity.password);
+};
+
+general_scripts.calculateBeginCash = function (){
+    general_scripts.ajaxSubmitWithoutLoading(calculate_begin_cash, {}, function(response){
+        $('._begin_cash').html('$ ' + response.amount);
+    });
+};
+
+general_scripts.calculateProgressiveCash = function (){
+    general_scripts.ajaxSubmitWithoutLoading(calculate_progressive_cash, {}, function(response){
+        $('._cash').html('$ ' + response.amount);
+    })
 };
 
 general_scripts.isLocalStorageAvailable = function(){

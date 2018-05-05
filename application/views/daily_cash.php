@@ -5,12 +5,12 @@
     <div class="panel-body">
         <div class="panel panel-default margB33">
             <div class="panel-body">
-                Estado inicial CAJA FISICA: <strong>$ <?php echo $begin_cash; ?></strong>
+                Estado inicial CAJA FISICA: <strong class="_begin_cash">calculando...</strong>
             </div>
         </div>
         <div class="panel panel-default margB33">
             <div class="panel-body">
-                Estado actual CAJA FISICA: <strong>$ <span class="_cash"><?php echo $monthly_progressive; ?></span></strong>
+                Estado actual CAJA FISICA: <strong><span class="_cash">calculando...</span></strong>
             </div>
         </div>
         <div class="panel panel-default margB33">

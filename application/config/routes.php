@@ -59,6 +59,8 @@ $route['deleteTransaction'] = 'manager/deleteTransaction';
 $route['getTransactionItems'] = 'manager/getTransactionItems';
 $route['generateCode'] = 'manager/generateCode';
 $route['authorizeCode'] = 'manager/authorizeCode';
+$route['calculate_begin_cash'] = 'manager/calculateBeginCash';
+$route['calculate_progressive_cash'] = 'manager/calculateProgressiveCash';
 
 $route['settings'] = 'settings';
 $route['saveSettings'] = 'settings/save';

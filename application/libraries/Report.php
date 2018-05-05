@@ -887,12 +887,35 @@ class Report {
     public static function buildRentersInDefaultReport($date) {
         $instance = &get_instance();
 
-        $alive_contracts = $instance->basic->get_where('contratos', array('con_enabled' => 1), 'con_tipo')->result_array();
+        $instance->data = self::getRentersInDefault($date);
+
+        return $instance->load->view('reports/renters_in_default_report', $instance->data, TRUE);
+    }
+
+    public static function getRentersInDefault($date, $renter_id = false) {
+        $instance = &get_instance();
+        $data = array();
+
+        if($renter_id){
+            $data['one_renter'] = true;
+            $alive_contracts = $instance->basic->get_where('contratos', array('client_id' => $renter_id, 'con_enabled' => 1), 'con_tipo')->result_array();
+
+            if(empty($alive_contracts)){
+                $renter = $instance->basic->get_where('clientes', array('client_id' => $renter_id))->row_array();
+
+                $alive_contracts = $instance->basic->get_where('contratos', array('con_inq' => $renter['client_name'], 'con_enabled' => 1), 'con_tipo')->result_array();
+            }
+
+        }else{
+            $data['one_renter'] = false;
+
+            $alive_contracts = $instance->basic->get_where('contratos', array('con_enabled' => 1), 'con_tipo')->result_array();
+        }
 
         $contract_renters_debts = array();
         $service_renters_debts = array();
         $control_service_renters_debts = array();
-        $instance->data['renters'] = array();
+        $data['renters'] = array();
 
         foreach ($alive_contracts as $alive_contract) {
             /* solo para davinia y rima */
@@ -959,20 +982,18 @@ class Report {
             }
 
             if ($debts_founded) {
-                array_push($instance->data['renters'], $renter);
+                array_push($data['renters'], $renter);
             }
         }
 
-        $instance->data['contract_renters_debts'] = $contract_renters_debts;
-        $instance->data['service_renters_debts'] = $service_renters_debts;
-        $instance->data['control_service_renters_debts'] = $control_service_renters_debts;
+        $data['contract_renters_debts'] = $contract_renters_debts;
+        $data['service_renters_debts'] = $service_renters_debts;
+        $data['control_service_renters_debts'] = $control_service_renters_debts;
 
-        $instance->data['date'] = $date;
-        $instance->data['renters'] = General::msort($instance->data['renters'], 'client_name');
-echo '<pre>';
-print_r($instance->data);
-die;
-        return $instance->load->view('reports/renters_in_default_report', $instance->data, TRUE);
+        $data['date'] = $date;
+        $data['renters'] = General::msort($data['renters'], 'client_name');
+
+        return $data;
     }
 
     public static function buildPendingRenditionsReport($from, $to) {

@@ -121,6 +121,8 @@ $route['printDebitReceive'] = 'debits/printDebitReceive';
 $route['buildCashReport'] = 'reports/buildCashReport';
 $route['cashReport'] = 'reports/cashReport';
 
+$route['getRenterDebts'] = 'reports/getRenterDebts';
+
 $route['buildOutmonthTransactionsReport'] = 'reports/buildOutmonthTransactionsReport';
 $route['outmonthTransactionsReport'] = 'reports/outmonthTransactionsReport';
 
@@ -129,6 +131,8 @@ $route['emailReceiveRenter'] = 'reports_delivery/emailReceiveRenter';
 
 $route['buildAccountReport'] = 'reports/buildAccountReport';
 $route['accountReport'] = 'reports/accountReport';
+
+$route['showRenterDebt/(:num)'] = 'reports/showRenterDebt/$1';
 
 $route['buildPropietaryRenditionsReport'] = 'reports/buildPropietaryRenditionsReport';
 $route['propietaryRenditionsReport'] = 'reports/propietaryRenditionsReport';

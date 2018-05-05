@@ -15,6 +15,57 @@
 
 class Reports extends CI_Controller {
 
+    public function getRenterDebts() {
+        $response['status'] = true;
+        $response['data'] = array();
+
+        $debts_data = Report::getRentersInDefault(date('d-m-Y'));
+
+        $renters = $debts_data['renters'];
+        $contract_renters_debts = $debts_data['contract_renters_debts'];
+        $service_renters_debts = $debts_data['service_renters_debts'];
+        $control_service_renters_debts = $debts_data['control_service_renters_debts'];
+
+        foreach ($renters as $renter) {
+            $debts = '';
+
+            if(isset($contract_renters_debts[$renter['client_id']])){
+                $debts = $contract_renters_debts[$renter['client_id']][0]['concept'];
+            }
+
+            if(isset($service_renters_debts[$renter['client_id']])){
+                if(!empty($service_renters_debts[$renter['client_id']][0])){
+                    $debts .= '|Servicios';
+                }
+            }
+
+            if(isset($control_service_renters_debts[$renter['client_id']])){
+                if(!empty($control_service_renters_debts[$renter['client_id']][0])){
+                    $debts .= '|Boletas de servicios';
+                }
+            }
+
+            array_push($response['data'], array(
+                'visible' => true,
+                'id' => $renter['client_id'],
+                'name' => $renter['client_name'],
+                'phone' => $renter['client_tel'] ? $renter['client_tel'] : 'No posee',
+                'debts' => $debts
+            ));
+
+        }
+
+        echo json_encode($response);
+    }
+
+    public function showRenterDebt($renter_id){
+        $data = Report::getRentersInDefault(date('d-m-Y'), $renter_id);
+
+        $this->data['content'] = $this->load->view('reports/renters_in_default_report', $data, TRUE);
+
+        $this->load->view('layout', $this->data);
+    }
+
     public function accountsAnualBalanceReport() {
         $this->data['content'] = $this->load->view('reports/accounts_anual_balance', '', TRUE);
         $this->load->view('layout', $this->data);

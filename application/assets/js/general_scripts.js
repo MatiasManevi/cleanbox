@@ -17,6 +17,7 @@ var list_filtered = false;
 
 general_scripts.init = function (){
     users.initComponents();
+    notifications.getRenterDebts();
     general_scripts.bindControlFields();
     general_scripts.initTooltips();
     general_scripts.disableEnterKeyInForms();
@@ -36,6 +37,14 @@ users.loadFormData = function (entity) {
     users.id.val(entity.id);
     users.username.val(entity.username);
     users.password.val(entity.password);
+};
+
+general_scripts.isLocalStorageAvailable = function(){
+    if (typeof(Storage) !== "undefined") {
+        return true;
+    } else {
+        return false;
+    }
 };
 
 general_scripts.removeImage = function (folder, container){
@@ -139,6 +148,25 @@ general_scripts.disableEnterKeyInForms = function (){
             e.preventDefault();
             return false;
         }  
+    });
+};
+
+general_scripts.ajaxSubmitWithoutLoading = function (url, params, callback) {
+    $.ajax({
+        url: url,
+        type:'POST',
+        dataType: 'json',
+        data: params,
+        success:function(response){
+            if(response.status){
+                if(callback){
+                    callback(response);
+                } 
+            }else{
+                cleanbox_alert.showAlertError(response.error);
+            }     
+            general_scripts.initTooltips();
+        }
     });
 };
 

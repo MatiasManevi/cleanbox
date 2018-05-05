@@ -2,7 +2,11 @@
 
     <h4 style="float:left;">Posadas, Misiones</h4>           
     <h4 style="float:right;"><?php echo date('d-m-Y') ?></h4>
-    <h4>Informe Inquilinos Morosos al día: <?php echo $date ?></h4>
+    <?php if ($one_renter){ ?>
+        <h4>Informe de deudas al día: <?php echo $date ?></h4>
+    <?php } else {?>
+        <h4>Informe Inquilinos Morosos al día: <?php echo $date ?></h4>
+    <?php } ?>
 
     <?php if (count($renters) > 0) { ?>
         <?php foreach ($renters as $renter) { ?>

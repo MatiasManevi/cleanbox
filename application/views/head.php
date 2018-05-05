@@ -94,6 +94,9 @@
     var delete_transaction = '<?php echo site_url('deleteTransaction') ?>';
     var transfer_to_cash = '<?php echo site_url('transferToCash') ?>';
     var transfer_to_safebox = '<?php echo site_url('transferToSafeBox') ?>';
+    var get_renter_debts = '<?php echo site_url('getRenterDebts') ?>';
+    var show_renter_debt = '<?php echo site_url('showRenterDebt') ?>';
+
     var is_admin = <?php echo json_encode($this->session->userdata('username') == 'admin') ?>;
     
     var print_copy = <?php echo json_decode(User::printCopy()); ?>;

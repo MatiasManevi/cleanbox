@@ -17,7 +17,12 @@
 .notification{
     padding: 10px;
     background: Menu;
-    height: 58px;
+}
+
+.no_notifications{
+    display: none;
+    padding: 10px;
+    background: Menu;
 }
 
 .notification:nth-child(odd) { background: #ddd; }
@@ -25,5 +30,36 @@
 .closing{
     position: absolute;
     right: 10px;
-    margin-top: 11px;
+    margin-top: 2px;
+}
+
+.see{
+    position: absolute;
+    right: 10px;
+    margin-top: 23px;
+}
+
+.closing_all{
+    padding: 10px;
+    background: Menu;
+    font-size: 11px;
+    text-align: center;
+    line-height: 4px;
+}
+
+.number { 
+   width: 61%;
+   height: 50%;
+   text-align: center;
+   position: absolute;
+   background: red;
+   -moz-border-radius: 70px;
+   -webkit-border-radius: 70px;
+   border-radius: 98px;
+   padding-top: 5px;
+   font-size: 11px;
+   right: -7px;
+   font-family: "Trebuchet MS";
+   font-weight: bold;
+   top: 19px;
 }

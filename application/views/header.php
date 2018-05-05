@@ -62,17 +62,18 @@
                     <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>                                  
                     <li><a href="<?php echo site_url('users') ?>">Usuarios</a></li> 
                     <li style="margin-left: 170px;"><a style="color:white;padding: 0px;"><span style="float: right;margin-top: 15px;">En sesion: <strong><?php echo $this->session->userdata('username'); ?></strong></span></a></li>  
-                    <li style="width: 35px;" id="notifications">
-                        <a title="Notificaciones" href="javascript:;" style="color:white;padding: 0px;"><i class="glyphicon glyphicon-bell header_user_icon"></i></a>
+                    <li id="notifications">
+                        <a title="Notificaciones" href="javascript:;" style="color:white;padding: 0px;">
+                            <i class="glyphicon glyphicon-bell header_user_icon">
+                                <div class="number _number">0</div>
+                            </i>
+                        </a>
                         <div class="notifications _notifications">
-                            <div class="notification">
-                                <div class="col-lg-12"><small>ADRIAN HEREDIA debe Alquiler</small></div>
-                                <div class="col-lg-12">
-                                    <div class="input-group">
-                                        <small>Telefono: 3764831903</small>
-                                    </div>
-                                </div>
-                                <a class="closing" href="javascript:;" onclick="$(this).parent().remove()"><i class="glyphicon glyphicon-trash"></i></a>
+                            <div class="closing_all _closing_all col-lg-12">
+                                <a href="javascript:;" onclick="general_scripts.removeAllNotifications();">Eliminar todas</a>
+                            </div>
+                            <div class="no_notifications col-lg-12">
+                                <div class="col-lg-12"><small>0 notificaciones de deudas</small></div>
                             </div>
                         </div>
                     </li>

@@ -27,10 +27,10 @@ notifications.getRenterDebts = function (){
 		}else{
 			general_scripts.ajaxSubmitWithoutLoading(get_renter_debts, {}, function(response){
 				var renter_debts = {};
-				var update_time = new Date();
+				var update_time = moment();
 
 				renter_debts['data'] = response.data;
-				renter_debts['update_time'] = update_time.getDate() + '-' + update_time.getMonth() + '-' + update_time.getFullYear();
+				renter_debts['update_time'] = update_time.format('D') + '-' + update_time.format('M') + '-' + update_time.format('YYYY');
 
 				localStorage.setItem('renter_debts', JSON.stringify(renter_debts));
 
@@ -46,13 +46,13 @@ notifications.getRenterDebts = function (){
 };
 
 notifications.areFreshDebts = function(update_time) {
-    var now = new Date();
+    var now = moment();
 
     update_time = update_time.split('-');
 
-    if (now.getDate() == update_time[0] && 
-        now.getMonth() == update_time[1] && 
-        now.getFullYear() == update_time[2]) {
+    if (now.format('D') == update_time[0] && 
+        now.format('M') == update_time[1] && 
+        now.format('YYYY') == update_time[2]) {
         return true;
     } else {
         return false;
@@ -90,6 +90,8 @@ notifications.loadNotificationsHtml = function(renter_debts){
 
 		if($('.notification').length == 0){
 			notifications.noNotifications();
+		}else{
+			$('._number').css('display', 'block');
 		}
 
 		$('._number').html($('.notification').length);
@@ -102,9 +104,10 @@ notifications.noNotifications = function (){
 	$('._closing_all').remove();
 	$('.no_notifications').css('display', 'block');
 	$('._number').html($('.notification').length);
+	$('._number').css('display', 'none');
 }
 
-notifications.removeAllNotifications = function (){
+notifications.removeAll = function (){
 
 	if(general_scripts.isLocalStorageAvailable()){
 		var renter_debts = JSON.parse(localStorage.getItem("renter_debts"));

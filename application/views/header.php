@@ -70,7 +70,7 @@
                         </a>
                         <div class="notifications _notifications">
                             <div class="closing_all _closing_all col-lg-12">
-                                <a href="javascript:;" onclick="general_scripts.removeAllNotifications();">Eliminar todas</a>
+                                <a href="javascript:;" onclick="notifications.removeAll();">Eliminar todas</a>
                             </div>
                             <div class="no_notifications col-lg-12">
                                 <div class="col-lg-12"><small>0 notificaciones de deudas</small></div>

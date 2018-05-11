@@ -3,8 +3,7 @@
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="<?php echo site_url('home') ?>" class="navbar-brand">
-                    <i class="glyphicon glyphicon-home" style="color: white;margin-right: 5px;font-size: 13px;"></i>
-                    Inicio
+                    <i class="glyphicon glyphicon-home" style="color: white;margin-right: 5px;font-size: 15px;"></i>
                 </a>
             </div>
             <div class="navbar-collapse collapse">

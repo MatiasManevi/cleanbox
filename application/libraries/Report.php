@@ -941,63 +941,66 @@ class Report {
                 $renter = $instance->basic->get_where('clientes', array('client_name' => $alive_contract['con_inq']))->row_array();
             }
 
-            $debts_founded = false;
+            if (!empty($renter)) {
+                
+                $debts_founded = false;
 
-            $service_renters_debts[$renter['client_id']] = array();
-            $control_service_renters_debts[$renter['client_id']] = array();
-            $contract_renters_debts[$renter['client_id']] = array();
+                $service_renters_debts[$renter['client_id']] = array();
+                $control_service_renters_debts[$renter['client_id']] = array();
+                $contract_renters_debts[$renter['client_id']] = array();
 
-            $renter['type'] = $alive_contract['con_tipo'];
-            $renter['propietary'] = $alive_contract['con_prop'];
-            $renter['address'] = $alive_contract['con_domi'];
+                $renter['type'] = $alive_contract['con_tipo'];
+                $renter['propietary'] = $alive_contract['con_prop'];
+                $renter['address'] = $alive_contract['con_domi'];
 
-            // Deudas de Alquileres o Loteos
-            if ($alive_contract['con_usado']) {
-                $contract_debts = Contract::getContractDebts($alive_contract['con_tipo'], $alive_contract);
-                if (!empty($contract_debts)) {
-                    $contract_renters_debts[$renter['client_id']] = $contract_debts;
-                    $debts_founded = true;
-                }
-            }
-
-            if (empty($contract_renters_debts[$renter['client_id']])) {
-                unset($contract_renters_debts[$renter['client_id']]);
-            }
-
-            $services = $instance->basic->get_where('servicios', array('serv_contrato' => $alive_contract['con_id']))->result_array();
-            foreach ($services as $service) {
+                // Deudas de Alquileres o Loteos
                 if ($alive_contract['con_usado']) {
-                    if ($service['serv_accion'] == 'Pagar') {
-                        // Deudas de servicios
-                        $service_debts = Contract::getContractServicesDebts($service['serv_concepto'], $alive_contract);
-                        if (!empty($service_debts)) {
-                            array_push($service_renters_debts[$renter['client_id']], $service_debts);
-                            $debts_founded = true;
-                        }
-                    } else {
-                        // cargo boletas pendientes de presentacion
-                        $last_control_serv = Transaction::getLastControl($alive_contract, $service['serv_concepto']);
-                        if ($last_control_serv) {
-                            $service_control_debt = Contract::getContractServicesControls($last_control_serv);
-                            if (!empty($service_control_debt)) {
-                                array_push($control_service_renters_debts[$renter['client_id']], $service_control_debt);
+                    $contract_debts = Contract::getContractDebts($alive_contract['con_tipo'], $alive_contract);
+                    if (!empty($contract_debts)) {
+                        $contract_renters_debts[$renter['client_id']] = $contract_debts;
+                        $debts_founded = true;
+                    }
+                }
+
+                if (empty($contract_renters_debts[$renter['client_id']])) {
+                    unset($contract_renters_debts[$renter['client_id']]);
+                }
+
+                $services = $instance->basic->get_where('servicios', array('serv_contrato' => $alive_contract['con_id']))->result_array();
+                foreach ($services as $service) {
+                    if ($alive_contract['con_usado']) {
+                        if ($service['serv_accion'] == 'Pagar') {
+                            // Deudas de servicios
+                            $service_debts = Contract::getContractServicesDebts($service['serv_concepto'], $alive_contract);
+                            if (!empty($service_debts)) {
+                                array_push($service_renters_debts[$renter['client_id']], $service_debts);
                                 $debts_founded = true;
+                            }
+                        } else {
+                            // cargo boletas pendientes de presentacion
+                            $last_control_serv = Transaction::getLastControl($alive_contract, $service['serv_concepto']);
+                            if ($last_control_serv) {
+                                $service_control_debt = Contract::getContractServicesControls($last_control_serv);
+                                if (!empty($service_control_debt)) {
+                                    array_push($control_service_renters_debts[$renter['client_id']], $service_control_debt);
+                                    $debts_founded = true;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (empty($service_renters_debts[$renter['client_id']])) {
-                unset($service_renters_debts[$renter['client_id']]);
-            }
+                if (empty($service_renters_debts[$renter['client_id']])) {
+                    unset($service_renters_debts[$renter['client_id']]);
+                }
 
-            if (empty($control_service_renters_debts[$renter['client_id']])) {
-                unset($control_service_renters_debts[$renter['client_id']]);
-            }
+                if (empty($control_service_renters_debts[$renter['client_id']])) {
+                    unset($control_service_renters_debts[$renter['client_id']]);
+                }
 
-            if ($debts_founded) {
-                array_push($data['renters'], $renter);
+                if ($debts_founded) {
+                    array_push($data['renters'], $renter);
+                }
             }
         }
 

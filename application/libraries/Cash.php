@@ -127,8 +127,8 @@ class Cash {
         $credits = $instance->basic->get_where('creditos', array('cred_tipo_trans' => 'Caja'))->result_array();
         $debits = $instance->basic->get_where('debitos', array('deb_tipo_trans' => 'Caja'))->result_array();
         
-        $transfers_to_safe = $instance->basic->get_where('creditos', array('cred_concepto' => 'Transferencia a CAJA FUERTE'))->result_array();
-        $transfers_to_cash = $instance->basic->get_where('debitos', array('deb_concepto' => 'Transferencia a CAJA FISICA'))->result_array();
+        $transfers_to_safe = $instance->basic->get_where('creditos', array('is_transfer' => 1))->result_array();
+        $transfers_to_cash = $instance->basic->get_where('debitos', array('is_transfer' => 1))->result_array();
         $transfers_to_safe_elimination = $instance->basic->get_where('debitos', array('deb_concepto' => 'Eliminacion de credito'))->result_array();
 
         $ins = 0;

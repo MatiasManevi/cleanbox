@@ -85,11 +85,11 @@
 
                 <tr>
                     <th colspan="2" class="cell">Sub-totales</th>
-                    <td class="cell">$ <?php echo $acumulated_amount; ?></td>
-                    <td class="cell">$ <?php echo round($acumulated_interes, 2); ?></td>
+                    <td class="cell">$ <?php echo isset($acumulated_amount) ? $acumulated_amount : 0; ?></td>
+                    <td class="cell">$ <?php echo isset($acumulated_interes) ? round($acumulated_interes, 2) : 0; ?></td>
                 </tr>
 
-                <?php $total = round($acumulated_amount + $acumulated_interes, 2) ?>
+                <?php $total = isset($acumulated_amount) && isset($acumulated_interes) ? round($acumulated_amount + $acumulated_interes, 2) : 0 ?>
 
                 <tr>
                     <th colspan="2" class="cell">Total</th>

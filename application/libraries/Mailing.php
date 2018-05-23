@@ -15,19 +15,19 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '/PHPMailer/src/Exception.php';
-require '/PHPMailer/src/PHPMailer.php';
+// require '/PHPMailer/src/Exception.php';
+// require '/PHPMailer/src/PHPMailer.php';
 
 use Dompdf\Adapter\CPDF;
 use Dompdf\Dompdf;
 use Dompdf\DompdfException;
 use Dompdf\Autoloader;
 
-require '/dompdf/lib/html5lib/Parser.php';
-require '/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php';
-require '/dompdf/lib/php-svg-lib/src/autoload.php';
-require '/dompdf/src/Autoloader.php';
-Autoloader::register();
+// require '/dompdf/lib/html5lib/Parser.php';
+// require '/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php';
+// require '/dompdf/lib/php-svg-lib/src/autoload.php';
+// require '/dompdf/src/Autoloader.php';
+// Autoloader::register();
 
 use GuzzleHttp\Client as GuzzleClient;
 

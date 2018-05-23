@@ -4,14 +4,12 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7fd826641890318745ec16f49f2977bb
+class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
 {
     public static $files = array (
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
     );
 
@@ -26,21 +24,11 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
             'Psr\\Http\\Message\\' => 17,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
-        'I' => 
-        array (
-            'Intervention\\Image\\' => 19,
-            'Illuminate\\Support\\' => 19,
-            'Illuminate\\Contracts\\' => 21,
-        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
-        ),
-        'C' => 
-        array (
-            'Carbon\\' => 7,
         ),
     );
 
@@ -61,18 +49,6 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
-        'Intervention\\Image\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/intervention/image/src/Intervention/Image',
-        ),
-        'Illuminate\\Support\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/support',
-        ),
-        'Illuminate\\Contracts\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/contracts',
-        ),
         'GuzzleHttp\\Psr7\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
@@ -85,35 +61,18 @@ class ComposerStaticInit7fd826641890318745ec16f49f2977bb
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'Carbon\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
-        ),
     );
 
-    public static $prefixesPsr0 = array (
-        'S' => 
-        array (
-            'Spatie\\Browsershot' => 
-            array (
-                0 => __DIR__ . '/..' . '/spatie/browsershot/src',
-            ),
-        ),
-        'D' => 
-        array (
-            'Doctrine\\Common\\Inflector\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/inflector/lib',
-            ),
-        ),
+    public static $fallbackDirsPsr4 = array (
+        0 => __DIR__ . '/..' . '/nesbot/carbon/src',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7fd826641890318745ec16f49f2977bb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7fd826641890318745ec16f49f2977bb::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7fd826641890318745ec16f49f2977bb::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$fallbackDirsPsr4;
 
         }, null, ClassLoader::class);
     }

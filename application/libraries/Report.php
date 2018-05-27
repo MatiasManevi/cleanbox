@@ -21,7 +21,12 @@ class Report {
 
         foreach ($months as $value) {
             $month = $value . ' ' . $year;
-            $instance->data['balances'][$month] = self::getAccountsBalance($month);
+            $current_accounts = self::getAccountsBalance($month);
+            $instance->data['balances'][$month] = 0;
+
+            foreach ($current_accounts as $current_account) {
+                $instance->data['balances'][$month] += $current_account['balance'];
+            }
         }
 
         echo '<pre>';
@@ -62,8 +67,7 @@ class Report {
         $months_outs = array();
 
         foreach ($credits as $credit) {
-            if (strpos($credit['cred_concepto'], 'Gestion de Cobro') === FALSE && 
-                strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
+            if (in_array($credit['cred_concepto'], array('Alquiler', 'Alquiler Comercial', 'Loteo', 'Honorarios'))) {
                 if($credit['cred_mes_alq'] != $month) {
                     if(General::isBetweenDates($credit['cred_fecha'], $from, $to)) {
                         array_push($response['credits'], $credit);
@@ -77,8 +81,7 @@ class Report {
         }
 
         foreach ($debits as $debit) {
-            if (strpos($debit['deb_concepto'], 'Gestion de Cobro') === FALSE &&
-                strpos($debit['deb_concepto'], 'Prestamo') === FALSE) {
+            if (in_array($debit['deb_concepto'], array('Rendicion'))) {
                 if($debit['deb_mes'] != $month) {
                     if(General::isBetweenDates($debit['deb_fecha'], $from, $to)) {
                         array_push($response['debits'], $debit);
@@ -184,20 +187,14 @@ class Report {
         $current_accounts = $instance->basic->get_all('cuentas_corrientes')->result_array();
         $accounts_balance = array();
 
-        $year = preg_replace('/[^0-9]/', '', $month);
-        $month = preg_replace('/[0-9]/', '', $month);
-
-        $from = '00-' . General::getMonthNumber($month) . '-' . $year;
-        $to = '31-' . General::getMonthNumber($month) . '-' . $year;
-
         foreach ($current_accounts as $current_account) {
             if (strpos($current_account['cc_prop'], 'INMOBILIARIA') === FALSE && strpos($current_account['cc_prop'], 'CAJA FUERTE') === FALSE) {
 
                 $debits = CurrentAccount::getDebits($current_account);
                 $credits = CurrentAccount::getCredits($current_account);
 
-                $ins = CurrentAccount::getCreditsSum($credits, $from, $to, false);
-                $outs = CurrentAccount::getDebitsSum($debits, $from, $to, false);
+                $ins = CurrentAccount::getCreditsSumMonth($credits, $month, false);
+                $outs = CurrentAccount::getDebitsSumMonth($debits, $month, false);
                 $balance = round($ins - $outs, 2);
 
                 if($balance != 0) {

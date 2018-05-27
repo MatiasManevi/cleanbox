@@ -44,6 +44,34 @@ class CurrentAccount {
         return $credits;
     }
 
+    public static function getCreditsSumMonth($credits, $month, $sum_loans = false) {
+        $sum = 0;
+
+        foreach ($credits as $row) {
+            if($sum_loans || strpos($row['cred_concepto'], 'Prestamo') === false) {
+                if ($row['cred_mes_alq'] == $month) {       
+                    $sum += $row['cred_monto'];
+                }
+            }
+        }
+
+        return $sum;
+    }
+
+    public static function getDebitsSumMonth($debits, $month, $sum_loans = false) {
+        $sum = 0;
+
+        foreach ($debits as $row) {
+            if($sum_loans || strpos($row['deb_concepto'], 'Prestamo') === false) {
+                if ($row['deb_mes'] == $month) {
+                    $sum += $row['deb_monto'];
+                }
+            }
+        }
+
+        return $sum;
+    }
+
     public static function getCreditsSum($credits, $from = false, $to = false, $sum_loans = false) {
         $sum = 0;
 

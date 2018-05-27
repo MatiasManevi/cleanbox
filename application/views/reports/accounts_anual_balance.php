@@ -4,7 +4,7 @@
     </div>
 
     <form class="section_form" action="javascript:;" onsubmit="report.buildReport('<?php echo site_url('buildAccountsAnualBalanceReport') ?>', this);return false;" enctype="multipart/form-data"> 
-        <input type="text" name="year" required class="form-control _year _general_number_input_control _general_amount_input_control _general_letters_input_control ui-autocomplete-input section_input" placeholder="Mes" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">   
+        <input type="text" name="year" required class="form-control     ui-autocomplete-input section_input" placeholder="Año" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">   
 
         <button class="btn btn-primary submit_button">Generar</button>
     </form>

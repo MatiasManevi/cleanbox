@@ -935,7 +935,7 @@ class Transaction {
 
         foreach ($secondary_credits as $secondary_credit) {
             $total_secondarys += $secondary_credit['cred_monto'];
-            $total_secondarys += $secondary_credit['cred_interes_calculado'];
+            $total_secondarys += (float) $secondary_credit['cred_interes_calculado'];
         }
 
         return $total_secondarys;

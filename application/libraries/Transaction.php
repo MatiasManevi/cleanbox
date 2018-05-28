@@ -112,7 +112,7 @@ class Transaction {
         return $impacted_credits;
     }
 
-    public function impactCommonCredit($credit, $transaction_id, &$contract) {
+    public static function impactCommonCredit($credit, $transaction_id, &$contract) {
         try {
             $instance = &get_instance();
             General::loadModels($instance);

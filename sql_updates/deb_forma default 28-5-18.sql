@@ -1,0 +1,2 @@
+ALTER TABLE `debitos` CHANGE `deb_forma` `deb_forma` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE `creditos` CHANGE `cred_tipo_pago` `cred_tipo_pago` VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;

@@ -14,25 +14,22 @@
 
 class Report {
 
-    public static function buildAccountsAnualBalanceReport($year) {
+    public static function buildAccountsAnualBalanceReport($year, $account) {
+        $instance = &get_instance();
+
         $months = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
         $instance->data['balances'] = array();
-
+        $instance->data['account_name'] = $account['cc_prop'];
+        $instance->data['year'] = $year;
 
         foreach ($months as $value) {
             $month = $value . ' ' . $year;
-            $current_accounts = self::getAccountsBalance($month);
-            $instance->data['balances'][$month] = 0;
+            $account_balance = self::getAccountsBalance($month, $account);
 
-            foreach ($current_accounts as $current_account) {
-                $instance->data['balances'][$month] += $current_account['balance'];
-            }
+            $instance->data['balances'][$month][] = $account_balance[0];
         }
-
-        echo '<pre>';
-        print_r($instance->data['balances']);
-        die;
-
+        
+        return $instance->load->view('reports/accounts_anual_balance_report', $instance->data, TRUE);
     }
 
     public static function buildOutmonthTransactionsReport($month) {
@@ -182,23 +179,28 @@ class Report {
         return true;
     }
 
-    public static function getAccountsBalance($month) {
+    public static function getAccountsBalance($month, $account = false) {
         $instance = &get_instance();
 
-        $current_accounts = $instance->basic->get_all('cuentas_corrientes')->result_array();
+        if(!is_array($account) || empty($account)){
+            $current_accounts = $instance->basic->get_all('cuentas_corrientes')->result_array();
+        }else{
+            $current_accounts = array($account);            
+        }
+
         $accounts_balance = array();
 
         foreach ($current_accounts as $current_account) {
-            if (strpos($current_account['cc_prop'], 'INMOBILIARIA') === FALSE && strpos($current_account['cc_prop'], 'CAJA FUERTE') === FALSE) {
+            if($current_account) {
+                if ($current_account['cc_prop'] != 'INMOBILIARIA' && $current_account['cc_prop'] != 'CAJA FUERTE') {
 
-                $debits = CurrentAccount::getDebits($current_account);
-                $credits = CurrentAccount::getCredits($current_account);
+                    $debits = CurrentAccount::getDebits($current_account);
+                    $credits = CurrentAccount::getCredits($current_account);
 
-                $ins = CurrentAccount::getCreditsSumMonth($credits, $month, false);
-                $outs = CurrentAccount::getDebitsSumMonth($debits, $month, false);
-                $balance = round($ins - $outs, 2);
+                    $ins = CurrentAccount::getCreditsSumMonth($credits, $month, false);
+                    $outs = CurrentAccount::getDebitsSumMonth($debits, $month, false);
+                    $balance = round($ins - $outs, 2);
 
-                if($balance != 0) {
                     $propietary_account = array(
                         'name' => $current_account['cc_prop'],
                         'ins' => $ins,
@@ -206,7 +208,7 @@ class Report {
                         'balance' => $balance
                     );
 
-                    array_push($accounts_balance, $propietary_account);
+                    array_push($accounts_balance, $propietary_account);    
                 }
             }
         }

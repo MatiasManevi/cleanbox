@@ -73,11 +73,12 @@ class Reports extends CI_Controller {
 
     public function buildAccountsAnualBalanceReport() {
         $year = $this->input->post('year');
+        $account = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $this->input->post('cc_id')))->row_array();
 
         try {
-            if ($year) {
+            if ($year && $account) {
                 $response['status'] = true;
-                $response['html'] = Report::buildAccountsAnualBalanceReport($year);
+                $response['html'] = Report::buildAccountsAnualBalanceReport($year, $account);
             } else {
                 $response['status'] = false;
                 $response['error'] = 'Debes elegir un año';

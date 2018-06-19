@@ -4,7 +4,11 @@
     </div>
 
     <form class="section_form" action="javascript:;" onsubmit="report.buildReport('<?php echo site_url('buildAccountsAnualBalanceReport') ?>', this);return false;" enctype="multipart/form-data"> 
-        <input type="text" name="year" required class="form-control     ui-autocomplete-input section_input" placeholder="Año" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">   
+
+        <input required type="text" class="form-control ui-autocomplete-input section_input _general_letters_input_control _search_input" placeholder="Propietario" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+        <input type="hidden" name="cc_id" class="form-control ui-autocomplete-input section_input _cc_id" placeholder="Propietario" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">    
+        
+        <input type="text" name="year" required class="form-control ui-autocomplete-input section_input" placeholder="Año" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">   
 
         <button class="btn btn-primary submit_button">Generar</button>
     </form>
@@ -12,19 +16,13 @@
 
 <script>
     $(function(){
-        $('._year').datepicker( {
-            monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
-            monthNamesShort: [ "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" ],
-            changeMonth: true,
-            changeYear: true,
-            yearRange: '1940:2050',
-            duration: "slow",
-            maxDate: "+15y",
-            dateFormat: 'yy',
-            onClose: function(dateText, inst) { 
-                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
-                $('._year').blur();
-            }
-        }); 
+        general_scripts.bindInputAutocomplete($('._search_input'), 'cuentas_corrientes', 'cc_id', 'cc_prop', false, function(response){
+            $('._cc_id').val(response.id);
+        });
+        $('._search_input').on('keypress','', function (key) {
+            if((key.charCode < 97 || key.charCode > 122) && key.charCode != 0 && key.charCode != 32 && key.charCode != 8 && key.charCode != 9  && (key.charCode < 65 || key.charCode > 90)) return false;
+   
+            $('._cc_id').val('');
+        });
     });
 </script>

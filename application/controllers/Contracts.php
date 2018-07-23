@@ -61,7 +61,6 @@ class Contracts extends CI_Controller {
                     $contract = array(
                         'con_prop' => strtoupper($this->input->post('con_prop')),
                         'con_inq' => strtoupper($this->input->post('con_inq')),
-                        'con_id' => $this->input->post('con_id'),
                         'cc_id' => $this->input->post('cc_id'),
                         'client_id' => $this->input->post('client_id'),
                         'gar1_id' => $this->input->post('gar1_id'),
@@ -87,6 +86,10 @@ class Contracts extends CI_Controller {
                         'con_date_declined' => $this->input->post('con_date_declined'),
                         'con_date_renovated' => $this->input->post('con_date_renovated')
                     );
+
+                    if($this->input->post('con_id')){
+                        $contract['con_id'] = $this->input->post('con_id');
+                    }
 
                     $contract = $this->createContractParts($contract);
 

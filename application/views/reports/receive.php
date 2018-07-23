@@ -197,31 +197,33 @@
 
                     <?php if (!empty($receive['secondary_credits'])) { ?>
                         <?php foreach ($receive['secondary_credits'] as $secondary) { ?>
+                            <?php if ($secondary['cred_concepto'] != 'Intereses' && $secondary['cred_concepto'] != 'IVA') { ?>
                             <?php
-                            if ($secondary['cred_forma'] == 'Efectivo') {
-                                $form = 'Efectivo';
-                            } else {
-                                $form = 'Cheque';
-                            }
+                                if ($secondary['cred_forma'] == 'Efectivo') {
+                                    $form = 'Efectivo';
+                                } else {
+                                    $form = 'Cheque';
+                                }
 
-                            if ($secondary['cred_tipo_trans'] == 'Bancaria') {
-                                $deposit = ' (Deposito Banco)';
-                            } else {
-                                $deposit = '';
-                            }
-                            ?>
-                            <tr>
-                                <td class="receive_cel"><?php echo $secondary['cred_concepto'] . ' ' . $secondary['cred_mes_alq'] ?></td>
+                                if ($secondary['cred_tipo_trans'] == 'Bancaria') {
+                                    $deposit = ' (Deposito Banco)';
+                                } else {
+                                    $deposit = '';
+                                }
+                                ?>
+                                <tr>
+                                    <td class="receive_cel"><?php echo $secondary['cred_concepto'] . ' ' . $secondary['cred_mes_alq'] ?></td>
 
-                                <td class="receive_cel"><?php echo $secondary['cred_forma'] == 'Efectivo' ? '$ ' . $secondary['cred_monto'] . $deposit : ''; ?></td>
-                                <td class="receive_cel"><?php echo $secondary['cred_forma'] == 'Cheque' ? '$ ' . $secondary['cred_monto'] . $deposit : ''; ?></td>
+                                    <td class="receive_cel"><?php echo $secondary['cred_forma'] == 'Efectivo' ? '$ ' . $secondary['cred_monto'] . $deposit : ''; ?></td>
+                                    <td class="receive_cel"><?php echo $secondary['cred_forma'] == 'Cheque' ? '$ ' . $secondary['cred_monto'] . $deposit : ''; ?></td>
 
-                                <td class="receive_cel"><?php echo $form == 'Efectivo' && $secondary['cred_interes_calculado'] ? '$ ' . $secondary['cred_interes_calculado'] . $deposit : ''; ?></td>
-                                <td class="receive_cel"><?php echo $form == 'Cheque' && $secondary['cred_interes_calculado'] ? '$ ' . $secondary['cred_interes_calculado'] . $deposit : ''; ?></td>
+                                    <td class="receive_cel"><?php echo $form == 'Efectivo' && $secondary['cred_interes_calculado'] ? '$ ' . $secondary['cred_interes_calculado'] . $deposit : ''; ?></td>
+                                    <td class="receive_cel"><?php echo $form == 'Cheque' && $secondary['cred_interes_calculado'] ? '$ ' . $secondary['cred_interes_calculado'] . $deposit : ''; ?></td>
 
-                                <td class="receive_cel"></td>
-                                <td class="receive_cel"></td>
-                            </tr>                        
+                                    <td class="receive_cel"></td>
+                                    <td class="receive_cel"></td>
+                                </tr>                        
+                            <?php } ?>
                         <?php } ?>
                     <?php } ?>
 

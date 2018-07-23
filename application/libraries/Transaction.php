@@ -14,6 +14,95 @@
 
 class Transaction {
 
+    public static function getAmountToRendition($account, $month) {
+        $instance = &get_instance();
+        $renditions = 0;
+        $payments = 0;
+        $gestion = 0;
+        $pagos = array();
+// probar con aldo, con boaglio y con alba
+        $contracts = $instance->basic->get_where('contratos', array('cc_id' => $account['cc_id']))->result_array();
+        $contracts_2 = $instance->basic->get_where('contratos', array('con_prop' => $account['cc_prop']))->result_array();
+        foreach ($contracts_2 as $contract_2) {
+            if (!in_array($contract_2, $contracts))
+                array_push($contracts, $contract_2);
+        }
+
+        // gestion de cobro
+        $debits_g = $instance->basic->get_where('debitos', array(
+            'deb_mes' => $month,
+            'cc_id' => $account['cc_id'],
+            'is_transfer' => 0))->result_array();
+        $debits_2 = $instance->basic->get_where('debitos', array(
+            'deb_mes' => $month,
+            'deb_cc' => $account['cc_prop'],
+            'is_transfer' => 0))->result_array();
+        foreach ($debits_2 as $debit_2) {
+            if (!in_array($debit_2, $debits_g))
+                array_push($debits_g, $debit_2);
+        }
+
+        foreach ($debits_g as $debit) {
+            if(strpos($debit['deb_concepto'], 'Gestion de Cobro') !== false){
+                $gestion += $debit['deb_monto'];
+            }    
+        }
+
+        // debitos rendiciones
+        $debits = $instance->basic->get_where('debitos', array(
+            'deb_concepto' => 'Rendicion',
+            'deb_mes' => $month,
+            'cc_id' => $account['cc_id'],
+            'is_transfer' => 0))->result_array();
+        $debits_2 = $instance->basic->get_where('debitos', array(
+            'deb_concepto' => 'Rendicion',
+            'deb_mes' => $month,
+            'deb_cc' => $account['cc_prop'],
+            'is_transfer' => 0))->result_array();
+        foreach ($debits_2 as $debit_2) {
+            if (!in_array($debit_2, $debits))
+                array_push($debits, $debit_2);
+        }
+
+        foreach ($debits as $debit) {
+            $renditions += $debit['deb_monto'];
+        }
+
+        // creditos por contratos
+        foreach ($contracts as $contract) {
+
+            $credits = $instance->basic->get_where('creditos', array(
+                'cred_concepto' => $contract['con_tipo'],
+                'cred_mes_alq' => $month,
+                'con_id' => $contract['con_id'],
+                'is_transfer' => 0))->result_array();
+
+            $credits_2 = $instance->basic->get_where('creditos', array(
+                'cred_concepto' => $contract['con_tipo'],
+                'cred_mes_alq' => $month,
+                'cred_cc' => $contract['con_prop'],
+                'cred_depositante' => $contract['con_inq'],
+                'is_transfer' => 0))->result_array();
+            
+            foreach ($credits_2 as $credit_2) {
+                if (!in_array($credit_2, $credits))
+                    array_push($credits, $credit_2);
+            }
+
+            foreach ($credits as $credit) {
+                if (!in_array($credit, $pagos)) {
+                    array_push($pagos, $credit);
+                }
+            }
+        }
+
+        foreach ($pagos as $pago) {
+            $payments += $pago['cred_monto'];
+        }
+
+        return round($payments - $renditions - $gestion, 2);
+    }
+
     public static function impactCredit($credit, &$contract, $transaction_id) {
         if ($credit['cred_concepto'] == 'Honorarios') {
             // forzamos que honorarios se impactara en cuenta de INMOBILIARIA
@@ -1191,19 +1280,19 @@ class Transaction {
         $cleaned = array();
 
         foreach ($credits as $credit) {
-            if ($credit['cred_concepto'] != 'IVA') {
+            // if ($credit['cred_concepto'] != 'IVA') {
 
                 if ($credit['cred_concepto'] != 'Gestion de Cobro') {
 
                     if ($credit['cred_concepto'] != 'Gestion de Cobro Sobre Intereses') {
 
-                        if ($credit['cred_concepto'] != 'Intereses') {
+                        // if ($credit['cred_concepto'] != 'Intereses') {
 
                             array_push($cleaned, $credit);
-                        }
+                        // }
                     }
                 }
-            }
+            // }
         }
 
         return $cleaned;
@@ -1236,7 +1325,7 @@ class Transaction {
 
         foreach ($credits as $credit) {
             $calculated_credit = $credit;
-            $calculated_credit['cred_interes_calculado'] = '';
+            $calculated_credit['cred_interes_calculado'] = 0;
             if ($credit['cred_interes'] > 0) {
                 $calculated_credit['cred_interes_calculado'] = round($credit['cred_monto'] * $credit['cred_interes'] * $contract['con_punitorio'], 2);
             }

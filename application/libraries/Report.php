@@ -158,8 +158,8 @@ class Report {
         }
 
         if (strpos($concept, 'Gestion de Cobro') === false &&
-            strpos($concept, 'Prestamo') === false &&
-            strpos($concept, 'Intereses') === false &&
+            strpos($concept, 'Prestamo') === false ||
+            // strpos($concept, 'Intereses') === false &&
             $concept == 'Loteo' ||
             $concept == 'Honorarios' ||
             strpos($concept, 'Reserva') !== false ||

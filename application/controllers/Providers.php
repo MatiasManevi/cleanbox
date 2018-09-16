@@ -45,7 +45,7 @@ class Providers extends CI_Controller {
                     'prov_tel' => $this->input->post('prov_tel'),
                     'prov_domicilio' => strtoupper($this->input->post('prov_domicilio')),
                     'prov_email' => strtoupper($this->input->post('prov_email')),
-                    'prov_nota' => $this->input->post('nota_total'),
+                    'prov_nota' => $this->input->post('nota_total') ? $this->input->post('nota_total') : 0,
                     'prov_id' => $this->input->post('prov_id')
                 );
 
@@ -97,15 +97,15 @@ class Providers extends CI_Controller {
 
     public function saveProveedorNota($prov_id, $post) {
         $notas = array(
-            'nota_id' => $post['nota_id'],
+            'nota_id' => $post['nota_id'] ? $post['nota_id'] : 0,
             'nota_prov_id' => $prov_id,
-            'nota_garantia' => $post['nota_garantia'],
-            'nota_exp' => $post['nota_exp'],
-            'nota_timing' => $post['nota_timing'],
-            'nota_presup' => $post['nota_presup'],
-            'nota_trust' => $post['nota_trust'],
-            'nota_calidad' => $post['nota_calidad'],
-            'nota_total' => $post['nota_total'],
+            'nota_garantia' => $post['nota_garantia'] ? $post['nota_garantia'] : 0,
+            'nota_exp' => $post['nota_exp'] ? $post['nota_exp'] : 0,
+            'nota_timing' => $post['nota_timing'] ? $post['nota_timing'] : 0,
+            'nota_presup' => $post['nota_presup'] ? $post['nota_presup'] : 0,
+            'nota_trust' => $post['nota_trust'] ? $post['nota_trust'] : 0,
+            'nota_calidad' => $post['nota_calidad'] ? $post['nota_calidad'] : 0,
+            'nota_total' => $post['nota_total'] ? $post['nota_total'] : 0,
         );
 
         $this->basic->save('proveedores_nota', 'nota_id', $notas);

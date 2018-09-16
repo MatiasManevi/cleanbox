@@ -33,7 +33,13 @@ class Maintenances extends CI_Controller {
             $this->form_validation->set_rules('mant_desc', 'Descripcion detallada', "required");
 
             if ($this->form_validation->run()) {
-                $maintenance = array_map("strtoupper", $this->input->post());
+                if(!$this->input->post('mant_monto')){
+                    $_POST['mant_monto'] = 0;
+                }
+                if(!$this->input->post('mant_calif')){
+                    $_POST['mant_calif'] = 0;
+                }
+                $maintenance = array_map("strtoupper", $_POST);
                 $maintenance['mant_id'] = $this->basic->save('mantenimientos', 'mant_id', $maintenance);
 
                 $response['status'] = true;

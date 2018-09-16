@@ -910,6 +910,7 @@ class Report {
     public static function getRentersInDefault($date, $renter_id = false) {
         $instance = &get_instance();
         $data = array();
+        $alive_contracts = array();
 
         if($renter_id){
             $data['one_renter'] = true;
@@ -918,7 +919,9 @@ class Report {
             if(empty($alive_contracts)){
                 $renter = $instance->basic->get_where('clientes', array('client_id' => $renter_id))->row_array();
 
-                $alive_contracts = $instance->basic->get_where('contratos', array('con_inq' => $renter['client_name'], 'con_enabled' => 1), 'con_tipo')->result_array();
+                if($renter){
+                    $alive_contracts = $instance->basic->get_where('contratos', array('con_inq' => $renter['client_name'], 'con_enabled' => 1), 'con_tipo')->result_array();
+                }
             }
 
         }else{

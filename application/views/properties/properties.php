@@ -17,7 +17,7 @@
         <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveProperty') ?>', this);return false;" enctype="multipart/form-data"> 
             <input id="prop_id" name="prop_id" type="hidden"/>
             <input id="cc_id" name="cc_id" type="hidden">
-            <input id="prop_enabled" name="prop_enabled" type="hidden">
+            <input id="prop_enabled" name="prop_enabled" type="hidden" value="1">
 
             <input required title="Propietario" class="form-control ui-autocomplete-input section_input _general_letters_input_control" type="text" name="prop_prop" id="prop_prop" placeholder="Propietario" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
             <input required title="Domicilio" class="form-control ui-autocomplete-input section_input" type="text" name="prop_dom" id="prop_dom" placeholder="Domicilio de propiedad" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">

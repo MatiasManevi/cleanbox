@@ -19,6 +19,7 @@ Class Basic extends CI_Model {
 
     function save($table, $id_field, $data = array()) {
         if (!isset($data[$id_field]) || empty($data[$id_field])) {
+            unset($data[$id_field]);
             $this->db->insert($table, $data);
             return $this->db->insert_id();
         } else {

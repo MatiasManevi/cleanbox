@@ -44,6 +44,13 @@ class Accounts extends CI_Controller {
 
                 $new_account['client_id'] = General::impactEditAccount($account, $new_account['cc_prop']);
 
+                if(!$this->input->post('cc_saldo')){
+                    $new_account['cc_saldo'] = 0;
+                }
+                if(!$this->input->post('cc_varios')){
+                    $new_account['cc_varios'] = 0;
+                }
+
                 $new_account['cc_id'] = $this->basic->save('cuentas_corrientes', 'cc_id', $new_account);
 
                 $response['status'] = true;

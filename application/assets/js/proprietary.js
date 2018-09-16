@@ -144,6 +144,7 @@ proprietary.initComponents = function () {
     proprietary.prop_id = $('#prop_id');
     proprietary.prop_prop = $('#prop_prop');
     proprietary.prop_dom = $('#prop_dom');
+    proprietary.prop_enabled = $('#prop_enabled');
     proprietary.prop_contrato_vigente = $('#prop_contrato_vigente');
     
     // Comentarios fields
@@ -394,6 +395,7 @@ proprietary.loadFormData = function (entity){
     proprietary.cc_id.val(entity.cc_id);
     proprietary.prop_prop.val(entity.prop_prop);
     proprietary.prop_dom.val(entity.prop_dom);
+    proprietary.prop_enabled.val(entity.prop_enabled);
     
     var in_contract = entity.prop_contrato_vigente != '' ? entity.prop_contrato_vigente : 'Libre';
     

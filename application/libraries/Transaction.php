@@ -573,7 +573,6 @@ class Transaction {
                     'cred_monto' => $credit['cred_interes_calculado'],
                     'cred_fecha' => $credit['cred_fecha'],
                     'cred_forma' => $credit['cred_forma'],
-                    'cred_interes' => '',
                     'cred_banco' => $credit['cred_banco'],
                     'receive_number' => $credit['receive_number'],
                     'cred_nro_cheque' => $credit['cred_nro_cheque'],

@@ -26,7 +26,7 @@
                     <th>Tipo</th>
 <!--                    <th>Acciones</th>-->
                 </tr>
-                <?
+                <?php
                 if (count($transfers_to_safe)) {
                     foreach ($transfers_to_safe as $row) {
                         ?>
@@ -38,12 +38,12 @@
                                 <a title="Eliminar" onclick="modals.deleteEntityModal(<?php echo $row['cred_id']; ?>, 'creditos', 'cred_id', 'transferencia');" href="javascript:;" class="glyphicon glyphicon-trash"></a>
                             </td>-->
                         </tr>
-                        <?
+                        <?php
                     }
                 } else {
                     ?>
                     <tr class="_no_records"><td colspan="100%"> No se encontraron registros </td></tr>
-                <? } ?>
+                <?php } ?>
             </table>
         </div>
     </div>
@@ -68,7 +68,7 @@
                     <th>Tipo</th>
 <!--                    <th>Acciones</th>-->
                 </tr>
-                <?
+                <?php
                 if (count($transfers_to_cash)) {
                     foreach ($transfers_to_cash as $row) {
                         ?>
@@ -87,12 +87,12 @@
                                 <a title="Eliminar" onclick="modals.deleteEntityModal(<?php echo $row['deb_id']; ?>, 'debitos', 'deb_id', 'transferencia');" href="javascript:;" class="glyphicon glyphicon-trash"></a>
                             </td>-->
                         </tr>
-                        <?
+                        <?php
                     }
                 } else {
                     ?>
                     <tr class="_no_records"><td colspan="100%"> No se encontraron registros </td></tr>
-                <? } ?>
+                <?php } ?>
             </table>
         </div>
     </div>

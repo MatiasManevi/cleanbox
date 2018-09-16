@@ -45,7 +45,7 @@
 </div>
 
 <div class="clear_both credit_contract_details">
-    <div class="contract_detail">
+    <div class="contract_detail" style="width: 12%;">
         <label>Gestion Cobro</label><input title="Porc. Gestion de Cobro Ej: 7% = 0.07" value="<?php echo $porc ?>"  type="text" name="con_porc" id="con_porc" class="form-control ui-autocomplete-input" placeholder="Gestion Cobro" readonly>
     </div>
     <div class="contract_detail">
@@ -58,10 +58,10 @@
         <label>Incluye IVA/Alquiler</label><input value="<?php echo $iva_alq ?>"  type="text" name="con_iva_alq" id="con_iva_alq" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
     </div>
     <div class="contract_detail">
-        <label>Pagos Honorarios</label><input value="<?php echo $honorary_cuotes_payed . '/' . $honorary_cuotes ?>" title="<?php echo $honorary_cuotes_payed . ' cuotas pagadas de ' . $honorary_cuotes . ' de Honorarios' ?>" type="text" name="honorary_cuotes" id="honorary_cuotes" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
+        <label>Pagos Honorarios</label><input value="<?php echo $honorary_cuotes_payed ? $honorary_cuotes_payed : 0 . '/' . $honorary_cuotes ?>" title="<?php echo $honorary_cuotes_payed . ' cuotas pagadas de ' . $honorary_cuotes . ' de Honorarios' ?>" type="text" name="honorary_cuotes" id="honorary_cuotes" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
     </div>
     <div class="contract_detail">
-        <label>Pagos Deposito de Garantia</label><input value="<?php echo $warranty_cuotes_payed . '/' . $warranty_cuotes ?>" title="<?php echo $warranty_cuotes_payed . ' cuotas pagadas de ' . $warranty_cuotes . ' de Depositos de Garantia' ?>"  type="text" name="warranty_cuotes" id="warranty_cuotes" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
+        <label>Pagos Deposito de Garantia</label><input value="<?php echo $warranty_cuotes_payed ? $warranty_cuotes_payed : 0 . '/' . $warranty_cuotes ?>" title="<?php echo $warranty_cuotes_payed . ' cuotas pagadas de ' . $warranty_cuotes . ' de Depositos de Garantia' ?>"  type="text" name="warranty_cuotes" id="warranty_cuotes" class="form-control ui-autocomplete-input" placeholder="IVA" readonly>
     </div>
     <input type="hidden" id="con_id" value="<?php echo $con_id; ?>">
 </div>

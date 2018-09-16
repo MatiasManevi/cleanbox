@@ -38,7 +38,7 @@ class Concepts extends CI_Controller {
                 
                 $concept = $this->input->post();
                 if (!$this->conceptExist($this->input->post()) || $this->input->post('conc_id') != '') {
-                    $concept['conc_id'] = $this->basic->save('conceptos', 'conc_id', $this->input->post());
+                    $concept['conc_id'] = $this->basic->save('conceptos', 'conc_id', array_map('strtoupper', $this->input->post()));
 
                     $response['status'] = true;
                     $response['entity'] = General::parseEntityForList($concept, 'conceptos');

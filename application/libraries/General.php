@@ -697,9 +697,11 @@ class General {
         if (empty($client)) {
             $client = array(
                 'client_name' => $new_account_name,
+                'client_categoria' => 'Propietario',
             );
         } else {
             $client['client_name'] = $new_account_name;
+            $client['client_categoria'] = 'Propietario';
         }
         $client['client_id'] = $instance->basic->save('clientes', 'client_id', $client);
 

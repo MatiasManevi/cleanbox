@@ -61,7 +61,6 @@ class Migrations extends CI_Controller {
                             'cred_domicilio' => $this->input->post('address'),
                             'cred_monto' => $this->input->post('amount'),
                             'cred_fecha' => Date('d-m-Y'),
-                            'cred_interes' => '',
                             'trans' => $transaction_id
                         );
 

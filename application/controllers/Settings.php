@@ -45,22 +45,24 @@ class Settings extends CI_Controller {
                     break;
             }
 
+            $updated_settings = [];
+
             foreach ($settings as $key => $setting_value) {
-                if ($this->input->post($key) || !$this->input->post($key) && $key == 'print_receive' || $key == 'build_receive_header' || $key == 'begin_cash_zero' || $key == 'code_control' || $key == 'loan_rendition' || $key == 'print_debit' || $key == 'print_copy' || $key == 'return_loan_in_dues' || $key == 'email_receive_renter') {
-                    if ($setting_value !== $this->input->post($key)) {
-                        $settings[$key] = $this->input->post($key);
-                    }
+                if(array_key_exists($key, $this->input->post())){
+                    $updated_settings[$key] = $this->input->post($key);
                 }
             }
 
-            $this->basic->save('settings', 'id', $settings);
+            $this->basic->save('settings', 'id', $updated_settings);
 
-            foreach ($reports_config as $report_config) {
-                if(isset($report_config['current_accounts'])){
-                    $report_config['data'] = serialize($report_config['current_accounts']);
-                    unset($report_config['current_accounts']);
+            if ($reports_config) {
+                foreach ($reports_config as $report_config) {
+                    if(isset($report_config['current_accounts'])){
+                        $report_config['data'] = serialize($report_config['current_accounts']);
+                        unset($report_config['current_accounts']);
+                    }
+                    $this->basic->save('reports_config', 'id', $report_config);
                 }
-                $this->basic->save('reports_config', 'id', $report_config);
             }
 
             $response['status'] = true;

@@ -51,6 +51,8 @@ class CI_Controller {
 
 		$this->load->initialize();
 		
+		$this->config->set_item('language', 'spanish');
+		
 		log_message('debug', "Controller Class Initialized");
 
 		User::checkLogin();

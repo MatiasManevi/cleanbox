@@ -29,6 +29,7 @@ class Contracts extends CI_Controller {
     public function save() {
         $response = array();
 
+        
         try {
             $this->form_validation->set_rules('con_prop', 'Propietario', "required|trim");
             $this->form_validation->set_rules('con_inq', 'Inquilino', "required|trim");
@@ -58,33 +59,35 @@ class Contracts extends CI_Controller {
                 }
 
                 if ($services_ok) {
+                    $this->db->trans_start();
+                    
                     $contract = array(
                         'con_prop' => strtoupper($this->input->post('con_prop')),
                         'con_inq' => strtoupper($this->input->post('con_inq')),
                         'cc_id' => $this->input->post('cc_id'),
                         'client_id' => $this->input->post('client_id'),
                         'gar1_id' => $this->input->post('gar1_id'),
-                        'gar2_id' => $this->input->post('gar2_id'),
-                        'prop_id' => $this->input->post('prop_id'),
-                        'con_venc' => $this->input->post('con_venc'),
+                        'gar2_id' => $this->input->post('gar2_id') ? $this->input->post('gar2_id') : null,
+                        'prop_id' => $this->input->post('prop_id') ? $this->input->post('prop_id') : null,
+                        'con_venc' => $this->input->post('con_venc') ? $this->input->post('con_venc') : null,
                         'con_tipo' => $this->input->post('con_tipo'),
                         'con_iva' => $this->input->post('con_iva'),
                         'con_domi' => strtoupper($this->input->post('con_domi')),
                         'con_iva_alq' => $this->input->post('con_iva_alq'),
                         'con_porc' => $this->input->post('con_porc'),
-                        'con_gar1' => strtoupper($this->input->post('con_gar1')),
-                        'con_gar2' => strtoupper($this->input->post('con_gar2')),
+                        'con_gar1' => $this->input->post('con_gar1') ? strtoupper($this->input->post('con_gar1')) : null,
+                        'con_gar2' => $this->input->post('con_gar2') ? strtoupper($this->input->post('con_gar2')) : null,
                         'con_motivo' => $this->input->post('con_motivo'),
                         'con_punitorio' => $this->input->post('con_punitorio'),
                         'con_tolerancia' => $this->input->post('con_tolerancia'),
-                        'honorary_cuotes' => $this->input->post('honorary_cuotes'),
-                        'honorary_cuotes_payed' => $this->input->post('honorary_cuotes_payed'),
-                        'warranty_cuotes' => $this->input->post('warranty_cuotes'),
-                        'warranty_cuotes_payed' => $this->input->post('warranty_cuotes_payed'),
+                        'honorary_cuotes' => $this->input->post('honorary_cuotes') ? $this->input->post('honorary_cuotes') : null,
+                        'honorary_cuotes_payed' => $this->input->post('honorary_cuotes_payed') ? $this->input->post('honorary_cuotes_payed') : null,
+                        'warranty_cuotes' => $this->input->post('warranty_cuotes') ? $this->input->post('warranty_cuotes') : null,
+                        'warranty_cuotes_payed' => $this->input->post('warranty_cuotes_payed') ? $this->input->post('warranty_cuotes_payed') : null,
                         'con_enabled' => $this->input->post('con_enabled'),
-                        'con_date_created' => $this->input->post('con_date_created'),
-                        'con_date_declined' => $this->input->post('con_date_declined'),
-                        'con_date_renovated' => $this->input->post('con_date_renovated')
+                        'con_date_created' => $this->input->post('con_date_created') ? $this->input->post('con_date_created') : null,
+                        'con_date_declined' => $this->input->post('con_date_declined') ? $this->input->post('con_date_declined') : null,
+                        'con_date_renovated' => $this->input->post('con_date_renovated') ? $this->input->post('con_date_renovated') : null
                     );
 
                     if($this->input->post('con_id')){
@@ -114,6 +117,8 @@ class Contracts extends CI_Controller {
                         'entity_name' => 'contrato',
                     );
                     $response['success'] = 'El contrato fue guardado!';
+
+                    $this->db->trans_complete();
                 } else {
                     $response['status'] = false;
                     $response['error'] = 'Los conceptos: ';

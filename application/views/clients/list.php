@@ -11,6 +11,7 @@
     <?php
     if (count($clients)) {
         foreach ($clients as $row) {
+            if (!in_array($row['client_name'], array('INMOBILIARIA', 'CAJA FUERTE'))) {
             ?>
             <tr class="_reg_entity_<?php echo $row['client_id']; ?>">
                 <td><?php echo $row['client_name']; ?></td>
@@ -25,6 +26,7 @@
                 </td>
             </tr>
         <?php
+            }
         }
     } else {
     ?>

@@ -39,7 +39,7 @@
                 <label>Logo de la empresa</label>
                 <div class="logo _logo">
                     <?php if (isset($settings) && $settings['logo'] != '') { ?>
-                    <img height="200" width="200" class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
+                    <img height="90" width="300" class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
                     <input type="hidden" name="logo" id="image" value="<?php echo $settings['logo'] ?>"/>
                     <a class="close _remove_image" href="javascript:;" onclick="general_scripts.removeImage('bussines_logos', '._logo');" title="Eliminar">[&times;]</a>
                     <?php } else { ?>

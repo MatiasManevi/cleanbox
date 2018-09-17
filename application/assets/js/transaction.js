@@ -813,7 +813,7 @@ credit.saveCredits = function (url) {
     };
    
     if(!credit.contract_info.is(':empty')){
-        params['con_id'] = $('#con_id').val();
+        params['con_id'] = $('#con_id').is('*') ? $('#con_id').val() : 0;
     }
     
     credit.dinamic_credits.find('._credit_block').each(function(){
@@ -822,7 +822,7 @@ credit.saveCredits = function (url) {
         
         new_credit['cred_id'] = '';
         new_credit['cred_cc'] = credit.cred_cc.val();
-        new_credit['con_id'] = params['con_id'] ? params['con_id'] : null;
+        new_credit['con_id'] = params['con_id'] ? params['con_id'] : 0;
         new_credit['cc_id'] = credit.cc_id.val();
         new_credit['client_id'] = credit.client_id.val();
         new_credit['cred_depositante'] = credit.cred_depositante.val();
@@ -835,7 +835,7 @@ credit.saveCredits = function (url) {
         new_credit['cred_mes_alq'] = $credit_block.find('._mes').val();
         new_credit['cred_concepto'] = $credit_block.find('._concepto').val();
         new_credit['cred_monto'] = $credit_block.find('._monto').val();
-        new_credit['cred_interes'] = $credit_block.find('._dias_mora').is('*') ? $credit_block.find('._dias_mora').val().replace(/[^0-9]/g,'') : 0;
+        new_credit['cred_interes'] = $credit_block.find('._dias_mora').is('*') ? $credit_block.find('._dias_mora').val().replace(/[^0-9]/g,'') : '0';
         new_credit['cred_domicilio'] = $credit_block.find('._domicilio').val();
         new_credit['cred_tipo_pago'] = $credit_block.find('._select_tipo_pago').is('*') ? $credit_block.find('._select_tipo_pago').val() : '';
         new_credit['cred_iva_calculado'] = $credit_block.find('._iva_calculado').is('*') ? $credit_block.find('._iva_calculado').val() : '';

@@ -40,7 +40,7 @@ class Credits extends CI_Controller {
             $services_controls = $this->input->post('services_control') ? $this->input->post('services_control') : false;
 
             if ($credits || $services_controls) {
-                $contract_id = $this->input->post('con_id') ? $this->input->post('con_id') : false;
+                $contract_id = $this->input->post('con_id') ? $this->input->post('con_id') : 0;
                 $transaction_id = Transaction::getLastTransactionId();
 
                 if ($contract_id) {

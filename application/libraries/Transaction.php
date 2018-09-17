@@ -273,6 +273,9 @@ class Transaction {
 
             // Guarda el credito puro
             $credit['trans'] = $transaction_id;
+            if(!$credit['cred_interes']){
+                $credit['cred_interes'] = 0;
+            }
             $credit['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit);
 
             array_push($impacted_credits, $credit);
@@ -513,6 +516,13 @@ class Transaction {
 
             $instance->basic->save('debitos', 'deb_id', $debit_gestion);
             $credit_gestion['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit_gestion);
+
+            $account_type = General::getAccountType($debit_gestion, 'Salida', 'deb_concepto');
+            
+            // impact loan
+            if ($debit_gestion['deb_concepto'] != 'Rendicion' || User::loanRendition()) {
+                self::createLoan($debit_gestion, $account_type, $cc_to_impact);
+            }
         }
 
         return $credit_gestion;

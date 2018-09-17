@@ -24,8 +24,8 @@
 */
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
     $config['base_url'] = "http://localhost/cleanbox";
-} elseif (strpos($_SERVER['SERVER_NAME'], 'pc-adriana') !== FALSE) {
-    $config['base_url'] = "http://pc-adriana/cleanbox";
+} elseif (strpos($_SERVER['SERVER_NAME'], 'desktop-g6ism67') !== FALSE) {
+    $config['base_url'] = "http://desktop-g6ism67/cleanbox";
 }
 
 /*

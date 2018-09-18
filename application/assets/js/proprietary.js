@@ -110,6 +110,7 @@ proprietary.initComponents = function () {
     accounts.cc_prop = $('#cc_prop');
     accounts.cc_saldo = $('#cc_saldo');
     accounts.cc_varios = $('#cc_varios');
+    accounts.loans = $('#loans');
     
     // Contract fields
     contracts.con_id = $('#con_id');
@@ -388,6 +389,7 @@ accounts.loadFormData = function (entity) {
     accounts.cc_prop.val(entity.cc_prop);
     accounts.cc_saldo.val(entity.cc_saldo);
     accounts.cc_varios.val(entity.cc_varios);
+    accounts.loans.val(entity.loans);
 };
 
 proprietary.loadFormData = function (entity){  

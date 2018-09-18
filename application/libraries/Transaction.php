@@ -119,9 +119,35 @@ class Transaction {
             self::impactDevolutionsStrict($credit, $transaction_id);
         }
 
+        self::createGestionLoans($transaction_id);
+
         return $impacted_credits;
     }
 
+    public static function createGestionLoans($transaction_id) {
+        $instance = &get_instance();
+
+        $debits = $instance->basic->get_where('debitos', array('trans' => $transaction_id))->result_array();
+
+        if(!empty($debits)){
+
+            $cc_to_impact = $instance->basic->get_where('cuentas_corrientes', array('cc_id' => $debits[0]['cc_id']))->row_array();
+            $difference = round($cc_to_impact['cc_saldo'] + $cc_to_impact['cc_varios'], 2);
+            
+            if ($difference < 0) {
+                foreach ($debits as $debit) {
+                    // impact loan
+                    if (strpos($debit['deb_concepto'], 'Gestion de Cobro') !== false) {
+                        $account_type = General::getAccountType($debit, 'Salida', 'deb_concepto');
+
+                        self::createLoan($debit, $account_type, $cc_to_impact, $difference);
+                    }
+                }
+            }
+
+            $instance->basic->save('cuentas_corrientes', 'cc_id', $cc_to_impact);
+        }
+    }
     /**
      * Cuando se trata de un credito por honorarios, este debe armarse para que impacte en la cuenta de
      * la INMOBILIARIA, y computar, si es que tiene, el IVA
@@ -516,13 +542,6 @@ class Transaction {
 
             $instance->basic->save('debitos', 'deb_id', $debit_gestion);
             $credit_gestion['cred_id'] = $instance->basic->save('creditos', 'cred_id', $credit_gestion);
-
-            $account_type = General::getAccountType($debit_gestion, 'Salida', 'deb_concepto');
-            
-            // impact loan
-            if ($debit_gestion['deb_concepto'] != 'Rendicion' || User::loanRendition()) {
-                self::createLoan($debit_gestion, $account_type, $cc_to_impact);
-            }
         }
 
         return $credit_gestion;
@@ -620,13 +639,14 @@ class Transaction {
      * @param string $account_type
      * @param array $cc_to_impact 
      */
-    public static function createLoan($debit, $account_type, &$cc_to_impact) {
+    public static function createLoan($debit, $account_type, &$cc_to_impact, $difference = false) {
         $instance = &get_instance();
-        General::loadModels($instance);
 
         $cc_inmo = $instance->basic->get_where('cuentas_corrientes', array('cc_prop' => 'INMOBILIARIA'))->row_array();
 
-        $difference = round($cc_to_impact['cc_saldo'] + $cc_to_impact['cc_varios'] - $debit['deb_monto'], 2);
+        if(!$difference){
+            $difference = round($cc_to_impact['cc_saldo'] + $cc_to_impact['cc_varios'] - $debit['deb_monto'], 2);
+        }
 
         if ($difference < 0) {
 
@@ -1382,6 +1402,14 @@ class Transaction {
         $type = General::getAccountType($credit, 'Entrada', 'cred_concepto');
         $account[$type] -= $credit['cred_monto'];
 
+        if (User::returnLoanInDues() && $account['cc_prop'] != 'INMOBILIARIA') {
+            // Si es un credito que fue a un propietario para prestamo y se borra 
+            // se debe restar el loans del propietario xq ya no estara el prestamo
+            if ($credit['cred_concepto'] == 'Prestamo') {
+                $account['loans'] -= $credit['cred_monto'];
+            }
+        }
+
         $instance->basic->del('creditos', 'cred_id', $credit['cred_id']);
         $instance->basic->save('cuentas_corrientes', 'cc_id', $account);
     }
@@ -1483,6 +1511,14 @@ class Transaction {
         // Eliminando efecto del debito a la cuenta
         $type = General::getAccountType($debit, 'Salida', 'deb_concepto');
         $account[$type] += $debit['deb_monto'];
+
+        if (User::returnLoanInDues() && $account['cc_prop'] != 'INMOBILIARIA') {
+            // Si es un debito que fue a la inmo para devolver un prestamo y se borra 
+            // se debe sumar al loans del propietario xq queda sin efecto la devolucion
+            if ($debit['deb_concepto'] == 'Devolucion Prestamo') {
+                $account['loans'] += $debit['deb_monto'];
+            }
+        }
 
         $instance->basic->del('debitos', 'deb_id', $debit['deb_id']);
         $instance->basic->save('cuentas_corrientes', 'cc_id', $account);

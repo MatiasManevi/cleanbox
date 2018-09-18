@@ -84,22 +84,23 @@ class Contracts extends CI_Controller {
                         'honorary_cuotes_payed' => $this->input->post('honorary_cuotes_payed') ? $this->input->post('honorary_cuotes_payed') : null,
                         'warranty_cuotes' => $this->input->post('warranty_cuotes') ? $this->input->post('warranty_cuotes') : null,
                         'warranty_cuotes_payed' => $this->input->post('warranty_cuotes_payed') ? $this->input->post('warranty_cuotes_payed') : null,
-                        'con_enabled' => $this->input->post('con_enabled'),
-                        'con_date_created' => $this->input->post('con_date_created') ? $this->input->post('con_date_created') : null,
-                        'con_date_declined' => $this->input->post('con_date_declined') ? $this->input->post('con_date_declined') : null,
-                        'con_date_renovated' => $this->input->post('con_date_renovated') ? $this->input->post('con_date_renovated') : null
+                        'con_enabled' => $this->input->post('con_enabled')
                     );
 
                     if($this->input->post('con_id')){
                         $contract['con_id'] = $this->input->post('con_id');
+                    }else{
+                        $contract['con_date_created'] = date('d-m-Y');
                     }
 
                     $contract = $this->createContractParts($contract);
 
                     if ($contract['con_motivo'] == 'Rescindido') {
                         $contract['con_enabled'] = 0;
+                        $contract['con_date_declined'] = date('d-m-Y');
                     } elseif ($contract['con_motivo'] == 'Prorrogado') {
                         $contract['con_enabled'] = 1;
+                        $contract['con_date_renovated'] = date('d-m-Y');
                     }
 
                     $contract['con_id'] = $this->basic->save('contratos', 'con_id', $contract);

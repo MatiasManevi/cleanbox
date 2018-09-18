@@ -799,11 +799,11 @@ credit.authUnlock = function (auth_code){
 };
 
 credit.saveCredits = function (url) {
-    if(print_receive && $('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
+    /*if(print_receive && $('#receive_number').is(':visible') && $('#receive_number').val().length == 0){
         cleanbox_alert.showAlertInfo('Ingresa el numero de recibo que imprimiras!');
         $('#receive_number').focus();
         return false;
-    }
+    }*/
     
     var params = {
         'credits' : [],

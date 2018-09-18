@@ -1,0 +1,1 @@
+ALTER TABLE `contratos` ADD `warranty_cuotes_price` DECIMAL(10,2) NULL DEFAULT '0' AFTER `warranty_cuotes_payed`, ADD `honorary_cuotes_price` DECIMAL(10,2) NULL DEFAULT '0' AFTER `warranty_cuotes_price`;

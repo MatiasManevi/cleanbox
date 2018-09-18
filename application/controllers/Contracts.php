@@ -80,10 +80,10 @@ class Contracts extends CI_Controller {
                         'con_motivo' => $this->input->post('con_motivo'),
                         'con_punitorio' => $this->input->post('con_punitorio'),
                         'con_tolerancia' => $this->input->post('con_tolerancia'),
-                        'honorary_cuotes_price' => $this->input->post('honorary_cuotes_price'),
+                        'honorary_cuotes_price' => $this->input->post('honorary_cuotes_price') ? $this->input->post('honorary_cuotes_price') : null,
                         'honorary_cuotes' => $this->input->post('honorary_cuotes') ? $this->input->post('honorary_cuotes') : null,
                         'honorary_cuotes_payed' => $this->input->post('honorary_cuotes_payed') ? $this->input->post('honorary_cuotes_payed') : null,
-                        'warranty_cuotes_price' => $this->input->post('warranty_cuotes_price'),
+                        'warranty_cuotes_price' => $this->input->post('warranty_cuotes_price') ? $this->input->post('warranty_cuotes_price') : null,
                         'warranty_cuotes' => $this->input->post('warranty_cuotes') ? $this->input->post('warranty_cuotes') : null,
                         'warranty_cuotes_payed' => $this->input->post('warranty_cuotes_payed') ? $this->input->post('warranty_cuotes_payed') : null,
                         'con_enabled' => $this->input->post('con_enabled')

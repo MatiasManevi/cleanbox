@@ -501,7 +501,6 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
     
     if(typeof contract != 'undefined'){
         if(concept == 'Honorarios'){
-            console.log(contract['warranty_cuotes_payed'])
             if(contract['warranty_cuotes_payed'] == null){
                 contract['warranty_cuotes_payed'] = 0
             }

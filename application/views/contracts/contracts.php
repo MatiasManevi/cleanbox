@@ -43,12 +43,14 @@
                     <label>Honorarios</label>
                     <input required id="honorary_cuotes" title="Cantidad de cuotas en que se pagan Honorarios" type="text" name="honorary_cuotes" class="form-control ui-autocomplete-input clear_both _general_number_input_control contract_fields" placeholder="Cantidad de cuotas" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="">
                     <input id="honorary_cuotes_payed" title="Cuotas abonadas de Honorarios" type="text" name="honorary_cuotes_payed" class="form-control ui-autocomplete-input _general_number_input_control contract_fields" placeholder="Cantidad de Cuotas Abonadas" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="">
+                    <input id="honorary_cuotes_price" title="Precio de la cuota" type="text" name="honorary_cuotes_price" class="form-control ui-autocomplete-input _general_number_input_control contract_fields" placeholder="Precio de la cuota" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="">
                 </div>
 
                 <div class="select">
                     <label>Deposito de Garantia</label>
                     <input required id="warranty_cuotes" title="Cantidad de cuotas en que se paga Deposito de Garantia" type="text" name="warranty_cuotes" class="form-control ui-autocomplete-input _general_number_input_control contract_fields" placeholder="Cantidad de cuotas" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="">
                     <input id="warranty_cuotes_payed" title="Cuotas abonadas de Deposito de Garantia" type="text" name="warranty_cuotes_payed" class="form-control ui-autocomplete-input _general_number_input_control contract_fields" placeholder="Cantidad de Cuotas Abonadas" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="">
+                    <input id="warranty_cuotes_price" title="Precio de la cuota" type="text" name="warranty_cuotes_price" class="form-control ui-autocomplete-input _general_number_input_control contract_fields" placeholder="Precio de la cuota" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true" style="">
                 </div>
             </div>
 

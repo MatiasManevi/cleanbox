@@ -130,8 +130,10 @@ proprietary.initComponents = function () {
     contracts.con_punitorio = $('#con_punitorio');
     contracts.honorary_cuotes = $('#honorary_cuotes');
     contracts.honorary_cuotes_payed = $('#honorary_cuotes_payed');
+    contracts.honorary_cuotes_price = $('#honorary_cuotes_price');
     contracts.warranty_cuotes = $('#warranty_cuotes');
     contracts.warranty_cuotes_payed = $('#warranty_cuotes_payed');
+    contracts.warranty_cuotes_price = $('#warranty_cuotes_price');
     contracts.periodos = $('._periods');
     contracts.servicios = $('._services');
     // selects
@@ -363,8 +365,10 @@ contracts.loadFormData = function (entity, periods, services) {
     contracts.con_punitorio.val(entity.con_punitorio);
     contracts.honorary_cuotes.val(entity.honorary_cuotes);
     contracts.honorary_cuotes_payed.val(entity.honorary_cuotes_payed);
+    contracts.honorary_cuotes_price.val(entity.honorary_cuotes_price);
     contracts.warranty_cuotes.val(entity.warranty_cuotes);
     contracts.warranty_cuotes_payed.val(entity.warranty_cuotes_payed);
+    contracts.warranty_cuotes_price.val(entity.warranty_cuotes_price);
    
     //selects
     contracts.con_enabled.find('option[value="' + entity.con_enabled + '"]').prop('selected', true);
@@ -433,8 +437,10 @@ contracts.saveContract = function (url) {
         'con_tolerancia': contracts.con_tolerancia.val(),
         'honorary_cuotes': contracts.honorary_cuotes.val(),
         'honorary_cuotes_payed': contracts.honorary_cuotes_payed.val(),
+        'honorary_cuotes_price': contracts.honorary_cuotes_price.val(),
         'warranty_cuotes': contracts.warranty_cuotes.val(),
         'warranty_cuotes_payed': contracts.warranty_cuotes_payed.val(),
+        'warranty_cuotes_price': contracts.warranty_cuotes_price.val(),
         'con_porc': contracts.con_porc.val(),
         'con_punitorio': contracts.con_punitorio.val(),
         'con_enabled': contracts.con_enabled.val(),

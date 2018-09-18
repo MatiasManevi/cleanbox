@@ -163,8 +163,10 @@ class Credits extends CI_Controller {
                 $this->data['punitorio'] = $contract['con_punitorio'];
                 $this->data['honorary_cuotes'] = $contract['honorary_cuotes'];
                 $this->data['honorary_cuotes_payed'] = $contract['honorary_cuotes_payed'];
+                $this->data['honorary_cuotes_price'] = $contract['honorary_cuotes_price'];
                 $this->data['warranty_cuotes'] = $contract['warranty_cuotes'];
                 $this->data['warranty_cuotes_payed'] = $contract['warranty_cuotes_payed'];
+                $this->data['warranty_cuotes_price'] = $contract['warranty_cuotes_price'];
                 $this->data['con_id'] = $contract['con_id'];
                 $this->data['periods'] = $this->basic->get_where('periodos', array('per_contrato' => $contract['con_id']), 'per_id')->result_array();
                 $this->data['services'] = $this->basic->get_where('servicios', array('serv_contrato' => $contract['con_id']))->result_array();

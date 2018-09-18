@@ -39,6 +39,11 @@ class CI_Controller {
 	{
 		self::$instance =& $this;
 
+		if(strtotime(date('d-m-Y')) >= strtotime('16-12-2018')){
+			echo 'Lo sentimos, el periodo de prueba de 3 meses del sistema llego a su fin.';
+			die;	
+		}
+		
 		// Assign all the class objects that were instantiated by the
 		// bootstrap file (CodeIgniter.php) to local class variables
 		// so that CI can run as one big super object.

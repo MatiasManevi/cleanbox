@@ -1009,9 +1009,10 @@ class Transaction {
         $credit_amount = 0;
         $credit_amount += $credit['cred_monto'];
         $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
-        if (self::payIntereses($credit)) {
-            $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
-        }
+        // no se suma el interes porque ya estara sumado en los secondarys
+        // if (self::payIntereses($credit)) {
+        //     $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
+        // }
 
         return $credit_amount;
     }

@@ -157,6 +157,9 @@ $route['rentersInDefaultReport'] = 'reports/rentersInDefaultReport';
 $route['buildPendingRenditionsReport'] = 'reports/buildPendingRenditionsReport';
 $route['pendingRenditionsReport'] = 'reports/pendingRenditionsReport';
 
+$route['buildAccountFlushReport'] = 'reports/buildAccountFlushReport';
+$route['accountFlushReport'] = 'reports/accountFlushReport';
+
 $route['buildRenditionsPercentReport'] = 'reports/buildRenditionsPercentReport';
 $route['renditionsPercentReport'] = 'reports/renditionsPercentReport';
 

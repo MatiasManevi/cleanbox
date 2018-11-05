@@ -305,6 +305,33 @@ class Reports extends CI_Controller {
         echo json_encode($response);
     }
 
+    public function accountFlushReport() {
+        $this->data['content'] = $this->load->view('reports/account_flush', '', TRUE);
+        $this->load->view('layout', $this->data);
+    }
+
+    public function buildAccountFlushReport() {
+        $response = array();
+
+        try {
+            $from = $this->input->post('from');
+            $to = $this->input->post('to');
+
+            if ($from && $to) {
+                $response['status'] = true;
+                $response['html'] = Report::buildAccountFlushReport($from, $to);
+            } else {
+                $response['status'] = false;
+                $response['error'] = 'Ups!, completa todos los campos correctamente!';
+            }
+        } catch (Exception $exc) {
+            $response['status'] = false;
+            $response['error'] = 'Ups! Ocurrio un error, intente nuevamente por favor. Detalle: ' . $exc->getMessage();
+        }
+
+        echo json_encode($response);
+    }
+
     public function pendingRenditionsReport() {
         $this->data['content'] = $this->load->view('reports/pending_renditions', '', TRUE);
         $this->load->view('layout', $this->data);

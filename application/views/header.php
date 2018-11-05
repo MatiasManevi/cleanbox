@@ -18,8 +18,9 @@
                             <li><a href="<?php echo site_url('accountReport') ?>">Reporte Cta. Cte. Propietario</a></li>
                             <!-- <li><a href="<?php echo site_url('propietaryRenditionsReport') ?>">Reporte Rendiciones a Propietarios</a></li>               -->
                             <li><a href="<?php echo site_url('accountsBalanceReport') ?>">Reporte Mensual de Balance</a></li>              
-                            <li><a href="<?php echo site_url('accountsAnualBalanceReport') ?>">Reporte Anual de Balances</a></li>               
-                            <!-- <li><a href="<?php echo site_url('propietaryLoansReport') ?>">Reporte Prestamos a Propietarios</a></li> --> 
+                            <li><a href="<?php echo site_url('accountFlushReport') ?>">Reporte por periodos de Balance</a></li>                    
+                            <li><a href="<?php echo site_url('accountsAnualBalanceReport') ?>">Reporte Anual de Balances</a></li>         
+                            <li><a href="<?php echo site_url('propietaryLoansReport') ?>">Reporte Prestamos a Propietarios</a></li> 
                         </ul>
                     </li>
                     <li><a href="<?php echo site_url('clients') ?>">Clientes</a></li>              
@@ -50,7 +51,7 @@
                             <li><a href="<?php echo site_url('rentersPaymentPercentReport') ?>">Porcentaje cobro a Inquilinos</a></li>                            
                             <li><label class="reports_header_separator">Estadísticas</label></li>
                             <li><a href="<?php echo site_url('generalBalanceReport') ?>">Balance General</a></li>              
-                            <li><a href="<?php echo site_url('pendingRenditionsReport') ?>">Rendiciones Pendientes</a></li>              
+                            <!-- <li><a href="<?php echo site_url('pendingRenditionsReport') ?>">Rendiciones Pendientes</a></li>               -->
                             <li><a href="<?php echo site_url('renditionsPercentReport') ?>">Porcentaje Rendiciones efectuadas</a></li>
                             <li><a href="<?php echo site_url('contractsDeclinationReport') ?>">Vencimientos de Contratos</a></li>
                             <li><a href="<?php echo site_url('allConceptsMovementsReport') ?>">General de Conceptos</a></li>              

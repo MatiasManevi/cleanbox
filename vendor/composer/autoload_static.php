@@ -7,6 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
 {
     public static $files = array (
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
@@ -17,6 +18,7 @@ class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Contracts\\' => 18,
             'Symfony\\Component\\Translation\\' => 30,
         ),
         'P' => 
@@ -30,12 +32,24 @@ class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
         ),
+        'F' => 
+        array (
+            'FontLib\\' => 8,
+        ),
+        'D' => 
+        array (
+            'Dompdf\\' => 7,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Symfony\\Contracts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/contracts',
         ),
         'Symfony\\Component\\Translation\\' => 
         array (
@@ -61,10 +75,41 @@ class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+        ),
+        'Dompdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+        ),
     );
 
     public static $fallbackDirsPsr4 = array (
         0 => __DIR__ . '/..' . '/nesbot/carbon/src',
+    );
+
+    public static $prefixesPsr0 = array (
+        'S' => 
+        array (
+            'Svg\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src',
+            ),
+            'Sabberworm\\CSS' => 
+            array (
+                0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/lib',
+            ),
+        ),
+    );
+
+    public static $classMap = array (
+        'Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
+        'HTML5_Data' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/Data.php',
+        'HTML5_InputStream' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/InputStream.php',
+        'HTML5_Parser' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/Parser.php',
+        'HTML5_Tokenizer' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/Tokenizer.php',
+        'HTML5_TreeBuilder' => __DIR__ . '/..' . '/dompdf/dompdf/lib/html5lib/TreeBuilder.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -73,6 +118,8 @@ class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
             $loader->prefixLengthsPsr4 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$prefixDirsPsr4;
             $loader->fallbackDirsPsr4 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$fallbackDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f::$classMap;
 
         }, null, ClassLoader::class);
     }

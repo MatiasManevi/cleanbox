@@ -18,10 +18,10 @@ use PHPMailer\PHPMailer\Exception;
 // require '/PHPMailer/src/Exception.php';
 // require '/PHPMailer/src/PHPMailer.php';
 
-use Dompdf\Adapter\CPDF;
-use Dompdf\Dompdf;
-use Dompdf\DompdfException;
-use Dompdf\Autoloader;
+// use Dompdf\Adapter\CPDF;
+// use Dompdf\Dompdf;
+// use Dompdf\DompdfException;
+// use Dompdf\Autoloader;
 
 // require '/dompdf/lib/html5lib/Parser.php';
 // require '/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php';
@@ -29,7 +29,12 @@ use Dompdf\Autoloader;
 // require '/dompdf/src/Autoloader.php';
 // Autoloader::register();
 
-use GuzzleHttp\Client as GuzzleClient;
+// use GuzzleHttp\Client as GuzzleClient;
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+require_once("./vendor/dompdf/dompdf/autoload.inc.php");
+use Dompdf\Dompdf;
 
 class Mailing {
 

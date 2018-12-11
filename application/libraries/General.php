@@ -46,7 +46,7 @@ class General {
         $concepts = $instance->basic->get_all('conceptos')->result_array();
 
         foreach ($concepts as $concept) {
-            if (strpos($transaction[$key_concept], $concept['conc_desc']) !== FALSE && $concept['conc_tipo'] == $type_concept) {
+            if (strpos(strtolower($transaction[$key_concept]), strtolower($concept['conc_desc'])) !== FALSE && $concept['conc_tipo'] == $type_concept) {
                 return $concept['conc_cc'];
             }
         }

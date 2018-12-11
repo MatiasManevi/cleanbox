@@ -12,45 +12,40 @@
  * All rights reserved ®
  */
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// require '/PHPMailer/src/Exception.php';
-// require '/PHPMailer/src/PHPMailer.php';
-
-// use Dompdf\Adapter\CPDF;
-// use Dompdf\Dompdf;
-// use Dompdf\DompdfException;
-// use Dompdf\Autoloader;
-
-// require '/dompdf/lib/html5lib/Parser.php';
-// require '/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php';
-// require '/dompdf/lib/php-svg-lib/src/autoload.php';
-// require '/dompdf/src/Autoloader.php';
-// Autoloader::register();
-
-// use GuzzleHttp\Client as GuzzleClient;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once("./vendor/dompdf/dompdf/autoload.inc.php");
+
+use PHPMailer\PHPMailer\PHPMailer;
 use Dompdf\Dompdf;
 
 class Mailing {
 
     public static function send($params) {
-        $email = new PHPMailer();
-        $email->From = 'noreply@cleanbox.com';
-        $email->FromName = 'Cleanbox';
-        $email->Subject = $params['subject'];
-        $email->Body = $params['body'];
-        $email->IsHTML($params['is_html']);
-        $email->AddAddress($params['address']);
+        // $email = new PHPMailer();
+        // $email->From = 'noreply@cleanbox.com';
+        // $email->FromName = 'Cleanbox';
+        // $email->Subject = $params['subject'];
+        // $email->Body = $params['body'];
+        // $email->IsHTML($params['is_html']);
+        // $email->AddAddress($params['address']);
+        // if(isset($params['report_root']) && isset($params['report_file_name'])){
+        //     $email->AddAttachment($params['report_root'], $params['report_file_name']);
+        // }
+
+        // return $email->Send();
+        $instance = &get_instance();
+
+        $instance->email->from('noreply@cleanbox.com', 'Cleanbox');
+        $instance->email->to($params['address']);
+        $instance->email->subject($params['subject']);
+        $instance->email->message($params['body']);
         if(isset($params['report_root']) && isset($params['report_file_name'])){
-            $email->AddAttachment($params['report_root'], $params['report_file_name']);
+            $instance->email->attach($params['report_root']);
         }
 
-        return $email->Send();
+        return $instance->email->send();
     }
 
     public static function generateAttachPdf($html) {

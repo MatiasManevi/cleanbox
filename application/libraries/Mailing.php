@@ -12,40 +12,28 @@
  * All rights reserved ®
  */
 
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require_once("./vendor/dompdf/dompdf/autoload.inc.php");
 
-use PHPMailer\PHPMailer\PHPMailer;
 use Dompdf\Dompdf;
 
 class Mailing {
 
     public static function send($params) {
-        // $email = new PHPMailer();
-        // $email->From = 'noreply@cleanbox.com';
-        // $email->FromName = 'Cleanbox';
-        // $email->Subject = $params['subject'];
-        // $email->Body = $params['body'];
-        // $email->IsHTML($params['is_html']);
-        // $email->AddAddress($params['address']);
-        // if(isset($params['report_root']) && isset($params['report_file_name'])){
-        //     $email->AddAttachment($params['report_root'], $params['report_file_name']);
-        // }
+        $email = new Mailer();
 
-        // return $email->Send();
-        $instance = &get_instance();
-
-        $instance->email->from('noreply@cleanbox.com', 'Cleanbox');
-        $instance->email->to($params['address']);
-        $instance->email->subject($params['subject']);
-        $instance->email->message($params['body']);
+        $email->From = 'noreply@cleanbox.com';
+        $email->FromName = 'Cleanbox';
+        $email->Subject = $params['subject'];
+        $email->Body = $params['body'];
+        $email->IsHTML($params['is_html']);
+        $email->AddAddress($params['address']);
         if(isset($params['report_root']) && isset($params['report_file_name'])){
-            $instance->email->attach($params['report_root']);
+            $email->AddAttachment($params['report_root'], $params['report_file_name']);
         }
 
-        return $instance->email->send();
+        return $email->Send();
     }
 
     public static function generateAttachPdf($html) {

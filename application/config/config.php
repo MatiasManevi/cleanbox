@@ -337,7 +337,7 @@ $config['csrf_expire'] = 7200;
 |
 */
 $config['compress_output'] = FALSE;
-
+$config['composer_autoload'] = true;
 /*
 |--------------------------------------------------------------------------
 | Master Time Reference

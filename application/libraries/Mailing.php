@@ -21,19 +21,26 @@ use Dompdf\Dompdf;
 class Mailing {
 
     public static function send($params) {
-        $email = new Mailer();
+        try {
+                
+            $email = new Mailer(true);
 
-        $email->From = 'noreply@cleanbox.com';
-        $email->FromName = 'Cleanbox';
-        $email->Subject = $params['subject'];
-        $email->Body = $params['body'];
-        $email->IsHTML($params['is_html']);
-        $email->AddAddress($params['address']);
-        if(isset($params['report_root']) && isset($params['report_file_name'])){
-            $email->AddAttachment($params['report_root'], $params['report_file_name']);
+            $email->From = 'noreply@cleanbox.com';
+            $email->FromName = 'Cleanbox';
+            $email->Subject = $params['subject'];
+            $email->Body = $params['body'];
+            $email->IsHTML($params['is_html']);
+            $email->AddAddress($params['address']);
+            if(isset($params['report_root']) && isset($params['report_file_name'])){
+                $email->AddAttachment($params['report_root'], $params['report_file_name']);
+            }
+
+            return $email->Send();
+        } catch (Exception $e) {
+            print_r($mail->ErrorInfo);
+            print_r($e);
         }
 
-        return $email->Send();
     }
 
     public static function generateAttachPdf($html) {

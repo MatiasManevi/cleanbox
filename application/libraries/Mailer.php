@@ -18,6 +18,7 @@ class Mailer extends PHPMailer\PHPMailer\PHPMailer
         $this->Password = 'solymaia2018';                           // SMTP password
         $this->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $this->Port = 587;  
+        $this->SMTPDebug  = 1;
 	}
 
 }

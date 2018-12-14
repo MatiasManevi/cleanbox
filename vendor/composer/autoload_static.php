@@ -18,7 +18,6 @@ class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Contracts\\' => 18,
             'Symfony\\Component\\Translation\\' => 30,
         ),
         'P' => 
@@ -46,10 +45,6 @@ class ComposerStaticInit93e1a78cf02a4ad9cb91afcc7ff5f67f
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
-        ),
-        'Symfony\\Contracts\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/contracts',
         ),
         'Symfony\\Component\\Translation\\' => 
         array (

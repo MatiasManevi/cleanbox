@@ -22,26 +22,33 @@ class Reports_delivery extends CI_Controller {
             $reports_config = $this->basic->get_all('reports_config')->result_array();
 
             ini_set('memory_limit', '256M');
+            
+            $response = array();
 
             foreach ($reports_config as $report_config) {
                 if($report_config['frequency'] != 'no_send'){
                     switch ($report_config['report_name']) {
                         case 'Reporte mensual de balances':
                             $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-                            $this->sendAccountsBalanceReport($reports_email, $month);
+                            $res = $this->sendAccountsBalanceReport($reports_email, $month);
+                            array_push($response, $res);
                             break;
                         case 'Reporte Pago de Honorarios':
                             $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-                            $this->sendHonoraryDuesReport($reports_email, $month);
+                            $res = $this->sendHonoraryDuesReport($reports_email, $month);
+                            array_push($response, $res);
                             break;
                         case 'Reporte de Cuentas Corrientes especificas':
                             $month = General::getStringMonth(date('m')) . ' ' . date('Y');
-                            $this->sendCurrentAccountsReport($reports_email, $month, unserialize($report_config['data']));
+                            $res = $this->sendCurrentAccountsReport($reports_email, $month, unserialize($report_config['data']));
+                            array_push($response, $res);
                             break;    
                     }
                 }    
             }
         }
+
+        echo json_encode($response);
     }
 
     public function sendCurrentAccountsReport($reports_email, $month, $current_accounts) {
@@ -51,6 +58,8 @@ class Reports_delivery extends CI_Controller {
 
         $from = '01-'.$month_number.'-'.$year;
         $to = '31-'.$month_number.'-'.$year;
+
+        $response = array();
 
         foreach ($current_accounts as $current_account) {
             $account = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $current_account))->row_array();
@@ -79,11 +88,19 @@ class Reports_delivery extends CI_Controller {
                 if ($status) {
                     Report::saveDelivery('accounts_balance_report_'.$current_account, $month);
                 }
+
+                array_push($response, array(
+                    'report' => $report_file_name,
+                    'status' => $status
+                ));
             }
         }
+
+        return $response;
     }
 
     public function sendAccountsBalanceReport($reports_email, $month) {
+        $response = array();
 
         if(General::isLastDayInMonth() && !Report::wasDelivered('accounts_balance_report', $month)) {
             $html = Report::buildAccountsBalanceReport($month);
@@ -108,10 +125,18 @@ class Reports_delivery extends CI_Controller {
             if ($status) {
                 Report::saveDelivery('accounts_balance_report', $month);
             }
+
+            $response = array(
+                'report' => $report_file_name,
+                'status' => $status
+            );
         }
+
+        return $response;
     }
 
     public function sendHonoraryDuesReport($reports_email, $month) {
+        $response = array();
 
         if(General::isLastDayInMonth() && !Report::wasDelivered('honorary_payments_report', $month)) {
             $html = Report::buildHonoraryPaymentsReport();
@@ -135,7 +160,15 @@ class Reports_delivery extends CI_Controller {
             if ($status) {
                 Report::saveDelivery('honorary_payments_report', $month);
             }
+
+            $response = array(
+                'report' => $report_file_name,
+                'status' => $status
+            );
+
         }
+
+        return $response;
     }
 
     public function emailReceiveRenter() {
@@ -159,7 +192,7 @@ class Reports_delivery extends CI_Controller {
 
                     $response['status'] = Mailing::send(array(
                         'subject' => "Recibo pago alquiler | Inmobiliaria " . User::getBussinesName(),
-                        'body' => 'Hola!, recientemente usted pago su Alquiler, aqui le enviamos el recibo en formato digital, muchas gracias!. No responda este email',
+                        'body' => 'Hola!, recientemente usted pago su Alquiler, le adjuntamos el recibo en formato digital, gracias por ayudarnos a usar menos papel y proteger el medio ambiente!.',
                         'report_root' => $report_root,
                         'report_file_name' => $report_file_name,
                         'is_html' => false,

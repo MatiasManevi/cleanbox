@@ -17,8 +17,16 @@ class Mailer extends PHPMailer\PHPMailer\PHPMailer
         $this->Username = 'inmorima@gmail.com';                 // SMTP username
         $this->Password = 'solymaia2018';                           // SMTP password
         $this->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-        $this->Port = 587;  
-        $this->SMTPDebug  = 1;
+        $this->Port = '587';   
+        $this->SMTPOptions = array(
+		    'ssl' => array(
+		        'verify_peer' => false,
+		        'verify_peer_name' => false,
+		        'allow_self_signed' => true
+		    )
+		);
+        //$this->Port = 587;465   
+        $this->SMTPDebug  = 2;
 	}
 
 }

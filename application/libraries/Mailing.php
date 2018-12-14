@@ -37,8 +37,8 @@ class Mailing {
 
             return $email->Send();
         } catch (Exception $e) {
-            print_r($mail->ErrorInfo);
-            print_r($e);
+            print_r('email->ErrorInfo: '.$email->ErrorInfo);
+            print_r('e: '.$e);
         }
 
     }

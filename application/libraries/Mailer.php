@@ -26,7 +26,7 @@ class Mailer extends PHPMailer\PHPMailer\PHPMailer
 		    )
 		);
         //$this->Port = 587;465   
-        $this->SMTPDebug  = 2;
+        //$this->SMTPDebug  = 2;
 	}
 
 }

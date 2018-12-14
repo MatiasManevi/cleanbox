@@ -17,15 +17,16 @@ class Reports_delivery extends CI_Controller {
     public function index() {
         $reports_email = User::getReportsEmail();
 
+        $response = array();
+
         if (filter_var($reports_email, FILTER_VALIDATE_EMAIL)) {
  
             $reports_config = $this->basic->get_all('reports_config')->result_array();
 
             ini_set('memory_limit', '256M');
             
-            $response = array();
-
             foreach ($reports_config as $report_config) {
+
                 if($report_config['frequency'] != 'no_send'){
                     switch ($report_config['report_name']) {
                         case 'Reporte mensual de balances':

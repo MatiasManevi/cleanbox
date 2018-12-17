@@ -14,6 +14,35 @@
 
 class Contract {
 
+    public static function allowedByPlan() {
+        $instance = &get_instance();
+
+        $contracts = count($instance->basic->get_where('contratos', array('con_enabled' => 1))->result_array());
+
+        $quant_allowed = self::quantAllowed();
+
+        return $quant_allowed > $contracts;
+    }
+
+    public static function quantAllowed() {
+        $instance = &get_instance();
+
+        switch ($instance->session->userdata('plan')) {
+            case User::FREE_PLAN:
+                return 10;
+                break;
+            case User::BASIC_PLAN:
+                return 50;
+                break;
+            case User::ENTERPRISE_PLAN:
+                return 100;
+                break;
+            case User::FULL_PLAN:
+                return 0;
+                break;    
+        }
+    }
+
     public static function getHonoraryPayments($contract) {
         $instance = &get_instance();
 

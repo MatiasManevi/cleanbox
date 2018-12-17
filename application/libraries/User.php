@@ -14,6 +14,11 @@
 
 class User {
 
+    const FREE_PLAN = 1;
+    const BASIC_PLAN = 2;
+    const ENTERPRISE_PLAN = 3;
+    const FULL_PLAN = 4;
+
     public static function checkLogin() {
         $instance = &get_instance();
 

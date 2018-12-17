@@ -41,98 +41,104 @@ class Contracts extends CI_Controller {
             $this->form_validation->set_rules('con_domi', 'Domicilio Inmueble', "required|trim");
             $this->form_validation->set_rules('con_gar1', 'Garante (al menos uno)', "required|trim");
 
-            if ($this->form_validation->run()) {
-                $services = $this->input->post('services');
-                $periods = $this->input->post('periods');
+            if(Contract::allowedByPlan() || in_array($this->input->post('con_motivo'), array('Rescindido', 'Vencido'))) {
+                
+                if ($this->form_validation->run()) {
+                    $services = $this->input->post('services');
+                    $periods = $this->input->post('periods');
 
-                // Controlo que esten bien cargados los conceptos de los servicios
-                $services_ok = true;
-                $no_load = array();
+                    // Controlo que esten bien cargados los conceptos de los servicios
+                    $services_ok = true;
+                    $no_load = array();
 
-                if (!empty($services)) {
-                    foreach ($services as $service) {
-                        if ($service['serv_control'] == 0) {
-                            $services_ok = false;
-                            $no_load[] = $service['serv_concepto'];
+                    if (!empty($services)) {
+                        foreach ($services as $service) {
+                            if ($service['serv_control'] == 0) {
+                                $services_ok = false;
+                                $no_load[] = $service['serv_concepto'];
+                            }
                         }
                     }
-                }
 
-                if ($services_ok) {
-                    $this->db->trans_start();
-                    
-                    $contract = array(
-                        'con_prop' => strtoupper($this->input->post('con_prop')),
-                        'con_inq' => strtoupper($this->input->post('con_inq')),
-                        'cc_id' => $this->input->post('cc_id'),
-                        'client_id' => $this->input->post('client_id'),
-                        'gar1_id' => $this->input->post('gar1_id'),
-                        'gar2_id' => $this->input->post('gar2_id') ? $this->input->post('gar2_id') : null,
-                        'prop_id' => $this->input->post('prop_id') ? $this->input->post('prop_id') : null,
-                        'con_venc' => $this->input->post('con_venc') ? $this->input->post('con_venc') : null,
-                        'con_tipo' => $this->input->post('con_tipo'),
-                        'con_iva' => $this->input->post('con_iva'),
-                        'con_domi' => strtoupper($this->input->post('con_domi')),
-                        'con_iva_alq' => $this->input->post('con_iva_alq'),
-                        'con_porc' => $this->input->post('con_porc'),
-                        'con_gar1' => $this->input->post('con_gar1') ? strtoupper($this->input->post('con_gar1')) : null,
-                        'con_gar2' => $this->input->post('con_gar2') ? strtoupper($this->input->post('con_gar2')) : 0,
-                        'con_motivo' => $this->input->post('con_motivo'),
-                        'con_punitorio' => $this->input->post('con_punitorio'),
-                        'con_tolerancia' => $this->input->post('con_tolerancia'),
-                        'honorary_cuotes_price' => $this->input->post('honorary_cuotes_price') ? $this->input->post('honorary_cuotes_price') : 0,
-                        'honorary_cuotes' => $this->input->post('honorary_cuotes') ? $this->input->post('honorary_cuotes') : 0,
-                        'honorary_cuotes_payed' => $this->input->post('honorary_cuotes_payed') ? $this->input->post('honorary_cuotes_payed') : 0,
-                        'warranty_cuotes_price' => $this->input->post('warranty_cuotes_price') ? $this->input->post('warranty_cuotes_price') : 0,
-                        'warranty_cuotes' => $this->input->post('warranty_cuotes') ? $this->input->post('warranty_cuotes') : 0,
-                        'warranty_cuotes_payed' => $this->input->post('warranty_cuotes_payed') ? $this->input->post('warranty_cuotes_payed') : 0,
-                        'con_enabled' => $this->input->post('con_enabled')
-                    );
+                    if ($services_ok) {
+                        $this->db->trans_start();
+                        
+                        $contract = array(
+                            'con_prop' => strtoupper($this->input->post('con_prop')),
+                            'con_inq' => strtoupper($this->input->post('con_inq')),
+                            'cc_id' => $this->input->post('cc_id'),
+                            'client_id' => $this->input->post('client_id'),
+                            'gar1_id' => $this->input->post('gar1_id'),
+                            'gar2_id' => $this->input->post('gar2_id') ? $this->input->post('gar2_id') : null,
+                            'prop_id' => $this->input->post('prop_id') ? $this->input->post('prop_id') : null,
+                            'con_venc' => $this->input->post('con_venc') ? $this->input->post('con_venc') : null,
+                            'con_tipo' => $this->input->post('con_tipo'),
+                            'con_iva' => $this->input->post('con_iva'),
+                            'con_domi' => strtoupper($this->input->post('con_domi')),
+                            'con_iva_alq' => $this->input->post('con_iva_alq'),
+                            'con_porc' => $this->input->post('con_porc'),
+                            'con_gar1' => $this->input->post('con_gar1') ? strtoupper($this->input->post('con_gar1')) : null,
+                            'con_gar2' => $this->input->post('con_gar2') ? strtoupper($this->input->post('con_gar2')) : 0,
+                            'con_motivo' => $this->input->post('con_motivo'),
+                            'con_punitorio' => $this->input->post('con_punitorio'),
+                            'con_tolerancia' => $this->input->post('con_tolerancia'),
+                            'honorary_cuotes_price' => $this->input->post('honorary_cuotes_price') ? $this->input->post('honorary_cuotes_price') : 0,
+                            'honorary_cuotes' => $this->input->post('honorary_cuotes') ? $this->input->post('honorary_cuotes') : 0,
+                            'honorary_cuotes_payed' => $this->input->post('honorary_cuotes_payed') ? $this->input->post('honorary_cuotes_payed') : 0,
+                            'warranty_cuotes_price' => $this->input->post('warranty_cuotes_price') ? $this->input->post('warranty_cuotes_price') : 0,
+                            'warranty_cuotes' => $this->input->post('warranty_cuotes') ? $this->input->post('warranty_cuotes') : 0,
+                            'warranty_cuotes_payed' => $this->input->post('warranty_cuotes_payed') ? $this->input->post('warranty_cuotes_payed') : 0,
+                            'con_enabled' => $this->input->post('con_enabled')
+                        );
 
-                    if($this->input->post('con_id')){
-                        $contract['con_id'] = $this->input->post('con_id');
-                    }else{
-                        $contract['con_date_created'] = date('d-m-Y');
+                        if($this->input->post('con_id')){
+                            $contract['con_id'] = $this->input->post('con_id');
+                        }else{
+                            $contract['con_date_created'] = date('d-m-Y');
+                        }
+
+                        $contract = $this->createContractParts($contract);
+
+                        if ($contract['con_motivo'] == 'Rescindido' || $contract['con_motivo'] == 'Vencido') {
+                            $contract['con_enabled'] = 0;
+                            $contract['con_date_declined'] = date('d-m-Y');
+                        } elseif ($contract['con_motivo'] == 'Prorrogado') {
+                            $contract['con_enabled'] = 1;
+                            $contract['con_date_renovated'] = date('d-m-Y');
+                        }
+
+                        $contract['con_id'] = $this->basic->save('contratos', 'con_id', $contract);
+
+                        $this->createContractPeriods($periods, $contract['con_id']);
+                        $this->createContractServices($services, $contract['con_id']);
+    //                    $this->transferSign($contract);
+
+                        $response['status'] = true;
+                        $response['count_alive_contracts'] = Contract::getCountAliveContracts();
+                        $response['entity'] = General::parseEntityForList($contract, 'contratos');
+                        $response['table'] = array(
+                            'table' => 'contratos',
+                            'table_pk' => 'con_id',
+                            'entity_name' => 'contrato',
+                        );
+                        $response['success'] = 'El contrato fue guardado!';
+
+                        $this->db->trans_complete();
+                    } else {
+                        $response['status'] = false;
+                        $response['error'] = 'Los conceptos: ';
+                        for ($x = 0; $x < count($no_load); $x++) {
+                            $response['error'] .= $no_load[$x] . ', ';
+                        }
+                        $response['error'] .= ' no existen aun, debe darlos de alta en el sistema en la seccion Conceptos.';
                     }
-
-                    $contract = $this->createContractParts($contract);
-
-                    if ($contract['con_motivo'] == 'Rescindido') {
-                        $contract['con_enabled'] = 0;
-                        $contract['con_date_declined'] = date('d-m-Y');
-                    } elseif ($contract['con_motivo'] == 'Prorrogado') {
-                        $contract['con_enabled'] = 1;
-                        $contract['con_date_renovated'] = date('d-m-Y');
-                    }
-
-                    $contract['con_id'] = $this->basic->save('contratos', 'con_id', $contract);
-
-                    $this->createContractPeriods($periods, $contract['con_id']);
-                    $this->createContractServices($services, $contract['con_id']);
-//                    $this->transferSign($contract);
-
-                    $response['status'] = true;
-                    $response['count_alive_contracts'] = Contract::getCountAliveContracts();
-                    $response['entity'] = General::parseEntityForList($contract, 'contratos');
-                    $response['table'] = array(
-                        'table' => 'contratos',
-                        'table_pk' => 'con_id',
-                        'entity_name' => 'contrato',
-                    );
-                    $response['success'] = 'El contrato fue guardado!';
-
-                    $this->db->trans_complete();
                 } else {
                     $response['status'] = false;
-                    $response['error'] = 'Los conceptos: ';
-                    for ($x = 0; $x < count($no_load); $x++) {
-                        $response['error'] .= $no_load[$x] . ', ';
-                    }
-                    $response['error'] .= ' no existen aun, debe darlos de alta en el sistema en la seccion Conceptos.';
+                    $response['error'] = validation_errors();
                 }
             } else {
                 $response['status'] = false;
-                $response['error'] = validation_errors();
+                $response['error'] = 'Su plan actual le permite gestionar hasta '. Contract::quantAllowed(). ' contratos activos, para mejorar su plan comuniquese con el administrador del sistema';
             }
         } catch (Exception $exc) {
             $response['status'] = false;

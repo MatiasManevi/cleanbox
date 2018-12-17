@@ -21,6 +21,11 @@ class Contract {
 
         $quant_allowed = self::quantAllowed();
 
+        // 0 means limitless
+        if($quant_allowed == 0){
+            return true;
+        }
+
         return $quant_allowed > $contracts;
     }
 

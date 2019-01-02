@@ -1823,8 +1823,6 @@ class Transaction {
 
     public static function sendNotification($credits) {
         $instance = &get_instance();
-        General::loadModels($instance);
-
         $settings = User::getUserSettings();
 
         $propietary_client = $instance->basic->get_where('clientes', array('client_name' => $credits[0]['cred_cc']))->row_array();

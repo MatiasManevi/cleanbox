@@ -21,9 +21,9 @@ use Dompdf\Dompdf;
 class Mailing {
 
     public static function send($params) {
-       // try {
+       //try {
                 
-            $email = new Mailer(/*true*/);
+            $email = new Mailer(true);
 
             $email->From = 'noreply@cleanbox.com';
             $email->FromName = 'Cleanbox';

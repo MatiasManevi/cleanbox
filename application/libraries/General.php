@@ -130,6 +130,7 @@ class General {
                         'id' => $entity['cc_id'],
                         'cc_prop' => $entity['cc_prop'],
                         'saldo' => '$ ' . round($entity['cc_saldo'] + $entity['cc_varios'], 2),
+                        'prestamos' => '$ ' . round($entity['loans'], 2),
                     );
                 } else {
                     $entity = array();

@@ -2,6 +2,7 @@
     <tr>    
         <th>Nombre</th>
         <th>Saldo cuenta</th>
+        <th>Prestamos</th>
 <!--        <th>Saldo Cuenta Secundaria</th>-->
         <th>Acciones</th>
     </tr>
@@ -13,6 +14,7 @@
                 <tr class="_reg_entity_<?php echo $row['cc_id']; ?>">
                     <td><?php echo $row['cc_prop']; ?></td>
                     <td>$ <?php echo round($row['cc_saldo'] + $row['cc_varios'], 2); ?></td>
+                    <td>$ <?php echo round($row['loans'], 2); ?></td>
 <!--                    <td><?php // echo '$ ' . $row['cc_varios']; ?></td>-->
                     <td>
                         <?php if ($this->session->userdata('username') == 'admin') { ?>

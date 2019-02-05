@@ -14,10 +14,18 @@
             <label>En este formulario se registran las ctas. ctes. de Propietarios</label>
         </div>
         <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveAccount') ?>', this);return false;" enctype="multipart/form-data"> 
+            
             <input required title="El campo se autocompleta con los Clientes cargados hasta el momento, de lo contrario se creara un Cliente nuevo con el nombre ingresado" type="text" name="cc_prop" class="form-control ui-autocomplete-input section_input _general_letters_input_control" id="cc_prop" placeholder="Propietario" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+            
+            <label style="clear: both;">Saldo cta principal</label>
             <input title="Caja Principal: se registran movimientos de Alquileres" type="text" name="cc_saldo" class="form-control ui-autocomplete-input section_input _general_amount_input_control" id="cc_saldo" placeholder="Saldo Cta. Principal" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+            
+            <label style="clear: both;">Saldo cta secundaria</label>
             <input title="Caja Secundaria: se registran movimientos de servicios y otros" type="text" name="cc_varios" class="form-control ui-autocomplete-input section_input _general_amount_input_control" id="cc_varios" placeholder="Saldo Cta. Secundaria" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+            
+            <label style="clear: both;">Prestamos</label>
             <input readonly title="Prestamos: monto que el propietario debe a la inmobiliaria" type="text" name="loans" class="form-control ui-autocomplete-input section_input _general_amount_input_control" id="loans" placeholder="Prestamos" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+
             <input id="cc_id" name="cc_id" type="hidden"/>
             <input id="client_id" name="client_id" type="hidden"/>
             <button class="btn btn-primary submit_button _save_button" type="submit">Crear</button>

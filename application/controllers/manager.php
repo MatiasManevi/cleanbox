@@ -66,7 +66,7 @@ class Manager extends CI_Controller {
 
     public function calculateBeginCash() {
         $response['status'] = true;
-        $response['amount'] = Cash::getBeginCash(date('d-m-Y'));
+        $response['amount'] = round(Cash::getBeginCash(date('d-m-Y')), 2);
 
         echo json_encode($response);
     }
@@ -75,7 +75,7 @@ class Manager extends CI_Controller {
         $response['status'] = true;
         $monthly_progressive = Cash::getBalance('Caja');
         $monthly_progressive = $monthly_progressive > 0 ? $monthly_progressive : '0.00';
-        $response['amount'] = $monthly_progressive;
+        $response['amount'] = round($monthly_progressive, 2);
 
         echo json_encode($response);   
     }

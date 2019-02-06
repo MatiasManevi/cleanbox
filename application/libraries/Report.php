@@ -352,7 +352,6 @@ return $instance->load->view('reports/cash_report', $instance->data, true);
 
 public static function buildAccountReport($from, $to, $account) {
     $instance = &get_instance();
-    General::loadModels($instance);
 
     $instance->data['account'] = $account;
     $instance->data['principal_ins'] = 0;

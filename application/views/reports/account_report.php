@@ -733,6 +733,12 @@ a.delete:hover{
         <tr>
             <th class="cell">Saldo operativo: </th><td colspan="3" class="cell">$ <?php echo round($account['cc_saldo'] + $account['cc_varios'], 2); ?></td>
         </tr>
+        <tr>
+            <th class="cell">Prestamos *: </th><td colspan="2" class="cell">$ <?php echo round($account['loans'], 2); ?></td>
+        </tr>
+        <tr>
+            <td colspan="3" class="cell"><span style="font-size: 10px">* Es un monto que se genera al haber un gasto o debito en la presente cuenta y esta no posee el saldo operativo fisico suficiente para cubrirlo. Luego, el dinero que ingresa lo ira cubriendo hasta quedar en cero.</span></td>
+        </tr>
     </table>
 
     <?php if (count($contracts) > 0 && $contracts_period_status) { ?>

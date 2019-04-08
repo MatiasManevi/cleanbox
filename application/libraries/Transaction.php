@@ -990,6 +990,9 @@ class Transaction {
                 // total servicios y gastos
                 $receive_report['total_secondarys'] = self::getTotalSecondarys($receive_report['secondary_credits']);
 
+                // si hay intereses o IVA creados manualmente
+                $receive_report['principal_credit'] = self::getTotalManualporcs($receive_report['principal_credit'],$receive_report['secondary_credits']);
+
                 $receive_report['total'] = $receive_report['total_principal'] + $receive_report['total_secondarys'];
                 $receive_report['total_letters'] = self::getTotalInLetters($receive_report['total']);
 
@@ -1001,14 +1004,36 @@ class Transaction {
                 array_push($receives, $receive_report);
             }
         }
-
+//         echo '<pre>';
+// print_r($receives);die;
         return $receives;
     }
 
-    public static function calculateCreditAmount($credit) {
+    public static function getTotalManualporcs($principal_credit, $secondary_credits){
+        $others = $principal_credit['other_principal'];
+
+        foreach ($secondary_credits as $secondary_credit) {
+            if($principal_credit['cred_interes'] == '' || !$principal_credit['cred_interes']){
+                if($secondary_credit['cred_concepto'] == 'Intereses'){//
+                    array_push($others, $secondary_credit);
+                }
+            }
+            // if(isset($principal_credit['cred_iva_calculado'])){
+            //     if($secondary_credit['cred_concepto'] == 'IVA'){//
+            //         array_push($others, $secondary_credit);
+            //     }
+            // }
+        }
+
+        $principal_credit['other_principal'] = $others;
+
+        return $principal_credit;
+    }
+
+    public static function calculateCreditAmount($credit, $calculating_others = false) {
         $credit_amount = 0;
         $credit_amount += $credit['cred_monto'];
-        $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
+        // $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
         // no se suma el interes porque ya estara sumado en los secondarys
         // if (self::payIntereses($credit)) {
         //     $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
@@ -1022,7 +1047,7 @@ class Transaction {
 
         if (!empty($receive_report['other_principal'])) {
             foreach ($receive_report['other_principal'] as $other_principal) {
-                $total += self::calculateCreditAmount($other_principal);
+                $total += self::calculateCreditAmount($other_principal, true);
             }
         }
 
@@ -1219,21 +1244,20 @@ class Transaction {
 
             if ($receive_report['cred_tipo_pago'] == 'A Cuenta') {
                 $debt += self::getPrincipalPaymentDebt($receive_report, $contract);
-
                 if (!empty($receive_report['other_principal'])) {
                     foreach ($receive_report['other_principal'] as $other_principal) {
                         $min_debt += $other_principal['cred_monto'];
                     }
                 }
             } else {
-                if($receive_report['cred_concepto'] != 'Honorarios' && $receive_report['cred_concepto'] != 'Reserva'){
-                    $min_debt += self::getPrincipalPaymentDebt($receive_report, $contract);
-                    if (!empty($receive_report['other_principal'])) {
-                        foreach ($receive_report['other_principal'] as $other_principal) {
-                            $debt += $other_principal['cred_monto'];
-                        }
-                    }
-                }
+                // if($receive_report['cred_concepto'] != 'Honorarios' && $receive_report['cred_concepto'] != 'Reserva'){
+                //     $min_debt += self::getPrincipalPaymentDebt($receive_report, $contract);
+                //     if (!empty($receive_report['other_principal'])) {
+                //         foreach ($receive_report['other_principal'] as $other_principal) {
+                //             $debt += $other_principal['cred_monto'];
+                //         }
+                //     }
+                // }
             }
         }
 

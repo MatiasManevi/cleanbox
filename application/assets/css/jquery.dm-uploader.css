@@ -1,0 +1,104 @@
+.dm-uploader {
+	cursor: default;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	border: 0.25rem dashed #A5A5C7;
+	text-align: center;
+	height: 20vh;
+}
+
+.dm-uploader.active {
+	border-color: #ecf0f5;
+	border-style: solid;
+	background: #ecf0f5;
+}
+
+.dm-uploader .btn {
+	position: relative;
+	overflow: hidden;
+	width: 77%;
+	top: 18px;
+	margin: 0 auto;
+}
+
+.dm-uploader .btn input[type="file"] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	border: solid transparent;
+	width: 100%;
+	opacity: .0;
+	filter: alpha(opacity= 0);
+	cursor: pointer;
+}
+
+
+/* LIST */ 
+#files .media {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+
+#files .media .media-body{
+	margin-left: 18px;
+}
+
+.card-header{
+	margin-bottom: 9px;
+}
+
+#files {
+    overflow-y: scroll !important;
+    min-height: 320px;
+    max-height: 304px;
+}
+@media (min-width: 768px) {
+	#files {
+		min-height: 0;
+	}
+}
+
+#debug {
+	overflow-y: scroll !important;
+	height: 180px;	
+}
+
+/* These are for the single examle */
+a .preview-img {
+	width: 64px;
+	height: 64px;
+}
+
+form.active {
+	border-color: red !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

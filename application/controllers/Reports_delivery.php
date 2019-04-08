@@ -79,7 +79,7 @@ class Reports_delivery extends CI_Controller {
 
                 $status = Mailing::send(array(
                     'subject' => "Reporte cuenta de  ". $account['cc_prop']. " " . $month,
-                    'body' => 'Cleanbox le envia un reporte automatico. No responda este email',
+                    'body' => 'Gemma le envia un reporte automatico. No responda este email',
                     'report_root' => $report_root,
                     'report_file_name' => $report_file_name,
                     'is_html' => false,
@@ -116,7 +116,7 @@ class Reports_delivery extends CI_Controller {
 
             $status = Mailing::send(array(
                 'subject' => "Reporte mensual de saldos: " . $month,
-                'body' => 'Cleanbox le envia el reporte mensual de balances. No responda este email',
+                'body' => 'Gemma le envia el reporte mensual de balances. No responda este email',
                 'report_root' => $report_root,
                 'report_file_name' => $report_file_name,
                 'is_html' => false,
@@ -151,7 +151,7 @@ class Reports_delivery extends CI_Controller {
 
             $status = Mailing::send(array(
                 'subject' => 'Reporte Pago de Honorarios',
-                'body' => 'Cleanbox le envia el Reporte de Pago de Honorarios. Por favor, no responda este email',
+                'body' => 'Gemma le envia el Reporte de Pago de Honorarios. Por favor, no responda este email',
                 'report_root' => $report_root,
                 'report_file_name' => $report_file_name,
                 'is_html' => false,
@@ -178,8 +178,15 @@ class Reports_delivery extends CI_Controller {
         $credits_info = json_decode(stripslashes(get_cookie('credits_receive')), true);
 
         if($credits_info){
+            $transaction_id = $credits_info['transaction_id'];
+            $credits = $this->basic->get_where('creditos', array('trans' => $transaction_id))->result_array();
 
-            $renter = General::getRenterClientByCredit($credits_info['credits'][0]);
+            foreach ($credits as $credit) {
+                if($credit['cred_concepto'] != "Gestion de Cobro" && $credit['cred_concepto'] != "Gestion de Cobro Sobre Intereses"){
+                    $renter = General::getRenterClientByCredit($credit);
+                    break;
+                }
+            }
 
             if($renter && strlen($renter['client_email']) > 0 && filter_var($renter['client_email'], FILTER_VALIDATE_EMAIL)){ 
 
@@ -190,7 +197,6 @@ class Reports_delivery extends CI_Controller {
                 $image = @file_put_contents($report_root, base64_decode(explode(",", $_POST['data'])[1]));
 
                 if($image){
-
                     $response['status'] = Mailing::send(array(
                         'subject' => "Recibo pago alquiler | Inmobiliaria " . User::getBussinesName(),
                         'body' => 'Hola!, recientemente usted pago su Alquiler, le adjuntamos el recibo en formato digital, gracias por ayudarnos a usar menos papel y proteger el medio ambiente!.',

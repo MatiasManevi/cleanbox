@@ -814,7 +814,6 @@ credit.saveCredits = function (url) {
     var params = {
         'credits' : [],
         'services_control' : [],
-        'send_notification': $('#send_notification').is(':checked'),
         'con_id': 0
     };
    
@@ -878,7 +877,7 @@ credit.saveCredits = function (url) {
             general_scripts.cleanAddTab(response.table.table);
             
             if(response.print_report){
-                transaction.printCreditReport(params);
+                transaction.printCreditReport(response.transaction_id, $('#send_notification').is(':checked'));
             }
         }else{
             cleanbox_alert.showAlertError(response.error);
@@ -886,9 +885,9 @@ credit.saveCredits = function (url) {
     });
 };
     
-transaction.printCreditReport = function (params) {
+transaction.printCreditReport = function (transaction_id, send_notification) {
     loading.show();
-    cookie.setCookie('credits_receive', JSON.stringify(params), 1);
+    cookie.setCookie('credits_receive', JSON.stringify({"transaction_id": transaction_id, "send_notification": send_notification}), 1);
     window.location.href = show_credit_report;
 };
 

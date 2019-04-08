@@ -14,8 +14,8 @@ class Mailer extends PHPMailer\PHPMailer\PHPMailer
 		$this->isSMTP();                                      // Set mailer to use SMTP
         $this->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
         $this->SMTPAuth = true;                               // Enable SMTP authentication
-        $this->Username = 'inmorima@gmail.com';                 // SMTP username
-        $this->Password = 'solymaia2018';                           // SMTP password
+        $this->Username = 'manevimatias@gmail.com';                 // SMTP username
+        $this->Password = 'pu4leveliame';                           // SMTP password
         $this->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $this->Port = '587';   
         $this->SMTPOptions = array(
@@ -25,8 +25,8 @@ class Mailer extends PHPMailer\PHPMailer\PHPMailer
 		        'allow_self_signed' => true
 		    )
 		);
-        //$this->Port = 587;465   
-        //$this->SMTPDebug  = 2;
+		
+        // $this->SMTPDebug  = 2;
 	}
 
 }

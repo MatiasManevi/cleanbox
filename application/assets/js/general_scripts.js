@@ -79,11 +79,11 @@ general_scripts.removeImage = function (folder, container){
     
 general_scripts.activateUploadFromFileImage = function ($input, folder, container){
     $input.uploadify({                     
-        uploader: '/cleanbox/plugins/uploadify/uploadify.swf',
-        script: '/cleanbox/plugins/uploadify/uploadify.php',
-        cancelImg: '/cleanbox/plugins/uploadify/cancel.png',
-        buttonImg: '/cleanbox/plugins/uploadify/button.jpg',
-        folder: '/cleanbox/img/' + folder + '/',
+        uploader: '/gemma-demo/plugins/uploadify/uploadify.swf',
+        script: '/gemma-demo/plugins/uploadify/uploadify.php',
+        cancelImg: '/gemma-demo/plugins/uploadify/cancel.png',
+        buttonImg: '/gemma-demo/plugins/uploadify/button.jpg',
+        folder: '/gemma-demo/img/' + folder + '/',
         scriptAccess: 'always',
         fileExt     : '*.jpg;*.gif;*.png',
         fileSizeLimit : '0',

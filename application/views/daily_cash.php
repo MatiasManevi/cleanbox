@@ -13,14 +13,14 @@
                 Estado actual CAJA FISICA: <strong><span class="_cash">calculando...</span></strong>
             </div>
         </div>
-        <div class="panel panel-default margB33">
+        <!-- <div class="panel panel-default margB33">
             <div class="panel-body">
                 Estado actual CAJA FUERTE: <strong>$ <span class="_safebox"><?php echo $safe_box; ?></span></strong>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
-
+<!-- 
 <div class="panel panel-primary cash_transfers">
     <div class="panel-heading">
         <h3 class="panel-title">Transferencias</h3>
@@ -58,7 +58,7 @@
         </div>
     </div>
 </div>
-
+ -->
 <script>
     $(function(){
         $.ajax({

@@ -24,13 +24,12 @@
 */
 
 $pc_host = 'adriana-pc';
-// phpMyAdmin 403 = https://stackoverflow.com/questions/43616290/how-can-solve-phpmyadmin-403-on-laragon
-// https://www.digifloor.com/simple-steps-fix-403-forbidden-errors-wamp-server-28
+$pjct = '/cleanbox';
 
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
-    $config['base_url'] = "http://localhost/cleanbox";
+    $config['base_url'] = "http://localhost".$pjct;
 } elseif (strpos($_SERVER['SERVER_NAME'], $pc_host) !== FALSE) {
-    $config['base_url'] = "http://".$pc_host."/cleanbox";
+    $config['base_url'] = "http://".$pc_host.$pjct;
 }
 
 /*

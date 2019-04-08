@@ -98,8 +98,9 @@ class Credits extends CI_Controller {
                 $response['table'] = array(
                     'table' => 'creditos',
                     'table_pk' => 'cred_id',
-                    'entity_name' => 'credito',
+                    'entity_name' => 'credito'
                 );
+                $response['transaction_id'] = $transaction_id;
                 $response['success'] = 'El credito fue guardado!';
             } else {
                 $response['status'] = false;
@@ -258,15 +259,25 @@ class Credits extends CI_Controller {
 
         if ($credits_info) {
 
-            if ($credits_info['con_id']) {
-                $contract = $this->basic->get_where('contratos', array('con_id' => $credits_info['con_id']))->row_array();
-            } else {
-                $contract = Contract::getContract($credits_info['credits']);
-            }
+            // if ($credits_info['con_id']) {
+            //     $contract = $this->basic->get_where('contratos', array('con_id' => $credits_info['con_id']))->row_array();
+            // } else {
+            //     $contract = Contract::getContract($credits_info['credits']);
+            // }
+
+            $transaction_id = $credits_info['transaction_id'];
+            $credits = $this->basic->get_where('creditos', array('trans' => $transaction_id))->result_array();
+            $services_control = $this->basic->get_where('services_control', array('trans' => $transaction_id))->result_array();
+
+            $contract = Contract::getContract($credits);
+
+            $credits = Transaction::cleanCalculatedCredits($credits);
+            $credits = Transaction::calculateReceiveIVA($credits, $contract);
+            $credits = Transaction::calculateReceiveInteres($credits, $contract);
 
             $receive_elements = array(
-                'credits' => $credits_info['credits'],
-                'services_control' => $credits_info['services_control']
+                'credits' => $credits,
+                'services_control' => $services_control
             );
 
             $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
@@ -277,7 +288,7 @@ class Credits extends CI_Controller {
                 $this->data['propietary'] = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();
             } else {
                 // Cuando es un recibo por reserva no hay contrato aun
-                $this->data['propietary'] = General::getPropietaryClientByCredit($credits_info['credits'][0]);
+                $this->data['propietary'] = General::getPropietaryClientByCredit($credits[0]);
             }
 
             $this->data['mail_receive'] = true;
@@ -285,7 +296,7 @@ class Credits extends CI_Controller {
             $this->data['content'] = $this->load->view('reports/receive', $this->data, TRUE);
 
             if ($credits_info['send_notification']) {
-                Transaction::sendNotification($credits_info['credits']);
+                Transaction::sendNotification($credits);
             }
 
             delete_cookie('credits_receive');

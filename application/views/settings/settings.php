@@ -36,19 +36,29 @@
             <input required value="<?php echo $settings['zip_code']; ?>" title="Codigo postal" placeholder="Codigo postal" type="text" name="zip_code" class="form-control ui-autocomplete-input section_input _general_number_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
 
             <div class="logo_container">
-                <label>Logo de la empresa</label>
+                <label>Tu logo</label>
                 <div class="logo _logo">
                     <?php if (isset($settings) && $settings['logo'] != '') { ?>
-                    <img height="90" width="300" class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
-                    <input type="hidden" name="logo" id="image" value="<?php echo $settings['logo'] ?>"/>
-                    <a class="close _remove_image" href="javascript:;" onclick="general_scripts.removeImage('bussines_logos', '._logo');" title="Eliminar">[&times;]</a>
+                        <img height="200" width="200" class="img_shadow _image_logo" src="<?php echo img_url() . 'bussines_logos/' . $settings['logo'] ?>" alt="logo"/>
+                        <input type="hidden" name="logo" id="image" value="<?php echo $settings['logo'] ?>"/>
+                        <a class="close _remove_image" href="javascript:;" onclick="general_scripts.removeImage('bussines_logos', '._logo');" title="Eliminar">[&times;]</a>
                     <?php } else { ?>
-                    <img height="200" width="200" class="img_shadow _no_image" src="<?php echo img_url() . 'no-image.png' ?>" alt="logo"/>
+                        <img height="200" width="200" class="img_shadow _no_image" src="<?php echo img_url() . 'no-image.png' ?>" alt="logo"/>
                     <?php } ?>
                 </div>
-                <div class="button_uploader">
-                    <label for="Filedata"></label>
-                    <?php echo form_upload(array('name' => 'Filedata', 'id' => 'logo')); ?>
+
+                <div class="row">
+                    <div class="col-md-6 col-sm-12" style="width: 333px;margin-top: 24px;right: 40px;">
+                        <label for="Filedata"></label>
+                        <div id="busines_logo" data-folder="./img/bussines_logos" class="dm-uploader p-5">
+                            <h3 class="mb-5 mt-5 text-muted">Arrastra tu logo aqui, o</h3>
+
+                            <div class="btn btn-primary btn-block mb-5">
+                                <span>Abri el buscador de imagenes</span>
+                                <input name="file" type="file"/>
+                            </div>
+                        </div><!-- /uploader -->
+                    </div>
                 </div>
             </div>
 
@@ -74,111 +84,105 @@
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_copy" name="print_copy" <?php echo $settings['print_copy'] ? 'checked' : ''?> value="<?php echo $settings['print_copy']; ?>"/><label for="print_copy">Imprimir copia de recibos</label>
 
             <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="print_debit" name="print_debit" <?php echo $settings['print_debit'] ? 'checked' : ''?> value="<?php echo $settings['print_debit']; ?>"/><label for="print_debit">Imprimir recibo para debitos</label>
-<!-- 
-            <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="email_receive_renter" name="email_receive_renter" <?php echo $settings['email_receive_renter'] ? 'checked' : ''?> value="<?php echo $settings['email_receive_renter']; ?>"/><label for="email_receive_renter">Enviar recibos por email a Inquilinos</label> -->
-            
-            <div class="section_selects">
-                <label>Tipo de devolucion de prestamos</label>
-                <select title="Esoecifica si para devolver prestamos se utilizara una devolucion flexible o estricta.
-                     La devolucion flexible permite devolver en cuotas, es decir no es necesario que el monto
-                     del credito cubra completamente el saldo prestado para realizar la devolucion.
-                     La devolucion estricta implica que el credito si o si debe cubrir el monto del prestamo
-                     para realizarse la devolucion" class="form-control ui-autocomplete-input" name="return_loan_in_dues">
-                    <option <?php echo $settings['return_loan_in_dues'] ? 'selected' : '' ?> value="1">Flexible</option>
-                    <option <?php echo!$settings['return_loan_in_dues'] ? 'selected' : '' ?> value="0">Estricta</option>
-                </select>
-            </div> 
 
-            <div class="section_selects">
-                <label>Control por codigo de autorizacion</label>
-                <select title="Especifica si estara activo el sistema de generacion de codigos. Estos codigos sirven para solicitar habilitar campo 'dias de mora' para modificarlo" class="form-control ui-autocomplete-input" name="code_control">
-                    <option <?php echo $settings['code_control'] ? 'selected' : '' ?> value="1">Activado</option>
-                    <option <?php echo!$settings['code_control'] ? 'selected' : '' ?> value="0">Desactivado</option>
-                </select>
-            </div> 
+    <input onclick="general_scripts.changeValueCheckbox($(this));" style="float: left;margin-right: 8px;margin-left: 4px;margin-bottom: 22px;clear: both;" type="checkbox" id="email_receive_renter" name="email_receive_renter" <?php echo $settings['email_receive_renter'] ? 'checked' : ''?> value="<?php echo $settings['email_receive_renter']; ?>"/><label for="email_receive_renter">Enviar recibos por email a Inquilinos</label>
 
-            <div class="section_selects">
-                <label>Inicio mensuales de cajas fisicas</label>
-                <select title="Especifica si la caja fisica comenzara el nuevo mes con monto en $0.00 o arrastrara el monto con el que termino el mes anterior" class="form-control ui-autocomplete-input" name="begin_cash_zero">
-                    <option <?php echo $settings['begin_cash_zero'] ? 'selected' : '' ?> value="1">Inicio de caja fisica siempre en $ 0.00 (cero)</option>
-                    <option <?php echo!$settings['begin_cash_zero'] ? 'selected' : '' ?> value="0">Inicio de caja fisica arrastrado de mes anterior</option>
-                </select>
-            </div> 
+    <div class="section_selects">
+        <label>Tipo de devolucion de prestamos</label>
+        <select title="Esoecifica si para devolver prestamos se utilizara una devolucion flexible o estricta.
+        La devolucion flexible permite devolver en cuotas, es decir no es necesario que el monto
+        del credito cubra completamente el saldo prestado para realizar la devolucion.
+        La devolucion estricta implica que el credito si o si debe cubrir el monto del prestamo
+        para realizarse la devolucion" class="form-control ui-autocomplete-input" name="return_loan_in_dues">
+        <option <?php echo $settings['return_loan_in_dues'] ? 'selected' : '' ?> value="1">Flexible</option>
+        <option <?php echo!$settings['return_loan_in_dues'] ? 'selected' : '' ?> value="0">Estricta</option>
+    </select>
+</div> 
 
-            <div class="section_selects">
-                <label>Prestamos a Rendiciones</label>
-                <select title="Especifica si se permite que debitos de Rendiciones dejen en negativo la cuenta, por lo cual se generara un prestamo de la Inmobiliaria para solventar la Rendicion en la cuenta sin fondos del propietario" class="form-control ui-autocomplete-input" name="loan_rendition">
-                    <option <?php echo $settings['loan_rendition'] ? 'selected' : '' ?> value="1">Generar prestamo por Rendicion</option>
-                    <option <?php echo!$settings['loan_rendition'] ? 'selected' : '' ?> value="0">No generar prestamo por Rendicion</option>
-                </select>
-            </div> 
+<div class="section_selects">
+    <label>Control por codigo de autorizacion</label>
+    <select title="Especifica si estara activo el sistema de generacion de codigos. Estos codigos sirven para solicitar habilitar campo 'dias de mora' para modificarlo" class="form-control ui-autocomplete-input" name="code_control">
+        <option <?php echo $settings['code_control'] ? 'selected' : '' ?> value="1">Activado</option>
+        <option <?php echo!$settings['code_control'] ? 'selected' : '' ?> value="0">Desactivado</option>
+    </select>
+</div> 
 
-            <button class="btn btn-primary submit_button" type="submit">Guardar</button>
-        </form>
-    </div>
-    
-    <div class="tab-pane fade" id="report_delivery">
-        <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;"> 
+<div class="section_selects">
+    <label>Inicio mensuales de cajas fisicas</label>
+    <select title="Especifica si la caja fisica comenzara el nuevo mes con monto en $0.00 o arrastrara el monto con el que termino el mes anterior" class="form-control ui-autocomplete-input" name="begin_cash_zero">
+        <option <?php echo $settings['begin_cash_zero'] ? 'selected' : '' ?> value="1">Inicio de caja fisica siempre en $ 0.00 (cero)</option>
+        <option <?php echo!$settings['begin_cash_zero'] ? 'selected' : '' ?> value="0">Inicio de caja fisica arrastrado de mes anterior</option>
+    </select>
+</div> 
 
-            <div class="section_description">
-                <label>Configura el envio automatico de reportes a tu email</label>
-            </div>
+<div class="section_selects">
+    <label>Prestamos a Rendiciones</label>
+    <select title="Especifica si se permite que debitos de Rendiciones dejen en negativo la cuenta, por lo cual se generara un prestamo de la Inmobiliaria para solventar la Rendicion en la cuenta sin fondos del propietario" class="form-control ui-autocomplete-input" name="loan_rendition">
+        <option <?php echo $settings['loan_rendition'] ? 'selected' : '' ?> value="1">Generar prestamo por Rendicion</option>
+        <option <?php echo!$settings['loan_rendition'] ? 'selected' : '' ?> value="0">No generar prestamo por Rendicion</option>
+    </select>
+</div> 
 
-            <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
-            <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
-            <input value="report_delivery" name="setting_section" type="hidden"/>
-            
-            
-            <input value="<?php echo $settings['reports_email']; ?>" placeholder="Email al que se enviaran los reportes" required name="reports_email" type="email" class="form-control section_input ui-autocomplete-input"/>
-            
-            <?php foreach($reports_config as $report_config) {?>
-                <?php $id = isset($report_config) ? $report_config['id'] : 'no' ?>
-                <div class="section_selects">
-                    <label><?php echo $report_config['report_name'] ?></label>
-                    <input value="<?php echo $report_config['id']; ?>" name="reports_config[<?php echo $id ?>][id]" type="hidden"/>
-                    <select title="Elija la frecuencia" class="form-control ui-autocomplete-input" name="reports_config[<?php echo $id ?>][frequency]" id="accounts_balance_report_freq">
-                        <option <?php echo $report_config['frequency'] == 'no_send' ? 'selected' : '' ?> value="no_send">No enviar</option>
-                        <option <?php echo $report_config['frequency'] == 'monthly' ? 'selected' : '' ?> value="monthly">Enviar mensualmente</option>
-                    </select>
-                
-                    <?php if ($report_config['report_name'] == 'Reporte de Cuentas Corrientes especificas') {?>
-                        <select style="height: 200px;margin-top: 5px" name="reports_config[<?php echo $id ?>][current_accounts][]" id="current_accounts" multiple class="form-control ui-autocomplete-input">     
-                            <?php foreach ($current_accounts as $current_account) {?>
-                                <?php $accounts = unserialize($report_config['data']); ?>
-                                <option <?php echo is_array($accounts) && in_array($current_account['cc_id'], $accounts) ? 'selected' : '' ?> value="<?php echo $current_account['cc_id'] ?>"><?php echo $current_account['cc_prop'] ?></option>
-                            <?php } ?>
-                        </select>
-                    <?php } ?>
-
-                </div> 
-            <?php } ?>
-
-            <button class="btn btn-primary submit_button" type="submit">Guardar</button>
-        </form>
-    </div>
-    
-    <div class="tab-pane fade" id="tax">
-        <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;" enctype="multipart/form-data"> 
-
-            <div class="section_description">
-                <label>Registra porcentajes de impuestos que seran usados para calcular automaticamente las percepciones de los mismos</label>
-            </div>
-
-            <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
-            <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
-            <input value="tax" name="setting_section" type="hidden"/>
-
-            <input required value="<?php echo $settings['iva_tax']; ?>" title="% IVA Ej: 21% = 0.21" placeholder="% IVA" type="text" name="iva_tax" class="form-control ui-autocomplete-input section_input _general_amount_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
-            <input required value="<?php echo $settings['iibb_bank_tax']; ?>" title="% IIBB/Operacion bancaria Ej: 2.45% = 0.0245" placeholder="% IIBB/Operacion bancaria" type="text" name="iibb_bank_tax" class="form-control ui-autocomplete-input section_input _general_amount_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
-
-            <button class="btn btn-primary submit_button" type="submit">Guardar</button>
-        </form>
-    </div>
-    
+<button class="btn btn-primary submit_button" type="submit">Guardar</button>
+</form>
 </div>
 
-<script>
-    $(function(){
-        general_scripts.activateUploadFromFileImage($('#logo'), 'bussines_logos', '._logo');
-    });
-</script>
+<div class="tab-pane fade" id="report_delivery">
+    <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;"> 
+
+        <div class="section_description">
+            <label>Configura el envio automatico de reportes a tu email</label>
+        </div>
+
+        <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
+        <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
+        <input value="report_delivery" name="setting_section" type="hidden"/>
+
+
+        <input value="<?php echo $settings['reports_email']; ?>" placeholder="Email al que se enviaran los reportes" required name="reports_email" type="email" class="form-control section_input ui-autocomplete-input"/>
+
+        <?php foreach($reports_config as $report_config) {?>
+            <?php $id = isset($report_config) ? $report_config['id'] : 'no' ?>
+            <div class="section_selects">
+                <label><?php echo $report_config['report_name'] ?></label>
+                <input value="<?php echo $report_config['id']; ?>" name="reports_config[<?php echo $id ?>][id]" type="hidden"/>
+                <select title="Elija la frecuencia" class="form-control ui-autocomplete-input" name="reports_config[<?php echo $id ?>][frequency]" id="accounts_balance_report_freq">
+                    <option <?php echo $report_config['frequency'] == 'no_send' ? 'selected' : '' ?> value="no_send">No enviar</option>
+                    <option <?php echo $report_config['frequency'] == 'monthly' ? 'selected' : '' ?> value="monthly">Enviar mensualmente</option>
+                </select>
+                
+                <?php if ($report_config['report_name'] == 'Reporte de Cuentas Corrientes especificas') {?>
+                    <select style="height: 200px;margin-top: 5px" name="reports_config[<?php echo $id ?>][current_accounts][]" id="current_accounts" multiple class="form-control ui-autocomplete-input">     
+                        <?php foreach ($current_accounts as $current_account) {?>
+                            <?php $accounts = unserialize($report_config['data']); ?>
+                            <option <?php echo is_array($accounts) && in_array($current_account['cc_id'], $accounts) ? 'selected' : '' ?> value="<?php echo $current_account['cc_id'] ?>"><?php echo $current_account['cc_prop'] ?></option>
+                        <?php } ?>
+                    </select>
+                <?php } ?>
+
+            </div> 
+        <?php } ?>
+
+        <button class="btn btn-primary submit_button" type="submit">Guardar</button>
+    </form>
+</div>
+
+<div class="tab-pane fade" id="tax">
+    <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveSettings') ?>', this);return false;" enctype="multipart/form-data"> 
+
+        <div class="section_description">
+            <label>Registra porcentajes de impuestos que seran usados para calcular automaticamente las percepciones de los mismos</label>
+        </div>
+
+        <input value="<?php echo $settings['user_id']; ?>" name="user_id" type="hidden"/>
+        <input value="<?php echo $settings['id']; ?>" name="id" type="hidden"/>
+        <input value="tax" name="setting_section" type="hidden"/>
+
+        <input required value="<?php echo $settings['iva_tax']; ?>" title="% IVA Ej: 21% = 0.21" placeholder="% IVA" type="text" name="iva_tax" class="form-control ui-autocomplete-input section_input _general_amount_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+        <input required value="<?php echo $settings['iibb_bank_tax']; ?>" title="% IIBB/Operacion bancaria Ej: 2.45% = 0.0245" placeholder="% IIBB/Operacion bancaria" type="text" name="iibb_bank_tax" class="form-control ui-autocomplete-input section_input _general_amount_input_control" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+
+        <button class="btn btn-primary submit_button" type="submit">Guardar</button>
+    </form>
+</div>
+
+</div>

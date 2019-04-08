@@ -22,10 +22,14 @@
 | a PHP script and you can easily do that on your own.
 |
 */
+
+$pc_host = 'adriana-pc';
+$pjct = '/cleanbox';
+
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
-    $config['base_url'] = "http://localhost/cleanbox";
-} elseif (strpos($_SERVER['SERVER_NAME'], 'adriana-pc') !== FALSE) {
-    $config['base_url'] = "http://adriana-pc/cleanbox";
+    $config['base_url'] = "http://localhost".$pjct;
+} elseif (strpos($_SERVER['SERVER_NAME'], $pc_host) !== FALSE) {
+    $config['base_url'] = "http://".$pc_host.$pjct;
 }
 
 /*

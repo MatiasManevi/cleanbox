@@ -1052,51 +1052,83 @@ class Manager extends CI_Controller {
         $response = array();
 
         try {
-            $file = $this->input->post('filearray');
-            $folder_img = $this->input->post('folder');
+            $config['upload_path']          = $this->input->post('folder');
+            $config['allowed_types']        = 'jpg|jpeg|png';
+            $config['max_size']             = 10000;
+            $config['max_width']            = 3000;
+            $config['max_height']           = 3000;
 
-            $data['json'] = json_decode($file);
+            $this->load->library('upload', $config);
 
-            $file_info = array();
+            if (!$this->upload->do_upload('file')){
+                $response['error'] = array('error' => $this->upload->display_errors());
+                $response['status'] = false;
+            }else{
+                $data = $this->upload->data();
 
-            $file_info['file_title'] = $data['json']->{'file_name'};
-            $file_info['file_ext'] = $data['json']->{'file_ext'};
-            $file_info['file_size'] = $data['json']->{'file_size'};
+                $response['status'] = true;
+                $response['image'] = array(
+                    'value' => $data['file_name'],
+                    'src' => $data['full_path'],
+                    'delete_url' => $data['full_path'],
+                );
 
-            /* RESIZE */
-            $folder = realpath('./img/' . $folder_img . '/');
-            chmod($folder . '/' . $file_info['file_title'], 0777);
-
-            /* THUMBS */
-            $config['image_library'] = 'GD2';
-            $config['source_image'] = $folder . '/' . $file_info['file_title'];
-            $config['new_image'] = $folder . '/thumbs/' . $file_info['file_title'];
-            $config['maintain_ratio'] = TRUE;
-            $config['width'] = 200;
-            $config['height'] = 200;
-
-            $this->ImageCR($config['source_image'], '1/1', '200*200', $config['source_image']);
-
-            $this->load->library('image_lib', $config);
-            if (!$this->image_lib->resize()) {
-                echo $this->image_lib->display_errors();
-                echo 'path ' . $folder . '/' . $file_info['file_title'];
+                if ($this->input->post('folder') == './img/bussines_logos') {
+                    $settings = User::getUserSettings();
+                    $settings['logo'] = $data['file_name'];
+                    $this->basic->save('settings', 'id', $settings);
+                }
             }
 
-            chmod('./img/' . $folder_img . '/' . $file_info['file_title'], 0777);
+            
+            /*
+                        die;
+                        $file = $_POST['file'];
+                        print_r($this->input->post('folder'));
+                        print_r($file);
+                        $folder_img = $this->input->post('folder');
 
-            $response['status'] = true;
-            $response['image'] = array(
-                'value' => $file_info['file_title'],
-                'src' => base_url() . 'img/' . $folder_img . '/' . $file_info['file_title'],
-                'delete_url' => base_url() . 'img/' . $folder_img . '/' . $file_info['file_title'],
-            );
+                        $data['json'] = json_decode($file);
 
-            if ($folder_img == 'bussines_logos') {
-                $settings = User::getUserSettings();
-                $settings['logo'] = $file_info['file_title'];
-                $this->basic->save('settings', 'id', $settings);
-            }
+                        $file_info = array();
+
+                        $file_info['file_title'] = $data['json']->{'file_name'};
+                        $file_info['file_ext'] = $data['json']->{'file_ext'};
+                        $file_info['file_size'] = $data['json']->{'file_size'};
+
+                        $folder = realpath('./img/' . $folder_img . '/');
+                        chmod($folder . '/' . $file_info['file_title'], 0777);
+
+                        $config['image_library'] = 'GD2';
+                        $config['source_image'] = $folder . '/' . $file_info['file_title'];
+                        $config['new_image'] = $folder . '/thumbs/' . $file_info['file_title'];
+                        $config['maintain_ratio'] = TRUE;
+                        $config['width'] = 200;
+                        $config['height'] = 200;
+
+                        $this->ImageCR($config['source_image'], '1/1', '200*200', $config['source_image']);
+
+                        $this->load->library('image_lib', $config);
+                        if (!$this->image_lib->resize()) {
+                            echo $this->image_lib->display_errors();
+                            echo 'path ' . $folder . '/' . $file_info['file_title'];
+                        }
+
+                        chmod('./img/' . $folder_img . '/' . $file_info['file_title'], 0777);
+
+                        $response['status'] = true;
+                        $response['image'] = array(
+                            'value' => $file_info['file_title'],
+                            'src' => base_url() . 'img/' . $folder_img . '/' . $file_info['file_title'],
+                            'delete_url' => base_url() . 'img/' . $folder_img . '/' . $file_info['file_title'],
+                        );
+
+                        if ($folder_img == 'bussines_logos') {
+                            $settings = User::getUserSettings();
+                            $settings['logo'] = $file_info['file_title'];
+                            $this->basic->save('settings', 'id', $settings);
+                        }
+            */
         } catch (Exception $exc) {
             $response['status'] = false;
             $response['error'] = 'Ups! Ocurrio un error, intente nuevamente por favor. Detalle: ' . $exc->getMessage();

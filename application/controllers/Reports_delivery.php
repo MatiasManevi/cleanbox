@@ -178,8 +178,15 @@ class Reports_delivery extends CI_Controller {
         $credits_info = json_decode(stripslashes(get_cookie('credits_receive')), true);
 
         if($credits_info){
+            $transaction_id = $credits_info['transaction_id'];
+            $credits = $this->basic->get_where('creditos', array('trans' => $transaction_id))->result_array();
 
-            $renter = General::getRenterClientByCredit($credits_info['credits'][0]);
+            foreach ($credits as $credit) {
+                if($credit['cred_concepto'] != "Gestion de Cobro" && $credit['cred_concepto'] != "Gestion de Cobro Sobre Intereses"){
+                    $renter = General::getRenterClientByCredit($credit);
+                    break;
+                }
+            }
 
             if($renter && strlen($renter['client_email']) > 0 && filter_var($renter['client_email'], FILTER_VALIDATE_EMAIL)){ 
 
@@ -190,7 +197,6 @@ class Reports_delivery extends CI_Controller {
                 $image = @file_put_contents($report_root, base64_decode(explode(",", $_POST['data'])[1]));
 
                 if($image){
-
                     $response['status'] = Mailing::send(array(
                         'subject' => "Recibo pago ".$credits_info['credits'][0]['cred_concepto']." | Inmobiliaria " . User::getBussinesName(),
                         'body' => 'Hola! '.$renter['client_name'].', recientemente usted pago su '.$credits_info['credits'][0]['cred_concepto'].', le adjuntamos el recibo en formato digital, gracias por ayudarnos a proteger el medio ambiente!',

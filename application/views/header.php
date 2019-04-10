@@ -59,7 +59,7 @@
                             <li><a href="javascript:;" onclick="report.buildReport('<?php echo site_url('buildHonoraryPaymentsReport') ?>');">Reporte Pago Honorarios</a></li>              
                         </ul>
                     </li>  
-                    <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>                                  
+                    <!-- <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>                                   -->
                     <li><a href="<?php echo site_url('users') ?>">Usuarios</a></li> 
                     <li style="margin-left: 170px;"><a style="color:white;padding: 0px;"><span style="float: right;margin-top: 15px;">En sesion: <strong><?php echo $this->session->userdata('username'); ?></strong></span></a></li>  
                     <li id="notifications">

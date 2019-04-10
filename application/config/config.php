@@ -24,6 +24,8 @@
 */
 
 $pc_host = 'adriana-pc';
+// phpMyAdmin 403 = https://stackoverflow.com/questions/43616290/how-can-solve-phpmyadmin-403-on-laragon
+// https://www.digifloor.com/simple-steps-fix-403-forbidden-errors-wamp-server-28
 
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
     $config['base_url'] = "http://localhost/gemma-demo";

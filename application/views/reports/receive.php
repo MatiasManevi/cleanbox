@@ -197,7 +197,7 @@
 
                     <?php if (!empty($receive['secondary_credits'])) { ?>
                         <?php foreach ($receive['secondary_credits'] as $secondary) { ?>
-                            <?php if ($secondary['cred_concepto'] != 'Intereses' && $secondary['cred_concepto'] != 'IVA') { ?>
+                            <?php // if ($secondary['cred_concepto'] != 'Intereses' && $secondary['cred_concepto'] != 'IVA') { ?>
                             <?php
                                 if ($secondary['cred_forma'] == 'Efectivo') {
                                     $form = 'Efectivo';
@@ -223,7 +223,7 @@
                                     <td class="receive_cel"></td>
                                     <td class="receive_cel"></td>
                                 </tr>                        
-                            <?php } ?>
+                            <?php //} ?>
                         <?php } ?>
                     <?php } ?>
 

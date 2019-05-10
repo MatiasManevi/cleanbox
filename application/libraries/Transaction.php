@@ -850,6 +850,7 @@ class Transaction {
 
         $receives = array();
 
+        // echo '<pre>';
         if(!self::existsRentCredit($receive_elements['credits'])){
             $receives = self::parseSeconaryCredits($receive_elements);
         } else {
@@ -883,8 +884,10 @@ class Transaction {
                 if (Report::isPrincipal($principal['cred_concepto'])) {
                     foreach ($credits as $key => $credit) {
                         if (self::paymentSamePrincipal($principal, $credit)) {
-                            array_push($principal['other_principal'], $credit);
-                            unset($credits[$key]);
+                            if($credit['cred_concepto'] != 'IVA' && $credit['cred_concepto'] != 'Intereses'){
+                                array_push($principal['other_principal'], $credit);
+                                unset($credits[$key]);
+                            }
                         }
                     }
                     array_push($principals_with_consecutives, $principal);
@@ -906,14 +909,19 @@ class Transaction {
                     'services_no_control' => array()
                 );
 
+//         echo '<pre>';
+// print_r($receive_elements);die;
                 // se adosan creditos secundarios
                 foreach ($credits as $key => $secondary_credit) {
                     if ($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq'] && $credit['cred_concepto'] != $secondary_credit['cred_concepto'] && strpos($secondary_credit['cred_concepto'], 'Prestamo') === FALSE) {
                         if (!Report::isPrincipal($secondary_credit['cred_concepto'])) {
                             if (!self::isAlreadyAdded($receive_reports, $secondary_credit, 'secondary_credits')) {
-                                array_push($receive['secondary_credits'], $secondary_credit);
-                                unset($credits[$key]);
+                                if($secondary_credit['cred_concepto'] == 'Intereses' && self::isManualInterest($receive_elements['credits'], $secondary_credit)){
+                                    array_push($receive['secondary_credits'], $secondary_credit);
+                                    unset($credits[$key]);
+                                }
                             }
+
                         }
                     }
                 }
@@ -960,8 +968,11 @@ class Transaction {
             foreach ($credits as $credit) {
                 if (!Report::isPrincipal($credit['cred_concepto']) && strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
                     if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {
+                        // if($credit['cred_id'] != 12456){
+                        if($credit['cred_concepto'] == 'Intereses' && self::isManualInterest($receive_elements['credits'], $credit)){
 
-                        array_push($receive_reports[0]['secondary_credits'], $credit);
+                            array_push($receive_reports[0]['secondary_credits'], $credit);
+                        }
                     }
                 }
             }
@@ -1004,9 +1015,24 @@ class Transaction {
                 array_push($receives, $receive_report);
             }
         }
-//         echo '<pre>';
-// print_r($receives);die;
+        
+        // print_r($receives);die;
+
         return $receives;
+    }
+
+    public function isManualInterest($credits, $secondary_credit){
+        foreach ($credits as $credit) {
+            if($credit['cred_interes_calculado'] && $credit['cred_interes_calculado'] > 0){
+                if($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq']){
+                    if($credit['cred_interes_calculado'] == $secondary_credit['cred_monto']){
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     public static function getTotalManualporcs($principal_credit, $secondary_credits){
@@ -1014,7 +1040,9 @@ class Transaction {
 
         foreach ($secondary_credits as $secondary_credit) {
             if($principal_credit['cred_interes'] == '' || !$principal_credit['cred_interes']){
-                if($secondary_credit['cred_concepto'] == 'Intereses'){//
+                // if($secondary_credit['cred_concepto'] == 'Intereses'){//
+                if($secondary_credit['cred_concepto'] != 'IVA' && $secondary_credit['cred_concepto'] != 'Intereses'){
+
                     array_push($others, $secondary_credit);
                 }
             }
@@ -1035,9 +1063,9 @@ class Transaction {
         $credit_amount += $credit['cred_monto'];
         // $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
         // no se suma el interes porque ya estara sumado en los secondarys
-        // if (self::payIntereses($credit)) {
-        //     $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
-        // }
+        if (self::payIntereses($credit)) {
+            $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
+        }
 
         return $credit_amount;
     }

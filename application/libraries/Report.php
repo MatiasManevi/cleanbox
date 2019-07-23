@@ -783,7 +783,7 @@ public static function buildpropietaryLoansReport($from, $to) {
                 array_push($instance->data['default_loans'], $loan);
             }
 
-            if ($loan['cred_concepto'] == 'Prestamo Devuelto') {
+            if ($loan['cred_concepto'] == 'Devolucion Prestamo') {
                 $instance->data['total_loans_returned'] += $loan['cred_monto'];
                 array_push($instance->data['returned_loans'], $loan);
             }

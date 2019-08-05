@@ -71,6 +71,13 @@ class Reports extends CI_Controller {
         $this->load->view('layout', $this->data);
     }
 
+    public function defaultPropietaries() {
+        $this->data['defaulter_accounts'] = $this->basic->get_where('cuentas_corrientes', array('loans >' => '0'))->result_array();
+        $this->data['heading'] = 'Informe de propietarios deudores de prestamos';
+        $this->data['content'] = $this->load->view('reports/default_propietaries', $this->data, TRUE);
+        $this->load->view('layout', $this->data);
+    }
+
     public function buildAccountsAnualBalanceReport() {
         $year = $this->input->post('year');
         $account = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $this->input->post('cc_id')))->row_array();

@@ -28,9 +28,9 @@ $pc_host = 'adriana-pc';
 // https://www.digifloor.com/simple-steps-fix-403-forbidden-errors-wamp-server-28
 
 if (strpos($_SERVER['SERVER_NAME'], 'localhost') !== FALSE) {
-    $config['base_url'] = "http://localhost/gemma-demo";
+    $config['base_url'] = "http://localhost/cleanbox";
 } elseif (strpos($_SERVER['SERVER_NAME'], $pc_host) !== FALSE) {
-    $config['base_url'] = "http://".$pc_host."/gemma-demo";
+    $config['base_url'] = "http://".$pc_host."/cleanbox";
 }
 
 /*

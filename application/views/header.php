@@ -21,6 +21,7 @@
                             <li><a href="<?php echo site_url('accountFlushReport') ?>">Reporte por periodos de Balance</a></li>                    
                             <li><a href="<?php echo site_url('accountsAnualBalanceReport') ?>">Reporte Anual de Balances</a></li>         
                             <li><a href="<?php echo site_url('propietaryLoansReport') ?>">Reporte Prestamos a Propietarios</a></li> 
+                            <li><a href="<?php echo site_url('defaultPropietaries') ?>">Reporte Propietarios Morosos</a></li> 
                         </ul>
                     </li>
                     <li><a href="<?php echo site_url('clients') ?>">Clientes</a></li>              

@@ -181,6 +181,8 @@ $route['endedMaintenancesReport'] = 'reports/endedMaintenancesReport';
 $route['buildRentersPaymentPercentReport'] = 'reports/buildRentersPaymentPercentReport';
 $route['rentersPaymentPercentReport'] = 'reports/rentersPaymentPercentReport';
 
+$route['defaultPropietaries'] = 'reports/defaultPropietaries';
+
 $route['buildHonoraryPaymentsReport'] = 'reports/buildHonoraryPaymentsReport';
 
 /* End of file routes.php */

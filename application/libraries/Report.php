@@ -767,6 +767,7 @@ public static function buildpropietaryLoansReport($from, $to) {
     General::loadModels($instance);
 
     $loans = $instance->basic->get_where('creditos', array('cred_depositante' => 'Inmobiliaria'))->result_array();
+    $returns = $instance->basic->get_where('creditos', array('cred_cc' => 'Inmobiliaria'))->result_array();
 
     $instance->data['from'] = $from;
     $instance->data['to'] = $to;
@@ -777,15 +778,18 @@ public static function buildpropietaryLoansReport($from, $to) {
 
     foreach ($loans as $loan) {
         if (General::isBetweenDates($loan['cred_fecha'], $from, $to)) {
-
             if ($loan['cred_concepto'] == 'Prestamo') {
                 $instance->data['total_loans'] += $loan['cred_monto'];
                 array_push($instance->data['default_loans'], $loan);
             }
+        }
+    }
 
-            if ($loan['cred_concepto'] == 'Devolucion Prestamo') {
-                $instance->data['total_loans_returned'] += $loan['cred_monto'];
-                array_push($instance->data['returned_loans'], $loan);
+    foreach ($returns as $return) {
+        if (General::isBetweenDates($return['cred_fecha'], $from, $to)) {
+            if ($return['cred_concepto'] == 'Devolucion Prestamo') {
+                $instance->data['total_loans_returned'] += $return['cred_monto'];
+                array_push($instance->data['returned_loans'], $return);
             }
         }
     }

@@ -41,7 +41,7 @@
     <table class="table">
         <tr><th class="cell" colspan="4">Prestamos Devueltos</th></tr>
         <tr>    
-            <th class="cell">Prestado A</th>
+            <th class="cell">Devuelto por</th>
             <th class="cell">Monto</th>
             <th class="cell">Fecha</th>                   
             <th class="cell">Mes</th>
@@ -49,7 +49,7 @@
         <?php if (count($returned_loans) > 0) { ?>
             <?php foreach ($returned_loans as $returned_loan) { ?>
                 <tr class="reg_<?php echo $returned_loan['cred_id']; ?>">
-                    <td class="cell"><?php echo $returned_loan['cred_cc']; ?></td>
+                    <td class="cell"><?php echo $returned_loan['cred_depositante']; ?></td>
                     <td class="cell">$ <?php echo $returned_loan['cred_monto']; ?></td>
                     <td class="cell"><?php echo $returned_loan['cred_fecha']; ?></td>
                     <td class="cell"><?php echo $returned_loan['cred_mes_alq']; ?></td>

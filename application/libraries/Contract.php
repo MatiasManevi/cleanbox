@@ -256,7 +256,8 @@ class Contract {
                         );
                     }
 
-                    $month_debt = '00-' . $current . '-' . $last_payment_year;
+                    $month_debt = '-' . $current . '-' . $last_payment_year;
+                    // $month_debt = '00-' . $current . '-' . $last_payment_year;
                     $debt['amount'] = Transaction::calculateAmount($month_debt, $periods);
                     $debt = Transaction::calculateIntereses($debt, $contract, $month_debt, $periods, Date('d-m-Y'));
                     array_push($total_debt, $debt);
@@ -286,7 +287,8 @@ class Contract {
                     'intereses' => 0
                 );
 
-                $month_debt = '00-' . $next_month_payment . '-' . Date('Y');
+                $month_debt = '-' . $next_month_payment . '-' . Date('Y');
+                // $month_debt = '00-' . $next_month_payment . '-' . Date('Y');
                 $debt['amount'] = Transaction::calculateAmount($month_debt, $periods);
                 $debt = Transaction::calculateIntereses($debt, $contract, $month_debt, $periods, Date('d-m-Y'));
 
@@ -411,8 +413,9 @@ class Contract {
                     }
 
                     if ($service_debt['interes_percibe']) {
-                        $month_debt = '00-' . $current . '-' . $last_payment_year;
-                        $service_debt = Transaction::calculateExpensInteres($service_debt, $contract, $month_debt, Date('d-m-Y'));
+                        $month_debt = '-' . $current . '-' . $last_payment_year;
+                        // $month_debt = '00-' . $current . '-' . $last_payment_year;
+                        $service_debt = Transaction::calculateExpensInteres($service_debt, $contract, $month_debt, Date('d-m-Y'), $periods);
                     }
 
                     array_push($services_debt, $service_debt);
@@ -443,7 +446,8 @@ class Contract {
                 );
 
                 if ($service_debt['interes_percibe']) {
-                    $month_debt = '00-' . $next_month_payment . '-' . Date('Y');
+                    $month_debt = '-' . $next_month_payment . '-' . Date('Y');
+                    // $month_debt = '00-' . $next_month_payment . '-' . Date('Y');
                     $service_debt = Transaction::calculateIntereses($service_debt, $contract, $month_debt, $periods, Date('d-m-Y'));
                 }
 

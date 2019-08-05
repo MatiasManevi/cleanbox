@@ -280,10 +280,15 @@ class Credits extends CI_Controller {
                 'services_control' => $services_control
             );
 
-            $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
             $this->data['contract'] = $contract;
             $this->data['settings'] = User::getUserSettings();
-            
+            $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
+
+            // echo '<pre>';
+            // print_r($receive_elements); 
+            // print_r($this->data['receives']); 
+            // die;
+                        
             if (!empty($contract)) {
                 $this->data['propietary'] = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();
             } else {
@@ -322,8 +327,8 @@ class Credits extends CI_Controller {
             'credits' => $credits,
             'services_control' => $services_control
         );
-
         $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
+        // echo'<pre>';print_r($receive_elements);print_r($this->data['receives']);die;
         $this->data['contract'] = $contract;
         $this->data['settings'] = User::getUserSettings();
 

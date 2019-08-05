@@ -877,7 +877,6 @@ class Transaction {
                     unset($credits[$key]);
                 }
             }
-
             // Adosamos a creditos principales unicos sus creditos principales consecutivos
             $principals_with_consecutives = array();
             foreach ($principals as $principal) {
@@ -909,14 +908,18 @@ class Transaction {
                     'services_no_control' => array()
                 );
 
-//         echo '<pre>';
-// print_r($receive_elements);die;
                 // se adosan creditos secundarios
                 foreach ($credits as $key => $secondary_credit) {
                     if ($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq'] && $credit['cred_concepto'] != $secondary_credit['cred_concepto'] && strpos($secondary_credit['cred_concepto'], 'Prestamo') === FALSE) {
                         if (!Report::isPrincipal($secondary_credit['cred_concepto'])) {
                             if (!self::isAlreadyAdded($receive_reports, $secondary_credit, 'secondary_credits')) {
                                 if($secondary_credit['cred_concepto'] == 'Intereses' && self::isManualInterest($receive_elements['credits'], $secondary_credit)){
+                                    array_push($receive['secondary_credits'], $secondary_credit);
+                                    unset($credits[$key]);
+                                }else if($secondary_credit['cred_concepto'] == 'IVA' && self::isManualIVA($receive_elements['credits'], $secondary_credit)){
+                                    array_push($receive['secondary_credits'], $secondary_credit);
+                                    unset($credits[$key]);
+                                }elseif(!self::isManualIVA($receive_elements['credits'], $secondary_credit) && !self::isManualInterest($receive_elements['credits'], $secondary_credit)){
                                     array_push($receive['secondary_credits'], $secondary_credit);
                                     unset($credits[$key]);
                                 }
@@ -968,14 +971,17 @@ class Transaction {
             foreach ($credits as $credit) {
                 if (!Report::isPrincipal($credit['cred_concepto']) && strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
                     if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {
-                        // if($credit['cred_id'] != 12456){
                         if($credit['cred_concepto'] == 'Intereses' && self::isManualInterest($receive_elements['credits'], $credit)){
-
+                            array_push($receive_reports[0]['secondary_credits'], $credit);
+                        }else if($credit['cred_concepto'] == 'IVA' && self::isManualIVA($receive_elements['credits'], $credit)){
+                            array_push($receive_reports[0]['secondary_credits'], $credit);
+                        }elseif(!self::isManualInterest($receive_elements['credits'], $credit) && !self::isManualIVA($receive_elements['credits'], $credit)){
                             array_push($receive_reports[0]['secondary_credits'], $credit);
                         }
                     }
                 }
             }
+            
             foreach ($services_control as $service_control) {
                 if (isset($service_control['status'])) {
                     $status = true;
@@ -1035,23 +1041,37 @@ class Transaction {
         return true;
     }
 
-    public static function getTotalManualporcs($principal_credit, $secondary_credits){
-        $others = $principal_credit['other_principal'];
-
-        foreach ($secondary_credits as $secondary_credit) {
-            if($principal_credit['cred_interes'] == '' || !$principal_credit['cred_interes']){
-                // if($secondary_credit['cred_concepto'] == 'Intereses'){//
-                if($secondary_credit['cred_concepto'] != 'IVA' && $secondary_credit['cred_concepto'] != 'Intereses'){
-
-                    array_push($others, $secondary_credit);
+    public function isManualIVA($credits, $secondary_credit){
+        foreach ($credits as $credit) {
+            if($credit['cred_iva_calculado'] && $credit['cred_iva_calculado'] > 0){
+                if($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq']){
+                    if($credit['cred_iva_calculado'] == $secondary_credit['cred_monto']){
+                        return false;
+                    }
                 }
             }
-            // if(isset($principal_credit['cred_iva_calculado'])){
-            //     if($secondary_credit['cred_concepto'] == 'IVA'){//
-            //         array_push($others, $secondary_credit);
-            //     }
-            // }
         }
+
+        return true;
+    }
+
+    public static function getTotalManualporcs($principal_credit, $secondary_credits){
+        $others = $principal_credit['other_principal'];
+// echo'<pre>';print_r($principal_credit);print_r($secondary_credits);die;
+        // foreach ($secondary_credits as $secondary_credit) {
+        //     if($principal_credit['cred_interes'] == '' || !$principal_credit['cred_interes']){
+        //         if($secondary_credit['cred_concepto'] != 'IVA' && $secondary_credit['cred_concepto'] != 'Intereses'){
+
+        //             array_push($others, $secondary_credit);
+        //         }
+        //     }
+
+        //     if(isset($principal_credit['cred_iva_calculado'])){
+        //         if($secondary_credit['cred_concepto'] == 'IVA'){//
+        //             array_push($others, $secondary_credit);
+        //         }
+        //     }
+        // }
 
         $principal_credit['other_principal'] = $others;
 
@@ -1061,7 +1081,7 @@ class Transaction {
     public static function calculateCreditAmount($credit, $calculating_others = false) {
         $credit_amount = 0;
         $credit_amount += $credit['cred_monto'];
-        // $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
+        $credit_amount += is_numeric($credit['cred_iva_calculado']) ? $credit['cred_iva_calculado'] : 0;
         // no se suma el interes porque ya estara sumado en los secondarys
         if (self::payIntereses($credit)) {
             $credit_amount += is_numeric($credit['cred_interes_calculado']) ? $credit['cred_interes_calculado'] : 0;
@@ -1269,8 +1289,8 @@ class Transaction {
         $min_debt = 0;
 
         if (Report::mustPrintReport($receive_report['cred_concepto']) && $receive_report['cred_concepto'] != 'Reserva') {
-
             if ($receive_report['cred_tipo_pago'] == 'A Cuenta') {
+
                 $debt += self::getPrincipalPaymentDebt($receive_report, $contract);
                 if (!empty($receive_report['other_principal'])) {
                     foreach ($receive_report['other_principal'] as $other_principal) {
@@ -1287,6 +1307,7 @@ class Transaction {
                 //     }
                 // }
             }
+            echo '</pre>';
         }
 
         $debt -= $min_debt;
@@ -1306,7 +1327,7 @@ class Transaction {
         $credit_month_number = General::getMonthNumber($credit_month);
         $credit_year = trim(preg_replace("/[^0-9 (),.]/", "", $credit['cred_mes_alq']));
 
-        $period_search = '05-' . $credit_month_number . '-' . $credit_year;
+        $period_search = date('d').'-' . $credit_month_number . '-' . $credit_year;
 
         $contract_periods = $instance->basic->get_where('periodos', array('per_contrato' => $contract['con_id']))->result_array();
 
@@ -1316,7 +1337,6 @@ class Transaction {
                 break;
             }
         }
-
         if ($period_amount) {
             $debt = $period_amount - $credit['cred_monto'];
         }
@@ -1643,14 +1663,16 @@ class Transaction {
             $month_string = trim(preg_replace("/[^^A-Za-z (),.]/", "", $last_payment['cred_mes_alq']));
             $last_payment_year = trim(preg_replace("/[^0-9 (),.]/", "", $last_payment['cred_mes_alq']));
             $last_payment_month = General::getMonthNumber($month_string);
-            $payed_account_date = '10' . '-' . $last_payment_month . '-' . $last_payment_year;
-
+            $month_year = '-' . $last_payment_month . '-' . $last_payment_year;
             $period_amount = 0;
-            foreach ($periods->result_array() as $period) {
-                if (General::isBetweenDates($payed_account_date, $period['per_inicio'], $period['per_fin'])) {
-                    $period_amount = $period['per_monto'];
-                }
-            }
+
+            // foreach ($periods->result_array() as $period) {
+            //     $payed_account_date = explode('-', $period['per_inicio'])[0] . '-' . $last_payment_month . '-' . $last_payment_year;
+                
+            //     if (General::isBetweenDates($payed_account_date, $period['per_inicio'], $period['per_fin'])) {
+            //         $period_amount = $period['per_monto'];
+            //     }
+            // }
 
             $payed_account_credits = $instance->basic->get_where('creditos', array('cred_mes_alq' => $last_payment['cred_mes_alq'], 'cred_tipo_pago' => 'A Cuenta', 'cc_id' => $contract['cc_id'], 'client_id' => $contract['client_id']))->result_array();
             /* solo para davinia y rima */
@@ -1668,32 +1690,35 @@ class Transaction {
                         $payed_account += $row['cred_monto'];
                 }
             }
+// print_r('month_year '.$month_year);
 
+            $period_amount = self::calculateAmount($month_year, $periods);
+// print_r('period_amount '.$period_amount);
             $difference = $period_amount - $payed_account;
             $account_debt = array(
                 'month' => $month_string . ' ' . $last_payment_year,
                 'default_days' => 0,
                 'concept' => $contract['con_tipo'],
                 'sald_account' => 1,
+                'interes_percibe' => Contract::conceptPerceiveInteres($last_payment['cred_concepto']),
+                'iva_percibe' => Contract::conceptPerceiveIVA($last_payment['cred_concepto']),
                 'amount' => $difference,
                 'intereses' => 0
             );
 
-            $month_debt = '00-' . $last_payment_month . '-' . $last_payment_year;
-            $account_debt = self::calculateIntereses($account_debt, $contract, $month_debt, $periods, Date('d-m-Y'));
+            // $month_debt = '00-' .$last_payment_month . '-' . $last_payment_year;
+            $account_debt = self::calculateIntereses($account_debt, $contract, $month_year, $periods, Date('d-m-Y'));
         }
 
         return $account_debt;
     }
 
-    public static function calculateAmount($month_debt, $periods) {
+    public static function calculateAmount($month_year, $periods) {
         $amount = 0;
-        $month_debt_explode = explode('-', $month_debt);
-        // Problema con el calculo de los montos, a veces no entra en ningun rango
-        // Deberia tomar del dia que inician los periodos no del dia 00
+
         foreach ($periods->result_array() as $row) {
-            $per_explode = explode('-', $row['per_inicio']);
-            $month_debt = $per_explode[0] . '-' . $month_debt_explode[1] . '-' . $month_debt_explode[2];
+            $month_debt = explode('-', $row['per_inicio'])[0] . $month_year;
+            // print_r('$month_debt in calculateAmount'.$month_debt);
             if (General::isBetweenDates($month_debt, $row['per_inicio'], $row['per_fin'])) {
                 $amount = $row['per_monto'];
             }
@@ -1736,30 +1761,20 @@ class Transaction {
         return $account_amount_payed;
     }
 
-    public static function calculateIntereses($debt, $contract, $month_debt, $periods, $current_date) {
-        $month_debt_array = explode('-', $month_debt);
+    public static function calculateIntereses($debt, $contract, $month_year, $periods, $current_date) {
+        $month_debt_array = explode('-', $month_year);
         $current_date_array = explode('-', $current_date);
 
         if ($month_debt_array[1] <= $current_date_array[1] && $month_debt_array[2] <= $current_date_array[2] || $month_debt_array[2] < $current_date_array[2]) {
             $intereses = 0;
-            $amount = 0;
-
-            // Busco intereses pagados a cuenta para ese mes para ver si los resto
-            //  esto anda para el culoo
-//            $account_payed_intereses = self::getAccountPayedIntereses($contract, $month_debt, $current_date);
-            $account_payed_intereses = 0;
-
-            // Obtengo el monto del alquiler
-            $amount = self::calculateAmount($month_debt, $periods);
 
             // Obtengo la cantidad de dias de mora
-            $default_days = self::calculateDaysInDefault($month_debt, $current_date);
-
+            $default_days = self::calculateDaysInDefault($month_year, $current_date, $periods);
+// print_r('amount'.$debt['amount']);
+// print_r(' default_days'.$default_days);
             if ($default_days > $contract['con_tolerancia']) {
                 if ($debt['amount'] != 0) {
-                    $intereses = ($debt['amount'] * $contract['con_punitorio'] * $default_days) - $account_payed_intereses;
-                } else {
-                    $intereses = ($amount * $contract['con_punitorio'] * $default_days) - $account_payed_intereses;
+                    $intereses = ($debt['amount'] * $contract['con_punitorio'] * $default_days);
                 }
                 $debt['intereses'] = $intereses;
                 $debt['default_days'] = $default_days;
@@ -1769,7 +1784,19 @@ class Transaction {
         return $debt;
     }
 
-    public static function calculateDaysInDefault($month_debt, $date) {
+    public static function getMonthDebt($month_year, $periods) {
+        foreach ($periods->result_array() as $row) {
+            $month_debt = explode('-', $row['per_inicio'])[0] . $month_year;
+            if (General::isBetweenDates($month_debt, $row['per_inicio'], $row['per_fin'])) {
+                return $month_debt;
+                break;
+            }
+        }
+    }
+
+    public static function calculateDaysInDefault($month_year, $date, $periods) {
+        $month_debt = self::getMonthDebt($month_year, $periods);
+
         $month_debt_explode = explode('-', $month_debt);
         $date_explode = explode('-', $date);
         //defino fecha 1 
@@ -1795,9 +1822,9 @@ class Transaction {
         return $days_diff;
     }
 
-    public static function calculateExpensInteres($debt, $contract, $month_debt, $date) {
+    public static function calculateExpensInteres($debt, $contract, $month_debt, $date, $periods) {
         // Obtengo la cantidad de dias de mora
-        $days_in_default = self::calculateDaysInDefault($month_debt, $date);
+        $days_in_default = self::calculateDaysInDefault($month_debt, $date, $periods);
 
         if ($days_in_default > $contract['con_tolerancia']) {
             $debt['default_days'] = $days_in_default;

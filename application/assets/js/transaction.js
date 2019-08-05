@@ -504,8 +504,8 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
             if(contract['warranty_cuotes_payed'] == null){
                 contract['warranty_cuotes_payed'] = 0
             }
-            var next_cuote_honorary = contract['honorary_cuotes_payed'] + 1;
-            if(next_cuote_honorary > contract['honorary_cuotes']){
+            var next_cuote_honorary = parseInt(contract['honorary_cuotes_payed']) + 1;
+            if(next_cuote_honorary > parseInt(contract['honorary_cuotes'])){
                 cleanbox_alert.showAlertInfo('Estas por pagar mas '+concept+' del que corresponde');
             }
             address = address + ' Cuota ' + next_cuote_honorary + '/' + contract['honorary_cuotes'];
@@ -514,8 +514,8 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
             if(contract['warranty_cuotes_payed'] == null){
                 contract['warranty_cuotes_payed'] = 0;
             }
-            var next_cuote_warranty = contract['warranty_cuotes_payed'] + 1;
-            if(next_cuote_warranty > contract['warranty_cuotes']){
+            var next_cuote_warranty = parseInt(contract['warranty_cuotes_payed']) + 1;
+            if(next_cuote_warranty > parseInt(contract['warranty_cuotes'])){
                 cleanbox_alert.showAlertInfo('Estas por pagar mas '+concept+' del que corresponde');
             }
             address = address + ' Cuota ' + next_cuote_warranty + '/' + contract['warranty_cuotes'];

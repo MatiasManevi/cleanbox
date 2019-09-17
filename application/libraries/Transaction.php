@@ -1767,7 +1767,6 @@ class Transaction {
 
         if ($month_debt_array[1] <= $current_date_array[1] && $month_debt_array[2] <= $current_date_array[2] || $month_debt_array[2] < $current_date_array[2]) {
             $intereses = 0;
-
             // Obtengo la cantidad de dias de mora
             $default_days = self::calculateDaysInDefault($month_year, $current_date, $periods);
 // print_r('amount'.$debt['amount']);
@@ -1796,30 +1795,33 @@ class Transaction {
 
     public static function calculateDaysInDefault($month_year, $date, $periods) {
         $month_debt = self::getMonthDebt($month_year, $periods);
+        if ($month_debt) {       
+            $month_debt_explode = explode('-', $month_debt);
+            $date_explode = explode('-', $date);
+            //defino fecha 1 
+            $ano1 = $month_debt_explode[2];
+            $mes1 = $month_debt_explode[1];
+            $dia1 = $month_debt_explode[0];
+            //defino fecha 2 
+            $ano2 = $date_explode[2];
+            $mes2 = $date_explode[1];
+            $dia2 = $date_explode[0];
+            //calculo timestam de las dos fechas 
+            $timestamp1 = mktime(0, 0, 0, $mes1, $dia1, $ano1);
+            $timestamp2 = mktime(0, 0, 0, $mes2, $dia2, $ano2);
+            //resto a una fecha la otra 
+            $seconds_diff = $timestamp1 - $timestamp2;
+            //echo $seconds_diff; 
+            //convierto segundos en días 
+            $days_diff = $seconds_diff / (60 * 60 * 24);
+            //obtengo el valor absoulto de los días (quito el posible signo negativo) 
+            $days_diff = abs($days_diff);
+            //quito los decimales a los días de diferencia 
+            $days_diff = round($days_diff);
+            return $days_diff;
+        } else {
 
-        $month_debt_explode = explode('-', $month_debt);
-        $date_explode = explode('-', $date);
-        //defino fecha 1 
-        $ano1 = $month_debt_explode[2];
-        $mes1 = $month_debt_explode[1];
-        $dia1 = $month_debt_explode[0];
-        //defino fecha 2 
-        $ano2 = $date_explode[2];
-        $mes2 = $date_explode[1];
-        $dia2 = $date_explode[0];
-        //calculo timestam de las dos fechas 
-        $timestamp1 = mktime(0, 0, 0, $mes1, $dia1, $ano1);
-        $timestamp2 = mktime(0, 0, 0, $mes2, $dia2, $ano2);
-        //resto a una fecha la otra 
-        $seconds_diff = $timestamp1 - $timestamp2;
-        //echo $seconds_diff; 
-        //convierto segundos en días 
-        $days_diff = $seconds_diff / (60 * 60 * 24);
-        //obtengo el valor absoulto de los días (quito el posible signo negativo) 
-        $days_diff = abs($days_diff);
-        //quito los decimales a los días de diferencia 
-        $days_diff = round($days_diff);
-        return $days_diff;
+        }
     }
 
     public static function calculateExpensInteres($debt, $contract, $month_debt, $date, $periods) {

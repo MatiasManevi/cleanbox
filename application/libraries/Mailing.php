@@ -25,8 +25,8 @@ class Mailing {
                 
             $email = new Mailer(/*true*/);
 
-            $email->From = 'noreply@gemma.com';
-            $email->FromName = 'Gemma';
+            $email->From = 'noreply@cleanbox.com';
+            $email->FromName = 'Cleanbox';
             $email->Subject = $params['subject'];
             $email->Body = $params['body'];
             $email->IsHTML($params['is_html']);

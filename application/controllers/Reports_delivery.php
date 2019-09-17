@@ -79,7 +79,7 @@ class Reports_delivery extends CI_Controller {
 
                 $status = Mailing::send(array(
                     'subject' => "Reporte cuenta de  ". $account['cc_prop']. " " . $month,
-                    'body' => 'Gemma le envia un reporte automatico. No responda este email',
+                    'body' => 'No responda este email. Gracias',
                     'report_root' => $report_root,
                     'report_file_name' => $report_file_name,
                     'is_html' => false,
@@ -116,7 +116,7 @@ class Reports_delivery extends CI_Controller {
 
             $status = Mailing::send(array(
                 'subject' => "Reporte mensual de saldos: " . $month,
-                'body' => 'Gemma le envia el reporte mensual de balances. No responda este email',
+                'body' => 'Le enviamos el reporte mensual de balances. No responda este email',
                 'report_root' => $report_root,
                 'report_file_name' => $report_file_name,
                 'is_html' => false,
@@ -151,7 +151,7 @@ class Reports_delivery extends CI_Controller {
 
             $status = Mailing::send(array(
                 'subject' => 'Reporte Pago de Honorarios',
-                'body' => 'Gemma le envia el Reporte de Pago de Honorarios. Por favor, no responda este email',
+                'body' => 'Le enviamos el Reporte de Pago de Honorarios. Por favor, no responda este email',
                 'report_root' => $report_root,
                 'report_file_name' => $report_file_name,
                 'is_html' => false,

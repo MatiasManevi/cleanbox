@@ -919,7 +919,7 @@ class Transaction {
                                 }else if($secondary_credit['cred_concepto'] == 'IVA' && self::isManualIVA($receive_elements['credits'], $secondary_credit)){
                                     array_push($receive['secondary_credits'], $secondary_credit);
                                     unset($credits[$key]);
-                                }elseif(!self::isManualIVA($receive_elements['credits'], $secondary_credit) && !self::isManualInterest($receive_elements['credits'], $secondary_credit)){
+                                }elseif($secondary_credit['cred_concepto'] != 'Intereses' && $secondary_credit['cred_concepto'] != 'IVA'){
                                     array_push($receive['secondary_credits'], $secondary_credit);
                                     unset($credits[$key]);
                                 }
@@ -964,23 +964,48 @@ class Transaction {
 
                 array_push($receive_reports, $receive);
             }
-
+                          
+                         
             // Cuando un servicio u otro concepto secundario no coincide en el mes de pago o control
             // con algun alquiler se verifica si fue adosado a alguno de ellos y sino
             // se agrega al primero por defecto
-            foreach ($credits as $credit) {
+            $receive = array_shift($receive_reports);
+            foreach ($credits as $key => $credit) {
                 if (!Report::isPrincipal($credit['cred_concepto']) && strpos($credit['cred_concepto'], 'Prestamo') === FALSE) {
-                    if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {
+                    if (!self::isAlreadyAdded($receive_reports, $credit, 'secondary_credits')) {   
                         if($credit['cred_concepto'] == 'Intereses' && self::isManualInterest($receive_elements['credits'], $credit)){
-                            array_push($receive_reports[0]['secondary_credits'], $credit);
+                            // echo '<pre>';
+                            // echo 'no esta agregado';
+                            // echo '</pre>'; 
+                            // echo 'if1<pre>';
+                            // print_r($credit);
+                            // echo 'if1</pre>';
+                            array_push($receive['secondary_credits'], $credit);
+                            unset($credits[$key]);
                         }else if($credit['cred_concepto'] == 'IVA' && self::isManualIVA($receive_elements['credits'], $credit)){
-                            array_push($receive_reports[0]['secondary_credits'], $credit);
-                        }elseif(!self::isManualInterest($receive_elements['credits'], $credit) && !self::isManualIVA($receive_elements['credits'], $credit)){
-                            array_push($receive_reports[0]['secondary_credits'], $credit);
+                            // echo '<pre>';
+                            // echo 'no esta agregado';
+                            // echo '</pre>'; 
+                            // echo 'elseif11<pre>';
+                            // print_r($credit);
+                            // echo 'elseif11</pre>';
+                            array_push($receive['secondary_credits'], $credit);
+                            unset($credits[$key]);
+                        }elseif($credit['cred_concepto'] != 'Intereses' && $credit['cred_concepto'] != 'IVA'){
+                            // echo '<pre>';
+                            // echo 'no esta agregado';
+                            // echo '</pre>'; 
+                            // echo 'elseif12<pre>';
+                            // print_r($credit);
+                            // echo 'elseif12</pre>';
+
+                            array_push($receive['secondary_credits'], $credit);
+                            unset($credits[$key]);
                         }
                     }
                 }
             }
+            array_push($receive_reports, $receive);
             
             foreach ($services_control as $service_control) {
                 if (isset($service_control['status'])) {
@@ -1027,7 +1052,7 @@ class Transaction {
         return $receives;
     }
 
-    public function isManualInterest($credits, $secondary_credit){
+    public static function isManualInterest($credits, $secondary_credit){
         foreach ($credits as $credit) {
             if($credit['cred_interes_calculado'] && $credit['cred_interes_calculado'] > 0){
                 if($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq']){
@@ -1041,7 +1066,7 @@ class Transaction {
         return true;
     }
 
-    public function isManualIVA($credits, $secondary_credit){
+    public static function isManualIVA($credits, $secondary_credit){
         foreach ($credits as $credit) {
             if($credit['cred_iva_calculado'] && $credit['cred_iva_calculado'] > 0){
                 if($credit['cred_mes_alq'] == $secondary_credit['cred_mes_alq']){

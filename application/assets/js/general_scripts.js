@@ -303,7 +303,7 @@ general_scripts.getEntitiesOnScrollDown = function(table, table_pk, entity_name,
        
         if($('._list_tab_button').hasClass('active') && !list_filtered) {
             
-            if ($(window).scrollTop() == $(document).height() - $(window).height()){ 
+            if (parseInt($(window).scrollTop()) == parseInt($(document).height() - $(window).height())){ 
                
                 var params = {
                     'table':table,

@@ -192,8 +192,8 @@ class Reports_delivery extends CI_Controller {
                 if($image){
 
                     $response['status'] = Mailing::send(array(
-                        'subject' => "Recibo pago ".$credits_info['credits'][0]['cred_concepto']." | Inmobiliaria " . User::getBussinesName(),
-                        'body' => 'Hola! '.$renter['client_name'].', recientemente usted pago su '.$credits_info['credits'][0]['cred_concepto'].', le adjuntamos el recibo en formato digital, gracias por ayudarnos a proteger el medio ambiente!',
+                        'subject' => "Recibo pago ".$credits_info['credits'][0]['cred_concepto']." | Inmobiliaria " . utf8_decode(User::getBussinesName()),
+                        'body' => 'Hola! '.$renter['client_name'].', recientemente usted pago su '.$credits_info['credits'][0]['cred_concepto'].', le adjuntamos el recibo en formato digital, gracias por ayudarnos a proteger el medio ambiente!. No es necesario que responda a este mail.',
                         'report_root' => $report_root,
                         'report_file_name' => $report_file_name,
                         'is_html' => false,

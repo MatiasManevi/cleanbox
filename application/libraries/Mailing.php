@@ -25,8 +25,10 @@ class Mailing {
                 
             $email = new Mailer(true);
 
+            $inmo_name = utf8_decode(User::getBussinesName());
+
             $email->From = 'noreply@cleanbox.com';
-            $email->FromName = 'Cleanbox';
+            $email->FromName = $inmo_name;
             $email->Subject = $params['subject'];
             $email->Body = $params['body'];
             $email->IsHTML($params['is_html']);

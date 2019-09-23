@@ -272,7 +272,11 @@ class Credits extends CI_Controller {
             $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
             $this->data['contract'] = $contract;
             $this->data['settings'] = User::getUserSettings();
-            
+            $renter = General::getRenterClientByCredit($credits_info['credits'][0]);
+
+            if($renter && strlen($renter['client_email']) > 0 && filter_var($renter['client_email'], FILTER_VALIDATE_EMAIL)){
+                $this->data['settings']['build_receive_header'] = true;
+            }
             if (!empty($contract)) {
                 $this->data['propietary'] = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();
             } else {
@@ -315,6 +319,12 @@ class Credits extends CI_Controller {
         $this->data['receives'] = Transaction::parseForReceives($receive_elements, $contract);
         $this->data['contract'] = $contract;
         $this->data['settings'] = User::getUserSettings();
+
+        $renter = General::getRenterClientByCredit($credits[0]);
+
+        if($renter && strlen($renter['client_email']) > 0 && filter_var($renter['client_email'], FILTER_VALIDATE_EMAIL)){
+            $this->data['settings']['build_receive_header'] = true;
+        }
 
         if (!empty($contract)) {
             $this->data['propietary'] = $this->basic->get_where('clientes', array('client_name' => $contract['con_prop']))->row_array();

@@ -1,0 +1,73 @@
+	.wrapper {
+		margin: 0 auto;
+		padding: 0 16.66% 50px;
+		width: 100%;
+	}
+	article {
+		width: 100%;
+		margin-top: 4em;
+	}
+	.timeline__nav {
+		position: fixed;
+		z-index: 99;
+		top: 0;
+		transition: top 0.3s ease-out;
+	}
+	.timeline__nav ul {
+		list-style: none;
+		list-style-position: inside;
+		margin: 15px 0;
+	}
+	.timeline__nav ul li {
+		margin: 15px 0;
+		padding-left: 0;
+		list-style-type: none;
+		color: #bfc1c3;
+		border-bottom: 1px dotted rgba(0,0,0,0.3);
+		cursor: pointer;
+		transition: all 0.3s ease-out;
+	}
+	.timeline__nav ul li.active {
+		font-weight: bold;
+		color: #428bca;
+		border-bottom: 1px dotted transparent;
+		-webkit-transform: scale(1.2);
+		transform: scale(1.2);
+	}
+	.timeline__nav ul li:hover {
+		color: #000;
+	}
+	.event{
+		background: white;
+		border-radius: 8px;
+		margin-left: 0px;
+		margin-bottom: 2em;
+		width: 100%;
+	}
+	.event .content{
+		margin-left: -12px;
+	}
+	.event .picture{
+		height: 240px;
+		width: 100%;
+		margin-left: -25px;
+		padding: 9px;
+		border-radius: 8px;
+	}
+	.event .content .title{
+		margin-top: 9px;
+		color: #428bca;
+	}
+	.event .content .date{
+		position: absolute;
+		top: 10px;
+		font-size: 1.1rem;
+		right: -4px;
+		color: grey;
+	}
+	.event .content .description{
+		font-size: 1.6rem;
+	}
+	.event .content .description a{
+		color:black;
+	}

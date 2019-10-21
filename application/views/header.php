@@ -8,6 +8,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav center_header">
+                    <li><a href="<?php echo site_url('timeline') ?>">Timeline propiedades</a></li>              
+
                     <li><a href="javascript:;">Propietarios</a>
                         <ul class="sub">
                             <li><a href="<?php echo site_url('accounts') ?>">Cuentas Corrientes</a></li>                                  

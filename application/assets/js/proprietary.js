@@ -175,7 +175,7 @@ contracts.addPeriodHtml = function (period){
         value: period ? period.per_inicio : '', 
         style : 'margin-right: 5px;font-size: 13px;width: 247px;float: left;',
         'class': 'form-control _per_inicio',
-        autocomplete:'off',
+        
         placeholder: 'Fecha Inicio'                 
     }).appendTo($period_container);
     general_scripts.bindDatepicker($period_begin);
@@ -188,7 +188,7 @@ contracts.addPeriodHtml = function (period){
         value: period ? period.per_fin : '', 
         style : 'margin-right: 5px;font-size: 13px;width: 247px;float: left;',
         'class': 'form-control _per_fin',
-        autocomplete:'off',
+        
         placeholder: 'Fecha Fin'                 
     }).appendTo($period_container);
     general_scripts.bindDatepicker($period_end);
@@ -199,7 +199,7 @@ contracts.addPeriodHtml = function (period){
         required: true,
         title: 'Monto periodo',
         value: period ? period.per_monto : '', 
-        autocomplete: 'off',
+        
         style : 'margin-right: 5px;font-size: 13px;width: 247px;float: left;',
         'class': 'form-control ui-autocomplete-input _per_monto _general_amount_input_control',
         placeholder: 'Monto'                 

@@ -375,7 +375,7 @@ credit.addServiceControl = function(concept, month){
     var $date = $('<input/>', {
         type: 'text',
         value: month,
-        autocomplete: 'off',
+        
         required: true,
         style : 'margin-right: 5px;width: 11.1%;float: left;',
         'class': 'form-control ui-autocomplete-input _month _general_number_input_control _general_amount_input_control _general_letters_input_control',
@@ -466,7 +466,7 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
         onblur:'credit.recalculateTotals()',
         type: 'text',
         title:'Monto de '+concept,
-        autocomplete: 'off',
+        
         style : 'margin-right: 5px;width: 6.5%;float: left;',
         'class': 'form-control ui-autocomplete-input _monto _general_amount_input_control',
         placeholder: 'Monto'                 
@@ -476,7 +476,7 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
         name: 'credit[mes][]',
         type: 'text',
         value: date,
-        autocomplete: 'off',
+        
         required: true,
         style : 'margin-right: 5px;width: 11.1%;float: left;',
         'class': 'form-control ui-autocomplete-input _mes _general_number_input_control _general_amount_input_control _general_letters_input_control',
@@ -922,7 +922,7 @@ debit.addDebit = function (concept){
         onblur:'debit.recalculateAccountAmount()',
         type: 'text',
         title:'Monto de '+concept,
-        autocomplete: 'off',
+        
         style : 'margin-right: 5px;width: 6.5%;float: left;',
         'class': 'form-control ui-autocomplete-input _monto _general_amount_input_control',
         placeholder: 'Monto'                 
@@ -931,7 +931,7 @@ debit.addDebit = function (concept){
     var $mes = $('<input/>', {
         name: 'debit[mes][]',
         type: 'text',
-        autocomplete: 'off',
+        
         required: true,
         style : 'margin-right: 5px;width: 11.1%;float: left;',
         'class': 'form-control ui-autocomplete-input _mes _general_number_input_control _general_amount_input_control _general_letters_input_control',

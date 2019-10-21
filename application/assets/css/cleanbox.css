@@ -3,9 +3,9 @@
     font-family: 'MyriadProSemibold';
     src: url('../../../fonts/myriadpro-semibold_0-webfont.eot');
     src: url('../../../fonts/myriadpro-semibold_0-webfont.eot?iefix') format('eot'),
-        url('../../../fonts/myriadpro-semibold_0-webfont.woff') format('woff'),
-        url('../../../fonts/myriadpro-semibold_0-webfont.ttf') format('truetype'),
-        url('../../../fonts/myriadpro-semibold_0-webfont.svg#webfontSMxjHBeJ') format('svg');
+    url('../../../fonts/myriadpro-semibold_0-webfont.woff') format('woff'),
+    url('../../../fonts/myriadpro-semibold_0-webfont.ttf') format('truetype'),
+    url('../../../fonts/myriadpro-semibold_0-webfont.svg#webfontSMxjHBeJ') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -13,9 +13,9 @@
     font-family: 'MagnetoBold';
     src: url('../../../fonts/magnetob-webfont.eot');
     src: url('../../../fonts/magnetob-webfont.eot?iefix') format('eot'),
-        url('../../../fonts/magnetob-webfont.woff') format('woff'),
-        url('../../../fonts/magnetob-webfont.ttf') format('truetype'),
-        url('../../../fonts/magnetob-webfont.svg#webfontSMxjHBeJ') format('svg');
+    url('../../../fonts/magnetob-webfont.woff') format('woff'),
+    url('../../../fonts/magnetob-webfont.ttf') format('truetype'),
+    url('../../../fonts/magnetob-webfont.svg#webfontSMxjHBeJ') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -23,9 +23,9 @@
     font-family: 'MyriadProRegular';
     src: url('../../../fonts/myriad_pro_regular-webfont.eot');
     src: url('../../../fonts/myriad_pro_regular-webfont.eot?#iefix') format('embedded-opentype'),
-        url('../../../fonts/myriad_pro_regular-webfont.woff') format('woff'),
-        url('../../../fonts/myriad_pro_regular-webfont.ttf') format('truetype'),
-        url('../../../fonts/myriad_pro_regular-webfont.svg#MyriadProRegular') format('svg');
+    url('../../../fonts/myriad_pro_regular-webfont.woff') format('woff'),
+    url('../../../fonts/myriad_pro_regular-webfont.ttf') format('truetype'),
+    url('../../../fonts/myriad_pro_regular-webfont.svg#MyriadProRegular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -33,9 +33,9 @@
     font-family: 'futura';
     src: url('../../../fonts/futura-webfont.eot');
     src: url('../../../fonts/futura-webfont.eot?#iefix') format('embedded-opentype'),
-        url('../../../fonts/futura-webfont.woff') format('woff'),
-        url('../../../fonts/futura-webfont.ttf') format('truetype'),
-        url('../../../fonts/futura-webfont.svg#futura1.4Regular') format('svg');
+    url('../../../fonts/futura-webfont.woff') format('woff'),
+    url('../../../fonts/futura-webfont.ttf') format('truetype'),
+    url('../../../fonts/futura-webfont.svg#futura1.4Regular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -43,10 +43,10 @@
     font-family: 'futura';
     src: url('../../../fonts/futura_light-webfont.eot');
     src: url('../../../fonts/futura_light-webfont.eot?#iefix') format('embedded-opentype'),
-        url('../../../fonts/futura_light-webfont.woff2') format('woff2'),
-        url('../../../fonts/futura_light-webfont.woff') format('woff'),
-        url('../../../fonts/futura_light-webfont.ttf') format('truetype'),
-        url('../../../fonts/futura_light-webfont.svg#futura_lightregular') format('svg');
+    url('../../../fonts/futura_light-webfont.woff2') format('woff2'),
+    url('../../../fonts/futura_light-webfont.woff') format('woff'),
+    url('../../../fonts/futura_light-webfont.ttf') format('truetype'),
+    url('../../../fonts/futura_light-webfont.svg#futura_lightregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -76,7 +76,7 @@ li{
 }
 body{
     font-family: "Trebuchet MS";
-    background: Menu;
+    background: #e9ebee;
     padding-top: 60px;
 }
 input, select, textarea{
@@ -628,4 +628,9 @@ a.delete:hover{
 }
 .zindexNone{
     z-index: -1;
+}
+.owl-nav{
+    bottom: 15px;
+    position: absolute;
+    left: 13px;
 }

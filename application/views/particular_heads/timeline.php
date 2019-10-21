@@ -1,0 +1,2 @@
+<link rel="stylesheet" href="<?php echo asset_url() ?>css/timeline.css?<?php echo filemtime('application/assets/css/timeline.css') ?>"/>
+<script type="text/javascript" src="<?php echo asset_url() ?>js/timeline.js?<?php echo filemtime('application/assets/js/timeline.js') ?>"></script>

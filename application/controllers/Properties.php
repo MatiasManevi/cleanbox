@@ -60,6 +60,20 @@ class Properties extends CI_Controller {
                     'entity_name' => 'propiedad',
                 );
                 $response['success'] = 'La propiedad fue guardada!';
+
+                if (!$this->input->post('prop_id')) {
+                    $timeline_id = TimelineService::createTimeline($new_property['prop_id']);
+                    $this->basic->save('propiedades', 'prop_id', [
+                        'prop_id' => $new_property['prop_id'],
+                        'timeline_id' => $timeline_id
+                    ]);
+                    TimelineService::createEvent([
+                        'timeline_id' => $timeline_id,
+                        'name' => 'Propiedad creada',
+                        'description' => 'En el domicilio <strong>'.$new_property['prop_dom'].'</strong>, a nombre de <strong>' . $new_property['prop_prop'].'</strong>'
+                    ]);
+                }
+
             } else {
                 $response['status'] = false;
                 $response['error'] = validation_errors();

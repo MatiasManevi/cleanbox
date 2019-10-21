@@ -39,9 +39,30 @@ class Maintenances extends CI_Controller {
                 if(!$this->input->post('mant_calif')){
                     $_POST['mant_calif'] = 0;
                 }
+
                 $maintenance = array_map("strtoupper", $_POST);
+                $property = $this->basic->get_where('propiedades',array('prop_dom' => $maintenance['mant_domicilio']))->row_array();
+
+                switch ($maintenance['mant_status']) {
+                    case '1':
+                        $name = 'Se crea mantenimiento en '.$maintenance['mant_domicilio'];
+                        break;
+                    case '2':
+                        $name = 'Se procesa mantenimiento en '.$maintenance['mant_domicilio'];
+                        break;
+                    case '3':
+                        $name = 'Se terminó mantenimiento en '.$maintenance['mant_domicilio'];
+                        break;
+                }
+
                 $maintenance['mant_id'] = $this->basic->save('mantenimientos', 'mant_id', $maintenance);
 
+                TimelineService::createEvent([
+                    'timeline_id' => $property['timeline_id'],
+                    'name' => $name,
+                    'description' => 'La tarea a realizar en la propiedad es: '.$maintenance['mant_desc']. '. Solicitada por el inquilino '. $maintenance['mant_inq']
+                ]);
+            
                 $response['status'] = true;
                 $response['entity'] = General::parseEntityForList($maintenance, 'mantenimientos');
                 $response['table'] = array(

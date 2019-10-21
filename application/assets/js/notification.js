@@ -9,7 +9,7 @@ $(document).mouseup(function(e){
     }
 });
 
-$('#notifications').live('click', function(event){
+$('#notifications').on('click', function(event){
 	var $notifications = $('._notifications');
 
 	if(!$notifications.is(':visible')){

@@ -40,11 +40,20 @@ if (!defined('BASEPATH'))
   | in the URL cannot be matched to a valid route.
   |
  */
+
+$route['default_controller'] = 'manager';
+$route['404_override'] = '';
+$route['translate_uri_dashes'] = FALSE;
+
+
+// cambiar mejorar enrutamiento
+
 $route['manager'] = 'manager';
 $route['manager/(.*)'] = 'manager/$1';
 
 $route['(\w{2})/(.*)'] = 'manager/$2';
 $route['(\w{2})'] = 'manager';
+
 
 //$route['(.*)'] = 'manager/$1';
 
@@ -67,6 +76,8 @@ $route['saveSettings'] = 'settings/save';
 
 $route['clients'] = 'clients';
 $route['saveClient'] = 'clients/save';
+
+$route['timeline'] = 'timeline';
 
 $route['users'] = 'users';
 $route['saveUser'] = 'users/save';

@@ -15,6 +15,7 @@
 class Settings extends CI_Controller {
 
     public function index() {
+        $this->data['particular_head'] = $this->load->view('particular_heads/settings', '', TRUE);
         $this->data['settings'] = User::getUserSettings();
         $this->data['reports_config'] = $this->basic->get_all('reports_config')->result_array();
         $this->data['current_accounts'] = $this->basic->get_where('cuentas_corrientes', array(), 'cc_prop', '')->result_array();

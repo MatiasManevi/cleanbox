@@ -248,51 +248,51 @@ class Manager extends CI_Controller {
                 switch ($value_searched) {
                     case 'cc_id':
                         // Devuelve los contratos de un propietario
-                        $account = $this->basic->get_where('cuentas_corrientes', array($value_searched => $id))->row_array();
+                    $account = $this->basic->get_where('cuentas_corrientes', array($value_searched => $id))->row_array();
 
-                        $entities = $this->basic->get_where('contratos', array($value_searched => $account['cc_id']))->result_array();
-                        /* solo para davinia y rima */
-                        $entities2 = $this->basic->get_where('contratos', array('con_prop' => $account['cc_prop']))->result_array();
-                        foreach ($entities2 as $entity2) {
-                            if (!in_array($entity2, $entities))
-                                array_push($entities, $entity2);
-                        }
-                        /* solo para davinia y rima */
+                    $entities = $this->basic->get_where('contratos', array($value_searched => $account['cc_id']))->result_array();
+                    /* solo para davinia y rima */
+                    $entities2 = $this->basic->get_where('contratos', array('con_prop' => $account['cc_prop']))->result_array();
+                    foreach ($entities2 as $entity2) {
+                        if (!in_array($entity2, $entities))
+                            array_push($entities, $entity2);
+                    }
+                    /* solo para davinia y rima */
 
-                        foreach ($entities as $entity) {
-                            array_push($response['entities'], General::parseEntityForList($entity, 'contratos'));
-                        }
+                    foreach ($entities as $entity) {
+                        array_push($response['entities'], General::parseEntityForList($entity, 'contratos'));
+                    }
 
-                        $response['table'] = array(
-                            'table' => 'contratos',
-                            'table_pk' => 'con_id',
-                            'entity_name' => 'contrato'
-                        );
-                        break;
+                    $response['table'] = array(
+                        'table' => 'contratos',
+                        'table_pk' => 'con_id',
+                        'entity_name' => 'contrato'
+                    );
+                    break;
                     case 'prop_prop':
 
                         // Devuelve las propiedades de un cliente
-                        $account = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $id))->row_array();
+                    $account = $this->basic->get_where('cuentas_corrientes', array('cc_id' => $id))->row_array();
 
-                        $entities = $this->basic->get_where('propiedades', array('cc_id' => $account['cc_id']))->result_array();
-                        /* solo para davinia y rima */
-                        $entities2 = $this->basic->get_where('propiedades', array($value_searched => $account['cc_prop']))->result_array();
-                        foreach ($entities2 as $entity2) {
-                            if (!in_array($entity2, $entities))
-                                array_push($entities, $entity2);
-                        }
-                        /* solo para davinia y rima */
+                    $entities = $this->basic->get_where('propiedades', array('cc_id' => $account['cc_id']))->result_array();
+                    /* solo para davinia y rima */
+                    $entities2 = $this->basic->get_where('propiedades', array($value_searched => $account['cc_prop']))->result_array();
+                    foreach ($entities2 as $entity2) {
+                        if (!in_array($entity2, $entities))
+                            array_push($entities, $entity2);
+                    }
+                    /* solo para davinia y rima */
 
-                        $response['table'] = array(
-                            'table' => 'propiedades',
-                            'table_pk' => 'prop_id',
-                            'entity_name' => 'propiedad'
-                        );
+                    $response['table'] = array(
+                        'table' => 'propiedades',
+                        'table_pk' => 'prop_id',
+                        'entity_name' => 'propiedad'
+                    );
 
-                        foreach ($entities as $entity) {
-                            array_push($response['entities'], General::parseEntityForList($entity, 'propiedades'));
-                        }
-                        break;
+                    foreach ($entities as $entity) {
+                        array_push($response['entities'], General::parseEntityForList($entity, 'propiedades'));
+                    }
+                    break;
                 }
             }
 
@@ -473,166 +473,166 @@ class Manager extends CI_Controller {
 
             switch ($table) {
                 case 'comentarios':
-                    if ($propietary) {
-                        $comentaries = $this->basic->get_where($table, array('com_prop' => $propietary))->result_array();
-                        if ($from && $to) {
-                            foreach ($comentaries as $row) {
-                                if (General::isBetweenDates($row['com_date'], $from, $to)) {
-                                    array_push($entities, $row);
-                                }
-                            }
-                        } else {
-                            $entities = $comentaries;
-                        }
-                    } else if ($from && $to) {
-                        if ($propietary) {
-                            $comentaries = $this->basic->get_where($table, array('com_prop' => $propietary))->result_array();
-                        } else {
-                            $comentaries = $this->basic->get_all($table)->result_array();
-                        }
+                if ($propietary) {
+                    $comentaries = $this->basic->get_where($table, array('com_prop' => $propietary))->result_array();
+                    if ($from && $to) {
                         foreach ($comentaries as $row) {
                             if (General::isBetweenDates($row['com_date'], $from, $to)) {
                                 array_push($entities, $row);
                             }
                         }
+                    } else {
+                        $entities = $comentaries;
                     }
-
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, $table));
+                } else if ($from && $to) {
+                    if ($propietary) {
+                        $comentaries = $this->basic->get_where($table, array('com_prop' => $propietary))->result_array();
+                    } else {
+                        $comentaries = $this->basic->get_all($table)->result_array();
                     }
+                    foreach ($comentaries as $row) {
+                        if (General::isBetweenDates($row['com_date'], $from, $to)) {
+                            array_push($entities, $row);
+                        }
+                    }
+                }
 
-                    $response['table'] = array(
-                        'table' => $table,
-                        'table_pk' => 'com_id',
-                        'entity_name' => 'comentario',
-                    );
-                    break;
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, $table));
+                }
+
+                $response['table'] = array(
+                    'table' => $table,
+                    'table_pk' => 'com_id',
+                    'entity_name' => 'comentario',
+                );
+                break;
                 case 'mantenimientos':
-                    $propietary = $this->input->post('propietary');
-                    $renter = $this->input->post('renter');
-                    $provider = $this->input->post('provider');
+                $propietary = $this->input->post('propietary');
+                $renter = $this->input->post('renter');
+                $provider = $this->input->post('provider');
 
-                    $maintenances = $this->getMaintenancesFiltered($propietary, $renter, $provider);
+                $maintenances = $this->getMaintenancesFiltered($propietary, $renter, $provider);
 
-                    if ($from && $to) {
-                        foreach ($maintenances as $maintenance) {
-                            if ($maintenance['mant_date_deadline']) {
-                                if (General::isBetweenDates($maintenance['mant_date_deadline'], $from, $to)) {
-                                    array_push($entities, $maintenance);
-                                }
+                if ($from && $to) {
+                    foreach ($maintenances as $maintenance) {
+                        if ($maintenance['mant_date_deadline']) {
+                            if (General::isBetweenDates($maintenance['mant_date_deadline'], $from, $to)) {
+                                array_push($entities, $maintenance);
                             }
                         }
-                    } else {
-                        $entities = $maintenances;
                     }
+                } else {
+                    $entities = $maintenances;
+                }
 
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, $table));
-                    }
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, $table));
+                }
 
-                    $response['table'] = array(
-                        'table' => $table,
-                        'table_pk' => 'mant_id',
-                        'entity_name' => 'mantenimiento',
-                    );
-                    break;
+                $response['table'] = array(
+                    'table' => $table,
+                    'table_pk' => 'mant_id',
+                    'entity_name' => 'mantenimiento',
+                );
+                break;
                 case 'creditos':
-                    $propietary = $this->input->post('propietary');
-                    $renter = $this->input->post('renter');
-                    $concept = $this->input->post('concept');
-                    $month = $this->input->post('month');
+                $propietary = $this->input->post('propietary');
+                $renter = $this->input->post('renter');
+                $concept = $this->input->post('concept');
+                $month = $this->input->post('month');
 
-                    $credits = $this->getCreditsFiltered($propietary, $renter, $concept, $month);
+                $credits = $this->getCreditsFiltered($propietary, $renter, $concept, $month);
 
-                    if ($from && $to) {
-                        foreach ($credits as $row) {
-                            if (General::isBetweenDates($row['cred_fecha'], $from, $to)) {
-                                array_push($entities, $row);
-                            }
+                if ($from && $to) {
+                    foreach ($credits as $row) {
+                        if (General::isBetweenDates($row['cred_fecha'], $from, $to)) {
+                            array_push($entities, $row);
                         }
-                    } else {
-                        $entities = $credits;
                     }
+                } else {
+                    $entities = $credits;
+                }
 
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, $table));
-                    }
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, $table));
+                }
 
-                    $response['table'] = array(
-                        'table' => $table,
-                        'table_pk' => 'cred_id',
-                        'entity_name' => 'credito',
-                    );
-                    break;
+                $response['table'] = array(
+                    'table' => $table,
+                    'table_pk' => 'cred_id',
+                    'entity_name' => 'credito',
+                );
+                break;
                 case 'debitos':
-                    $propietary = $this->input->post('propietary');
-                    $concept = $this->input->post('concept');
-                    $month = $this->input->post('month');
+                $propietary = $this->input->post('propietary');
+                $concept = $this->input->post('concept');
+                $month = $this->input->post('month');
 
-                    $debits = $this->getDebitsFiltered($propietary, $concept, $month);
+                $debits = $this->getDebitsFiltered($propietary, $concept, $month);
 
-                    if ($from && $to) {
-                        foreach ($debits as $row) {
-                            if (General::isBetweenDates($row['deb_fecha'], $from, $to)) {
-                                array_push($entities, $row);
-                            }
+                if ($from && $to) {
+                    foreach ($debits as $row) {
+                        if (General::isBetweenDates($row['deb_fecha'], $from, $to)) {
+                            array_push($entities, $row);
                         }
-                    } else {
-                        $entities = $debits;
                     }
+                } else {
+                    $entities = $debits;
+                }
 
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, $table));
-                    }
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, $table));
+                }
 
-                    $response['table'] = array(
-                        'table' => $table,
-                        'table_pk' => 'deb_id',
-                        'entity_name' => 'debito',
-                    );
-                    break;
+                $response['table'] = array(
+                    'table' => $table,
+                    'table_pk' => 'deb_id',
+                    'entity_name' => 'debito',
+                );
+                break;
                 case 'transferencias_to_safe':
-                    if ($from && $to) {
-                        $transfers_to_safe = $this->basic->get_where('creditos', array('is_transfer' => 1), 'cred_id')->result_array();
+                if ($from && $to) {
+                    $transfers_to_safe = $this->basic->get_where('creditos', array('is_transfer' => 1), 'cred_id')->result_array();
 
-                        foreach ($transfers_to_safe as $row) {
-                            if (General::isBetweenDates($row['cred_fecha'], $from, $to)) {
-                                array_push($entities, $row);
-                            }
+                    foreach ($transfers_to_safe as $row) {
+                        if (General::isBetweenDates($row['cred_fecha'], $from, $to)) {
+                            array_push($entities, $row);
                         }
                     }
+                }
 
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, $table));
-                    }
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, $table));
+                }
 
-                    $response['table'] = array(
-                        'table' => $table,
-                        'table_pk' => 'transf_id',
-                        'entity_name' => 'transferencia',
-                    );
-                    break;
+                $response['table'] = array(
+                    'table' => $table,
+                    'table_pk' => 'transf_id',
+                    'entity_name' => 'transferencia',
+                );
+                break;
                 case 'transferencias_to_cash':
-                    if ($from && $to) {
-                        $transfers_to_cash = $this->basic->get_where('debitos', array('is_transfer' => 1), 'deb_id')->result_array();
+                if ($from && $to) {
+                    $transfers_to_cash = $this->basic->get_where('debitos', array('is_transfer' => 1), 'deb_id')->result_array();
 
-                        foreach ($transfers_to_cash as $row) {
-                            if (General::isBetweenDates($row['deb_fecha'], $from, $to)) {
-                                array_push($entities, $row);
-                            }
+                    foreach ($transfers_to_cash as $row) {
+                        if (General::isBetweenDates($row['deb_fecha'], $from, $to)) {
+                            array_push($entities, $row);
                         }
                     }
+                }
 
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, $table));
-                    }
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, $table));
+                }
 
-                    $response['table'] = array(
-                        'table' => $table,
-                        'table_pk' => 'transf_id',
-                        'entity_name' => 'transferencia',
-                    );
-                    break;
+                $response['table'] = array(
+                    'table' => $table,
+                    'table_pk' => 'transf_id',
+                    'entity_name' => 'transferencia',
+                );
+                break;
             }
 
             $response['status'] = true;
@@ -656,29 +656,29 @@ class Manager extends CI_Controller {
 
             switch ($table) {
                 case 'proveedores':
-                    $response['entities'] = array();
-                    $entities = array();
-                    $providers = $this->basic->get_all('proveedores')->result_array();
-                    $areas = $this->basic->get_all('areas_proveedores')->result_array();
+                $response['entities'] = array();
+                $entities = array();
+                $providers = $this->basic->get_all('proveedores')->result_array();
+                $areas = $this->basic->get_all('areas_proveedores')->result_array();
 
-                    foreach ($providers as $provider) {
-                        foreach ($areas as $area) {
-                            if ($area[$key] == $value && $area['area_prov'] == $provider['prov_id']) {
-                                array_push($entities, $provider);
-                            }
+                foreach ($providers as $provider) {
+                    foreach ($areas as $area) {
+                        if ($area[$key] == $value && $area['area_prov'] == $provider['prov_id']) {
+                            array_push($entities, $provider);
                         }
                     }
+                }
 
-                    foreach ($entities as $entity) {
-                        array_push($response['entities'], General::parseEntityForList($entity, 'proveedores'));
-                    }
+                foreach ($entities as $entity) {
+                    array_push($response['entities'], General::parseEntityForList($entity, 'proveedores'));
+                }
 
-                    $response['table'] = array(
-                        'table' => 'proveedores',
-                        'table_pk' => 'prov_id',
-                        'entity_name' => 'proveedor',
-                    );
-                    break;
+                $response['table'] = array(
+                    'table' => 'proveedores',
+                    'table_pk' => 'prov_id',
+                    'entity_name' => 'proveedor',
+                );
+                break;
             }
         } catch (Exception $exc) {
             $response['status'] = false;
@@ -760,6 +760,10 @@ class Manager extends CI_Controller {
         return $this->basic->get_where('periodos', array('per_contrato' => $id), 'per_id')->result_array();
     }
 
+    public function searchInspectionPictures($id) {
+        return $this->basic->get_where('inspection_pictures', array('inspection_id' => $id), 'id')->result_array();
+    }
+
     public function searchContractServices($id) {
         return $this->basic->get_where('servicios', array('serv_contrato' => $id), 'serv_id')->result_array();
     }
@@ -837,6 +841,9 @@ class Manager extends CI_Controller {
                 $response['periods'] = $this->searchContractPeriods($id);
                 $response['services'] = $this->searchContractServices($id);
             }
+            if ($table == 'inspections') {
+                $response['entity']['pictures'] = $this->searchInspectionPictures($id);
+            }
             if ($table == 'proveedores') {
                 $response['areas'] = $this->searchProvAreas($id);
                 $response['nota'] = $this->searchProvNota($id);
@@ -873,30 +880,30 @@ class Manager extends CI_Controller {
                 if ($response['status']) {
                     switch ($table) {
                         case 'contratos':
-                            $this->basic->del('servicios', 'serv_contrato', $id);
-                            $this->basic->del('periodos', 'per_contrato', $id);
-                            break;
+                        $this->basic->del('servicios', 'serv_contrato', $id);
+                        $this->basic->del('periodos', 'per_contrato', $id);
+                        break;
                         case 'creditos':
-                            if ($entity['cred_tipo_trans'] == 'Caja') {
-                                if (Cash::canDeleteCredits($entity['cred_monto']) || $force_delete) {
-                                    Transaction::removeCreditAndDecreaseAccount(array($entity));
-                                } else {
-                                    $response['status'] = false;
-                                    $response['error_type'] = 'delete_credit';
-                                    $response['id'] = $entity['cred_id'];
-                                    $response['error'] = 'Eliminar este credito dejara tu caja con saldo negativo, estas seguro?';
-                                }
-                            } else {
+                        if ($entity['cred_tipo_trans'] == 'Caja') {
+                            if (Cash::canDeleteCredits($entity['cred_monto']) || $force_delete) {
                                 Transaction::removeCreditAndDecreaseAccount(array($entity));
+                            } else {
+                                $response['status'] = false;
+                                $response['error_type'] = 'delete_credit';
+                                $response['id'] = $entity['cred_id'];
+                                $response['error'] = 'Eliminar este credito dejara tu caja con saldo negativo, estas seguro?';
                             }
-                            break;
+                        } else {
+                            Transaction::removeCreditAndDecreaseAccount(array($entity));
+                        }
+                        break;
                         case 'debitos':
-                            Transaction::removeDebitAndIncreaseAccount(array($entity));
-                            break;
+                        Transaction::removeDebitAndIncreaseAccount(array($entity));
+                        break;
                         case 'proveedores':
-                            $this->basic->del('proveedores_nota', 'nota_prov_id', $id);
-                            $this->basic->del('areas_proveedores', 'area_prov', $id);
-                            break;
+                        $this->basic->del('proveedores_nota', 'nota_prov_id', $id);
+                        $this->basic->del('areas_proveedores', 'area_prov', $id);
+                        break;
                     }
                 } else {
                     $response['error'] = 'Ocurrio un error al eliminar el registro, intente nuevamente por favor';
@@ -1048,11 +1055,26 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
+    public function savePictures() {
+        print_r($_POST);die;
+    }
+
     public function uploadImageFromFile() {
         $response = array();
 
         try {
-            $config['upload_path']          = $this->input->post('folder');
+            if($this->input->post('folder') == 'inspections/'){
+                $file_name = 'inspection_'.bin2hex(random_bytes(50));
+            }
+            if($this->input->post('folder') == 'properties/'){
+                $file_name = 'property_'.bin2hex(random_bytes(50));
+            }
+            if($this->input->post('folder') == 'manteinments/'){
+                $file_name = 'manteinment_'.bin2hex(random_bytes(50));
+            }
+
+            $config['file_name']            = $file_name;
+            $config['upload_path']          = 'img/'.$this->input->post('folder');
             $config['allowed_types']        = 'jpg|jpeg|png';
             $config['max_size']             = 10000;
             $config['max_width']            = 3000;
@@ -1065,70 +1087,23 @@ class Manager extends CI_Controller {
                 $response['status'] = false;
             }else{
                 $data = $this->upload->data();
-
+          
                 $response['status'] = true;
                 $response['image'] = array(
                     'value' => $data['file_name'],
                     'src' => $data['full_path'],
+                    'full_path' => img_url().$this->input->post('folder').$data['raw_name'].$data['file_ext'],
+                    'path' => $this->input->post('folder').$data['raw_name'].$data['file_ext'],
                     'delete_url' => $data['full_path'],
                 );
 
-                if ($this->input->post('folder') == './img/bussines_logos') {
+                if ($this->input->post('folder') == 'bussines_logos/') {
                     $settings = User::getUserSettings();
                     $settings['logo'] = $data['file_name'];
                     $this->basic->save('settings', 'id', $settings);
                 }
+                
             }
-
-            
-            /*
-                        die;
-                        $file = $_POST['file'];
-                        print_r($this->input->post('folder'));
-                        print_r($file);
-                        $folder_img = $this->input->post('folder');
-
-                        $data['json'] = json_decode($file);
-
-                        $file_info = array();
-
-                        $file_info['file_title'] = $data['json']->{'file_name'};
-                        $file_info['file_ext'] = $data['json']->{'file_ext'};
-                        $file_info['file_size'] = $data['json']->{'file_size'};
-
-                        $folder = realpath('./img/' . $folder_img . '/');
-                        chmod($folder . '/' . $file_info['file_title'], 0777);
-
-                        $config['image_library'] = 'GD2';
-                        $config['source_image'] = $folder . '/' . $file_info['file_title'];
-                        $config['new_image'] = $folder . '/thumbs/' . $file_info['file_title'];
-                        $config['maintain_ratio'] = TRUE;
-                        $config['width'] = 200;
-                        $config['height'] = 200;
-
-                        $this->ImageCR($config['source_image'], '1/1', '200*200', $config['source_image']);
-
-                        $this->load->library('image_lib', $config);
-                        if (!$this->image_lib->resize()) {
-                            echo $this->image_lib->display_errors();
-                            echo 'path ' . $folder . '/' . $file_info['file_title'];
-                        }
-
-                        chmod('./img/' . $folder_img . '/' . $file_info['file_title'], 0777);
-
-                        $response['status'] = true;
-                        $response['image'] = array(
-                            'value' => $file_info['file_title'],
-                            'src' => base_url() . 'img/' . $folder_img . '/' . $file_info['file_title'],
-                            'delete_url' => base_url() . 'img/' . $folder_img . '/' . $file_info['file_title'],
-                        );
-
-                        if ($folder_img == 'bussines_logos') {
-                            $settings = User::getUserSettings();
-                            $settings['logo'] = $file_info['file_title'];
-                            $this->basic->save('settings', 'id', $settings);
-                        }
-            */
         } catch (Exception $exc) {
             $response['status'] = false;
             $response['error'] = 'Ups! Ocurrio un error, intente nuevamente por favor. Detalle: ' . $exc->getMessage();

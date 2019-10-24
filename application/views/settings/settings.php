@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12" style="width: 333px;margin-top: 24px;right: 40px;">
                         <label for="Filedata"></label>
-                        <div id="busines_logo" data-folder="./img/bussines_logos" class="dm-uploader p-5">
+                        <div id="busines_logo" data-folder="bussines_logos/" class="dm-uploader p-5">
                             <h3 class="mb-5 mt-5 text-muted">Arrastra tu logo aqui, o</h3>
 
                             <div class="btn btn-primary btn-block mb-5">

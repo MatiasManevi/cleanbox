@@ -11,7 +11,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet" href="<?php echo base_url() ?>plugins/uploadify/uploadify.css"/>
+<!-- <link rel="stylesheet" href="<?php echo base_url() ?>plugins/uploadify/uploadify.css"/> -->
 <!-- <link rel="stylesheet" href="<?php echo base_url() ?>plugins/jquery/jquery-ui-1.8.16.custom.css"/> -->
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/jquery-ui-1.12.1/jquery-ui.css"/>
 <link rel="stylesheet" href="<?php echo base_url() ?>plugins/fancybox/jquery.fancybox-1.3.4.css"/>
@@ -41,9 +41,9 @@
 
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/menu.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/date.format.js"></script>
-<script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/swfobject.js"></script>
+<!-- <script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/swfobject.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/slides.min.jquery.js"></script>
-<script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/jquery.uploadify.v2.1.4.min.js"></script>
+<!-- <script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/jquery.uploadify.v2.1.4.min.js"></script> -->
 
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/bootstrap-3.1.1-dist/js/bootstrap.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
@@ -58,8 +58,8 @@
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/jquery/jquery.are-you-sure/jquery.are-you-sure.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/ckeditor/ckeditor.js"></script>
-<script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/swfobject.js"></script>
-<script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/jquery.uploadify.v2.1.4.min.js"></script>
+<!-- <script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/swfobject.js"></script> -->
+<!-- <script type="text/javascript" src="<?php echo base_url() ?>plugins/uploadify/jquery.uploadify.v2.1.4.min.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url() ?>plugins/datetimepicker/jquery-ui-timepicker-addon.js"></script>
 <!-- Exportar tablas a excel -->
 <script src="<?php echo base_url() ?>plugins/TableExport-master/src/v1/v1.0/js/xlsx.core.js"></script>
@@ -77,9 +77,11 @@
 <script type="text/javascript" src="<?php echo asset_url() ?>js/html2canvas.js?<?php echo filemtime('application/assets/js/html2canvas.js') ?>"></script>
 <script type="text/javascript" src="<?php echo asset_url() ?>js/notification.js?<?php echo filemtime('application/assets/js/notification.js') ?>"></script>
 <script type="text/javascript" src="<?php echo asset_url() ?>js/jquery.dm-uploader.js?<?php echo filemtime('application/assets/js/jquery.dm-uploader.js') ?>"></script>
-<script type="text/javascript" src="<?php echo asset_url() ?>js/upload_file.js?<?php echo filemtime('application/assets/js/upload_file.js') ?>"></script>
+<script type="text/javascript" src="<?php echo asset_url() ?>js/inspection.js?<?php echo filemtime('application/assets/js/inspection.js') ?>"></script>
+<script type="text/javascript" src="<?php echo asset_url() ?>js/pictures_uploader.js?<?php echo filemtime('application/assets/js/pictures_uploader.js') ?>"></script>
 
 <script>
+    var img_url = '<?php echo img_url('img'); ?>';
     var list_autocomplete = '<?php echo site_url('manager/autocomplete'); ?>';
     var search_row = '<?php echo site_url('manager/searchRow'); ?>';
     var search_value = '<?php echo site_url('manager/searchValue'); ?>';
@@ -90,6 +92,7 @@
     var filter_by_values = '<?php echo site_url('manager/filterByValues') ?>';
     var filter_by_value = '<?php echo site_url('manager/filterByValue') ?>';
     var authorize_code = '<?php echo site_url('manager/authorizeCode') ?>';
+    var save_pictures = '<?php echo site_url('manager/savePictures') ?>';
     var upload_image_from_file = '<?php echo site_url('manager/uploadImageFromFile') ?>';
     var delete_image = '<?php echo site_url('manager/deleteImage') ?>';
     var calculate_begin_cash = '<?php echo site_url('calculate_begin_cash') ?>';
@@ -100,6 +103,7 @@
     var get_providers = '<?php echo site_url('getProviders') ?>';
     var get_transaction_items = '<?php echo site_url('getTransactionItems') ?>';
     var show_mantenimiento_report = '<?php echo site_url('maintenanceReport') ?>';
+    var show_inspection_report = '<?php echo site_url('inspectionReport') ?>';
     var show_credit_report = '<?php echo site_url('showCreditReport') ?>';
     var show_credit_report_list = '<?php echo site_url('showCreditReportList') ?>';
     var show_debit_report_list = '<?php echo site_url('showDebitReportList') ?>';

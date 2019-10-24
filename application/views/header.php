@@ -27,7 +27,8 @@
                         </ul>
                     </li>
                     <li><a href="<?php echo site_url('clients') ?>">Clientes</a></li>              
-                    <li><a href="javascript:;">Mantenimiento</a>
+                    <li><a href="<?php echo site_url('inspections') ?>">Inspecciones</a></li>              
+                    <li><a href="javascript:;">Mantenimientos</a>
                         <ul class="sub">
                             <li><a href="<?php echo site_url('providers') ?>">Proveedores</a></li>              
                             <li><a href="<?php echo site_url('maintenances') ?>">Mantenimientos</a></li>              
@@ -62,11 +63,9 @@
                             <li><a href="javascript:;" onclick="report.buildReport('<?php echo site_url('buildHonoraryPaymentsReport') ?>');">Reporte Pago Honorarios</a></li>              
                         </ul>
                     </li>  
-                    <!-- <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>                                   -->
-                    <li><a href="<?php echo site_url('users') ?>">Usuarios</a></li> 
-                    <li style="margin-left: 170px;"><a style="color:white;padding: 0px;"><span style="float: right;margin-top: 15px;">En sesion: <strong><?php echo $this->session->userdata('username'); ?></strong></span></a></li>  
-                    <li id="notifications">
-                        <a title="Notificaciones" href="javascript:;" style="color:white;padding: 0px;">
+                    <li><a href="<?php echo site_url('transfers') ?>">Transferencias</a></li>
+                    <li id="notifications" onclick="notifications.open()">
+                        <a href="javascript:;" style="color:white;padding: 0px;">
                             <i class="glyphicon glyphicon-bell header_user_icon">
                                 <div class="number _number">0</div>
                             </i>
@@ -79,11 +78,20 @@
                                 <div class="col-lg-12"><small>0 notificaciones de deudas</small></div>
                             </div>
                         </div>
-                    </li>
-                    <?php if ($this->session->userdata('username') == 'admin') { ?>
-                    <li style="width: 35px;"><a href="<?php echo site_url('settings') ?>" style="color:white;padding: 0px;"><i title="Configuraciones" class="glyphicon glyphicon-cog header_user_icon"></i></a></li>
-                    <?php } ?>
-                    <li><a href="<?php echo site_url('logout') ?>" style="color:white;padding: 0px;" title="Salir"><i class="glyphicon glyphicon-log-out header_user_icon"></i></a></li>
+                    </li>                                   
+                    <li style="margin-left: 90px;">
+                        <a style="color:white;padding: 0px;"><span style="float: right;margin-top: 15px;"> <strong><?php echo $this->session->userdata('username'); ?> <span class="caret"></span></strong></span></a>
+
+                        <ul class="sub" style="top: 51px;left: -37px;width: 181px;">
+                            <li><a href="<?php echo site_url('users') ?>"><i style="padding: 0;color:white;margin-right: 9px;" class="glyphicon glyphicon-user"></i> Usuarios</a></li>  
+                            
+                            <?php if ($this->session->userdata('username') == 'admin') { ?>
+                            <li><a href="<?php echo site_url('settings') ?>" style="padding: 0px;"><i style="padding: 0;color:white;" class="glyphicon glyphicon-cog header_user_icon"></i> Configurar</a></li>
+                            <?php } ?>
+
+                            <li><a href="<?php echo site_url('logout') ?>" style="padding: 0px;"><i style="padding: 0;color:white;" class="glyphicon glyphicon-log-out header_user_icon"></i> Salir</a></li>
+                        </ul>
+                    </li>  
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

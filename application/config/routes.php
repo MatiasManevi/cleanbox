@@ -111,6 +111,10 @@ $route['maintenances'] = 'maintenances';
 $route['saveMaintenance'] = 'maintenances/save';
 $route['maintenanceReport/(:num)'] = 'maintenances/maintenanceReport/$1';
 
+$route['inspections'] = 'inspections';
+$route['saveInspection'] = 'inspections/save';
+$route['inspectionReport/(:num)'] = 'inspections/report/$1';
+
 $route['migrations'] = 'migrations';
 $route['saveMigration'] = 'migrations/save';
 

@@ -180,6 +180,22 @@ class General {
                     'prov_nota' => $entity['prov_nota'],
                 );
                 break;
+            case 'inspections':
+                if ($entity['momentum'] == 1) {
+                    $momentum = 'Previo contrato';
+                } elseif ($entity['momentum'] == 2) {
+                    $momentum = 'Durante contrato';
+                } else {
+                    $momentum = 'Post contrato';
+                }
+                $entity = array(
+                    'id' => $entity['id'],
+                    'address' => $entity['address'],
+                    'renter' => $entity['renter'],
+                    'date' => $entity['date'],
+                    'momentum' => $momentum
+                );
+                break;
             case 'mantenimientos':
                 if ($entity['mant_status'] == 1) {
                     $status = '<a title="Creada" class="glyphicon glyphicon-folder-open maintenance_status"></a>';

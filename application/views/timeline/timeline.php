@@ -29,7 +29,6 @@
 	});
 	var owl = $('.gallery');
 	owl.owlCarousel({
-	    loop:true,
 	    autoplay: false,
 	 	items: 1,
 	    nav:true,

@@ -394,6 +394,9 @@ general_scripts.loadEntityHtml = function (response){
         case 'mantenimientos':
             maintenance.loadFormData(entity);
             break;
+        case 'inspections':
+            inspection.loadFormData(entity);
+            break;
         case 'conceptos':
             concept.loadFormData(entity);
             break;
@@ -495,6 +498,9 @@ general_scripts.cleanAddTab = function (table){
             break;
         case 'proveedores':
             provider.areas.empty();
+        case 'inspections':
+            inspection.pictures.val('');
+            inspection.image_listing.find('.media').remove();
             break;
         case 'creditos':
             credit.dinamic_credits.empty();

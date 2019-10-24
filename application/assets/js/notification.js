@@ -9,14 +9,6 @@ $(document).mouseup(function(e){
     }
 });
 
-$('#notifications').on('click', function(event){
-	var $notifications = $('._notifications');
-
-	if(!$notifications.is(':visible')){
-		$notifications.fadeIn('slow');
-	}
-});
-
 notifications.getRenterDebts = function (){
 
 	if(general_scripts.isLocalStorageAvailable()){
@@ -141,5 +133,13 @@ notifications.removeNotification = function($notification, index){
 
 	if($('.notification').length == 0){
 		notifications.noNotifications();
+	}
+};
+
+notifications.open = function () {
+	var $notifications = $('._notifications');
+	
+	if(!$notifications.is(':visible')){
+		$notifications.fadeIn('slow');
 	}
 };

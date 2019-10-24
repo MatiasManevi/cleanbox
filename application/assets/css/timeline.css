@@ -48,7 +48,7 @@
 		margin-left: -12px;
 	}
 	.event .picture{
-		height: 240px;
+		height: auto;
 		width: 100%;
 		margin-left: -25px;
 		padding: 9px;
@@ -58,12 +58,12 @@
 		margin-top: 9px;
 		color: #428bca;
 	}
-	.event .content .date{
-		position: absolute;
-		top: 10px;
-		font-size: 1.1rem;
-		right: -4px;
-		color: grey;
+	.event .date{
+		font-size: 1.2rem;
+	    color: grey;
+	    margin-right: -15px;
+	    margin-bottom: 8px;
+	    float: right;
 	}
 	.event .content .description{
 		font-size: 1.6rem;

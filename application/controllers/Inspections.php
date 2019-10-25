@@ -49,7 +49,7 @@ class Inspections extends CI_Controller {
                         break;
                 }
 
-                $pictures = isset($inspection['pictures']) ? $inspection['pictures'] : [];
+                $pictures = isset($inspection['pictures']) ? explode(',', $inspection['pictures']) : [];
                 unset($inspection['pictures']);
 
                 $inspection['id'] = $this->basic->save('inspections', 'id', $inspection);
@@ -62,29 +62,8 @@ class Inspections extends CI_Controller {
                     $name = 'Se actualiza inspección en '.$inspection['address'];
                 }
                 
-                $old_pics = $this->basic->get_where('inspection_pictures', array('inspection_id' => $inspection['id']), 'id')->result_array();
-                foreach ($old_pics as $old_pic) {
-                    if(isset($old_pic['url']) && $old_pic['url']){
-                        unlink('img/'.$old_pic['url']);
-                    }
-                }
-                $this->basic->del('inspection_pictures', 'inspection_id', $inspection['id']);
-
-                if(strlen($pictures)){
-                    
-                    $pictures = explode(',', $pictures);
-                    
-                    if(!empty($pictures)){
-
-                        foreach ($pictures as $picture) {
-                            if(strlen($picture) > 1){
-                                $this->basic->save('inspection_pictures', 'id', [
-                                    'inspection_id' => $inspection['id'],
-                                    'url' => $picture
-                                ]);
-                            }
-                        }
-                    }
+                if(!empty($pictures)){
+                    General::savePictures($inspection, 'inspection_pictures', 'inspection_id', 'id', $pictures);
                 }
 
                 TimelineService::createEvent([

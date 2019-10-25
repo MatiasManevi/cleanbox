@@ -1,8 +1,10 @@
-var arr_pictures;
+var arr_pictures = [];
 
 $(function(){
 	
-  capturePics();
+  if(!arr_pictures.length){
+    capturePics();
+  }
 
   $('#image_uploader').dmUploader({
     url: upload_image_from_file,
@@ -51,10 +53,12 @@ $(function(){
       updateImageProgress(id, percent);
     },
     onUploadSuccess: function(id, data){
+
       // A file was successfully uploaded
       data = JSON.parse(data);
+      updateStatusPicture(id, 'success', 'Imagen subida');
+      addDataToPicture(id, data, 'onUploadSuccess');
 
-      updateStatusPicture(id, 'success', 'Imagen subida', data);
       updateImageProgress(id, 100, 'success', false);
     },
     onUploadError: function(id, xhr, status, message){
@@ -89,10 +93,7 @@ function addPicture(id, file, img){
 }
 
 // Changes the status messages on our list
-function updateStatusPicture(id, status, message, data = false){
-  if(data){
-    addDataToPicture(id, data);
-  }
+function updateStatusPicture(id, status, message){
   $('#uploaderFile' + id).find('span').html(message).prop('class', 'status text-' + status);
   if(status == 'success'){
     $('#uploaderFile' + id).find('.progress-bar').css('background-color', 'limegreen');
@@ -122,19 +123,19 @@ function updateImageProgress(id, percent, color, active){
 }
 
 function capturePics() {
-  pictures = $('._pictures').val();
+  var pictures = $('._pictures').val();
 
   if(typeof pictures !== 'undefined' && pictures.length){
     var added = '';
     // no se xq esta linea me duplica imagenes
     // con added lo contralmos
     arr_pictures = pictures.split(",");
-
+    aux = [];
     for (var i = arr_pictures.length - 1; i >= 0; i--) {
 
       var file = arr_pictures[i];
       if(arr_pictures[i] && arr_pictures[i].length && !added.includes(file)){
-      
+        aux.push(arr_pictures[i]);
         var picture = img_url + arr_pictures[i];
 
         added = added + file;
@@ -152,27 +153,31 @@ function capturePics() {
           }
         };
 
-        updateStatusPicture(i, 'success', 'Imagen subida', data);
+        updateStatusPicture(i, 'success', 'Imagen subida');
+        addDataToPicture(i, data, 'capturePics');
       }
     }
+    arr_pictures = aux;
   }else{
-    pictures = [];
+    arr_pictures = [];
   }
 }
 
-function addDataToPicture(id, data) {
+function addDataToPicture(id, data, from) {
+  var x = -1;
   $('#fancy_uploaderFile_'+id).prop('href', data.image.full_path);
 
   arr_pictures.forEach(function(picture, i){
-    if(data.image.path == picture){
+    if(data.image.full_path.includes(picture)){
       x = i;
     }
   });
 
-  if(typeof x === 'undefined'){
+  if(x === -1){
     arr_pictures.push(data.image.path);
   }
 
+  $('._pictures').val('');
   $('._pictures').val(arr_pictures.join());
 }
 
@@ -189,6 +194,7 @@ function removeImage($button){
   if(typeof index !== 'undefined'){
     $li.remove();
     arr_pictures.splice(index, 1);
+    $('._pictures').val('');
     $('._pictures').val(arr_pictures.join());
   }
 }

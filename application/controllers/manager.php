@@ -1055,10 +1055,6 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
-    public function savePictures() {
-        print_r($_POST);die;
-    }
-
     public function uploadImageFromFile() {
         $response = array();
 

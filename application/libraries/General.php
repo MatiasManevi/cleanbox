@@ -14,6 +14,48 @@
 
 class General {
 
+    public static function savePictures($owner, $pictures_table, $owner_fkey, $owner_pkey, $pictures){
+        $instance = &get_instance();
+        $pics = [];
+        foreach ($pictures as $picture) {
+            if ($picture && strlen($picture)) {
+                array_push($pics, $picture);
+            }
+        }
+        
+        if(!empty($pics)){
+
+            self::removePictures($owner, $pictures_table, $owner_fkey, $owner_pkey, $pics);
+            
+            foreach ($pics as $picture) {
+                if(strlen($picture) > 1){
+                    $instance->basic->save($pictures_table, 'id', [
+                        $owner_fkey => $owner[$owner_pkey],
+                        'url' => $picture
+                    ]);
+                }
+            }
+        }else{
+            self::removePictures($owner, $pictures_table, $owner_fkey, $owner_pkey, $pics);
+        }
+        
+        return $pics;
+    }
+
+    public static function removePictures($owner, $pictures_table, $owner_fkey, $owner_pkey, $pictures) {
+        $instance = &get_instance();
+
+        $old_pics = $instance->basic->get_where($pictures_table, array($owner_fkey => $owner[$owner_pkey]))->result_array();    
+
+        foreach ($old_pics as $old_pic) {
+            if (!in_array($old_pic['url'], $pictures) && file_exists('./img/'.$old_pic['url'])) {
+                unlink('./img/'.$old_pic['url']);
+            }
+        }
+
+        $instance->basic->del($pictures_table, $owner_fkey, $owner[$owner_pkey]);
+    }
+
     public static function isLastDayInMonth() {
         return true;
         return date('d') == date('t');
@@ -41,7 +83,6 @@ class General {
      */
     public static function getAccountType($transaction, $type_concept, $key_concept) {
         $instance = &get_instance();
-        self::loadModels($instance);
 
         $concepts = $instance->basic->get_all('conceptos')->result_array();
 

@@ -40,6 +40,9 @@ class Maintenances extends CI_Controller {
                     $_POST['mant_calif'] = 0;
                 }
 
+                $pictures = isset($maintenance['pictures']) ? $maintenance['pictures'] : [];
+                unset($maintenance['pictures']);
+                
                 $maintenance = array_map("strtoupper", $_POST);
                 $property = $this->basic->get_where('propiedades',array('prop_dom' => $maintenance['mant_domicilio']))->row_array();
 
@@ -61,7 +64,7 @@ class Maintenances extends CI_Controller {
                     'timeline_id' => $property['timeline_id'],
                     'name' => $name,
                     'description' => 'La tarea a realizar en la propiedad es: '.$maintenance['mant_desc']. '. Solicitada por el inquilino '. $maintenance['mant_inq']
-                ]);
+                ], $pictures);
             
                 $response['status'] = true;
                 $response['entity'] = General::parseEntityForList($maintenance, 'mantenimientos');

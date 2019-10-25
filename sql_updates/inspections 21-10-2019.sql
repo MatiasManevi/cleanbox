@@ -56,7 +56,8 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 CREATE TABLE `cleanbox`.`inspection_pictures` ( 
- `id` INT NOT NULL , `inspection_id` INT NOT NULL ,
+ `id` INT NOT NULL AUTO_INCREMENT, 
+ `inspection_id` INT NOT NULL ,
  `url` VARCHAR(255) NOT NULL ,
  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
  `updated_at` TIMESTAMP NULL DEFAULT NULL ,
@@ -64,22 +65,25 @@ CREATE TABLE `cleanbox`.`inspection_pictures` (
   PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 CREATE TABLE `cleanbox`.`property_pictures` ( 
-  `id` INT NOT NULL , `property_id` INT NOT NULL ,
+  `id` INT NOT NULL AUTO_INCREMENT, 
+  `property_id` INT NOT NULL ,
   `url` VARCHAR(255) NOT NULL ,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   `updated_at` TIMESTAMP NULL DEFAULT NULL , 
-  `deleted_at` TIMESTAMP NULL DEFAULT NULL ) ENGINE = InnoDB;
+  `deleted_at` TIMESTAMP NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 CREATE TABLE `cleanbox`.`manteinment_pictures` ( 
-  `id` INT NOT NULL , `manteinment_id` INT NOT NULL , 
+  `id` INT NOT NULL AUTO_INCREMENT , 
+  `manteinment_id` INT NOT NULL , 
   `url` VARCHAR(255) NOT NULL , 
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-  `updated_at` TIMESTAMP NULL DEFAULT NULL , 
-  `deleted_at` TIMESTAMP NULL DEFAULT NULL ) ENGINE = InnoDB;
+  `updated_at` TIMESTAMP NOT NULL , 
+  `deleted_at` TIMESTAMP NOT NULL , 
+  PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 ALTER TABLE `inspections` 
 ADD `renter` VARCHAR(255) NOT NULL AFTER `renter_id`, 
 ADD `address` VARCHAR(255) NOT NULL AFTER `renter`;
 ALTER TABLE `inspections` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `inspections` CHANGE `date` `date` VARCHAR(255) NULL DEFAULT NULL;
-ALTER TABLE `inspection_pictures` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;

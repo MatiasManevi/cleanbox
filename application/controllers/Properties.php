@@ -39,7 +39,12 @@ class Properties extends CI_Controller {
 
             if ($this->form_validation->run()) {
 
-                $new_property = array_map("strtoupper", $this->input->post());
+                $new_property = $this->input->post();
+
+                $pictures = isset($new_property['pictures']) ? explode(',', $new_property['pictures']) : [];
+                unset($new_property['pictures']);
+
+                $new_property = array_map("strtoupper", $new_property);
 
                 if (!$this->input->post('prop_id')) {
                     $new_property['prop_date_created'] = date('d-m-Y');
@@ -61,6 +66,10 @@ class Properties extends CI_Controller {
                 );
                 $response['success'] = 'La propiedad fue guardada!';
 
+                if(!empty($pictures)){
+                    General::savePictures($new_property, 'property_pictures', 'property_id', 'prop_id', $pictures);
+                }
+
                 if (!$this->input->post('prop_id')) {
                     $timeline_id = TimelineService::createTimeline($new_property['prop_id']);
                     $this->basic->save('propiedades', 'prop_id', [
@@ -71,7 +80,7 @@ class Properties extends CI_Controller {
                         'timeline_id' => $timeline_id,
                         'name' => 'Propiedad creada',
                         'description' => 'En el domicilio <strong>'.$new_property['prop_dom'].'</strong>, a nombre de <strong>' . $new_property['prop_prop'].'</strong>'
-                    ]);
+                    ], $pictures);
                 }
 
             } else {

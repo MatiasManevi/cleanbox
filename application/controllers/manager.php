@@ -764,6 +764,10 @@ class Manager extends CI_Controller {
         return $this->basic->get_where('inspection_pictures', array('inspection_id' => $id), 'id')->result_array();
     }
 
+    public function searchPropertyPictures($id) {
+        return $this->basic->get_where('property_pictures', array('property_id' => $id), 'id')->result_array();
+    }
+
     public function searchContractServices($id) {
         return $this->basic->get_where('servicios', array('serv_contrato' => $id), 'serv_id')->result_array();
     }
@@ -843,6 +847,12 @@ class Manager extends CI_Controller {
             }
             if ($table == 'inspections') {
                 $response['entity']['pictures'] = $this->searchInspectionPictures($id);
+            }
+            if ($table == 'mantenimientos') {
+                $response['entity']['pictures'] = $this->searchManteinmentPictures($id);
+            }
+            if ($table == 'propiedades') {
+                $response['entity']['pictures'] = $this->searchPropertyPictures($id);
             }
             if ($table == 'proveedores') {
                 $response['areas'] = $this->searchProvAreas($id);

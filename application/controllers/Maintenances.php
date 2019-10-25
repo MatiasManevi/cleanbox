@@ -40,10 +40,11 @@ class Maintenances extends CI_Controller {
                     $_POST['mant_calif'] = 0;
                 }
 
-                $pictures = isset($maintenance['pictures']) ? $maintenance['pictures'] : [];
+                $maintenance = $this->input->post();
+                $pictures = isset($maintenance['pictures']) ? explode(',', $maintenance['pictures']) : [];
                 unset($maintenance['pictures']);
-                
-                $maintenance = array_map("strtoupper", $_POST);
+
+                $maintenance = array_map("strtoupper", $maintenance);
                 $property = $this->basic->get_where('propiedades',array('prop_dom' => $maintenance['mant_domicilio']))->row_array();
 
                 switch ($maintenance['mant_status']) {
@@ -59,6 +60,10 @@ class Maintenances extends CI_Controller {
                 }
 
                 $maintenance['mant_id'] = $this->basic->save('mantenimientos', 'mant_id', $maintenance);
+
+                if(!empty($pictures)){
+                    General::savePictures($maintenance, 'manteinment_pictures', 'manteinment_id', 'mant_id', $pictures);
+                }
 
                 TimelineService::createEvent([
                     'timeline_id' => $property['timeline_id'],

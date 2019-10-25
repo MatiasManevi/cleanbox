@@ -45,13 +45,13 @@ class General {
     public static function removePictures($owner, $pictures_table, $owner_fkey, $owner_pkey, $pictures) {
         $instance = &get_instance();
 
-        $old_pics = $instance->basic->get_where($pictures_table, array($owner_fkey => $owner[$owner_pkey]))->result_array();    
+        // $old_pics = $instance->basic->get_where($pictures_table, array($owner_fkey => $owner[$owner_pkey]))->result_array();    
 
-        foreach ($old_pics as $old_pic) {
-            if (!in_array($old_pic['url'], $pictures) && file_exists('./img/'.$old_pic['url'])) {
-                unlink('./img/'.$old_pic['url']);
-            }
-        }
+        // foreach ($old_pics as $old_pic) {
+        //     if (!in_array($old_pic['url'], $pictures) && file_exists('./img/'.$old_pic['url'])) {
+        //         unlink('./img/'.$old_pic['url']);
+        //     }
+        // }
 
         $instance->basic->del($pictures_table, $owner_fkey, $owner[$owner_pkey]);
     }

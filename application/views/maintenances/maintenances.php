@@ -46,6 +46,33 @@
             </select>
 
             <input title="Calificacion de tarea" name="mant_calif" id="mant_calif"  class="form-control ui-autocomplete-input section_input _general_amount_input_control"  placeholder="Calificación de tarea" type="text" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true"  style="margin-bottom: 5px;margin-right: 5px;width: 400px;float: left;">
+            
+
+            <!-- imagenes -->
+            <input class="_pictures" name="pictures" type="hidden">
+
+            <div class="col-lg-12" style="margin-top: 20px;width: 70%;">
+                <!-- Our markup, the important part here! -->
+                <div id="image_uploader" data-folder="manteinments/" class="dm-uploader p-5">
+                    <h3 class="mb-5 mt-5 text-muted">Arrastra tus imagenes aqui</h3>
+
+                    <div class="btn btn-primary btn-block mb-5">
+                        <span>Abrir buscador de imagenes</span>
+                        <input type="file" multiple/>
+                    </div>
+                </div><!-- /uploader -->
+                <div class="col-lg-12">
+                    <div class="card h-100">
+                        <div class="card-header" style="text-align: center;">
+                            Lista de imagenes
+                        </div>
+
+                        <ul class="list-unstyled p-2 d-flex flex-column col image_listing" id="files">
+                            <li class="text-muted text-center empty">Aun no hay imagenes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
             <button class="btn btn-primary submit_button _save_button" type="submit">Crear</button>
             <a class="btn btn-primary clear_button" onclick="general_scripts.cleanAddTab('mantenimientos');">Resetear campos</a>
@@ -81,3 +108,5 @@
         general_scripts.getEntitiesOnScrollDown('mantenimientos','mant_id','mantenimiento','mant_id');
     });
 </script>
+
+<?= $this->load->view('picture_uploader_script_tag'); ?>

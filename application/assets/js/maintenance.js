@@ -78,6 +78,9 @@ maintenance.initComponents = function () {
     // Providers rols fields
     provider_rol.id = $('#id');
     provider_rol.rol = $('#rol');
+    maintenance.image_listing = $('.image_listing');
+    
+    maintenance.pictures = $('._pictures');
 };
 
 provider.bindCalculateNota = function () {
@@ -165,7 +168,6 @@ provider.loadFormData = function (entity, areas, nota){
     for (x = 0; x < areas.length; x++) {
         provider.addArea(areas[x]['area_area']);
     }
-
 };
 
 maintenance.loadFormData = function (entity){
@@ -184,6 +186,19 @@ maintenance.loadFormData = function (entity){
     // selects
     maintenance.mant_prioridad.val(entity.mant_prioridad);
     maintenance.mant_status.val(entity.mant_status);
+
+    // pictures
+    var pics = '';
+    for (var i = entity.pictures.length - 1; i >= 0; i--) {
+        if(entity.pictures[i].url.length){
+            pics = pics + entity.pictures[i].url+',';
+        }
+    }
+    
+    if(pics.length){
+        maintenance.pictures.val(pics);
+        capturePics();
+    }
 };
 
 var providers = [];

@@ -499,9 +499,21 @@ general_scripts.cleanAddTab = function (table){
         case 'proveedores':
             provider.areas.empty();
         case 'inspections':
+            arr_pictures = [];
             inspection.pictures.val('');
             inspection.image_listing.find('.media').remove();
             break;
+        case 'mantenimientos':
+            arr_pictures = [];
+            maintenance.pictures.val('');
+            maintenance.image_listing.find('.media').remove();
+            break;
+        case 'propiedades':
+            arr_pictures = [];
+            proprietary.pictures.val('');
+            proprietary.image_listing.find('.media').remove();
+            proprietary.to_timeline.css('display', 'none');
+            break;    
         case 'creditos':
             credit.dinamic_credits.empty();
             credit.cred_cc.attr('readonly', false);

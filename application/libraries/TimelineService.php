@@ -43,31 +43,37 @@ class TimelineService {
 
         if($property_id){
             $timelines = $instance->basic->get_where('properties_timeline', array('property_id' => $property_id))->row_array();
-            $events = $instance->basic->get_where('timeline_events', array('timeline_id' => $timelines['id']), 'created_at', 'DESC')->result_array();
+            if($timelines){
+                $events = $instance->basic->get_where('timeline_events', array('timeline_id' => $timelines['id']), 'created_at', 'DESC')->result_array();
+            }
         }else{
             $events = $instance->basic->get_where('timeline_events', array(), 'created_at', 'DESC')->result_array();
         }
 
-        foreach ($events as $event) {
-            $event['date'] = date('d-m-Y H:i', strtotime($event['created_at']));
-            $event['pictures'] = $instance->basic->get_where('event_pictures', array('event_id' => $event['id']))->result_array();
-            array_push($timeline, $event);
-        }
-
-        $years = self::getYears($timeline);
         $result = [];
 
-        foreach ($years as $year) {
-            $result[$year] = [];
+        if(isset($events)){
 
-            foreach ($timeline as $event) {
-                $event_year = date('Y', strtotime($event['created_at']));
+            foreach ($events as $event) {
+                $event['date'] = date('d-m-Y H:i', strtotime($event['created_at']));
+                $event['pictures'] = $instance->basic->get_where('event_pictures', array('event_id' => $event['id']))->result_array();
+                array_push($timeline, $event);
+            }
 
-                if ($year == $event_year) {
-                    if(empty($result[$year])){
-                        $event['year'] = $event_year;
+            $years = self::getYears($timeline);
+            
+            foreach ($years as $year) {
+                $result[$year] = [];
+
+                foreach ($timeline as $event) {
+                    $event_year = date('Y', strtotime($event['created_at']));
+
+                    if ($year == $event_year) {
+                        if(empty($result[$year])){
+                            $event['year'] = $event_year;
+                        }
+                        array_push($result[$year], $event);
                     }
-                    array_push($result[$year], $event);
                 }
             }
         }

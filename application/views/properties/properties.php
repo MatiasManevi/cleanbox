@@ -12,6 +12,9 @@
     <div class="tab-pane fade in active _add" id="add">
         <div class="section_description">
             <label>En este formulario se registran las propiedades de los propietarios</label>
+            <div style="display: none;" class="to_timeline">
+                
+            </div>
         </div>
 
         <form class="section_form" action="javascript:;" onsubmit="general_scripts.saveEntity('<?php echo site_url('saveProperty') ?>', this);return false;" enctype="multipart/form-data"> 
@@ -24,6 +27,33 @@
 
             <label class="clear_both">En contrato vigente con:</label>
             <input title="Inquilino que ocupa el inmueble actualmente" class="form-control ui-autocomplete-input section_input _general_letters_input_control" type="text" name="prop_contrato_vigente" id="prop_contrato_vigente" placeholder="Inquilino" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+            
+
+            <!-- imagenes -->
+            <input class="_pictures" name="pictures" type="hidden">
+
+            <div class="col-lg-12" style="margin-top: -101px;width: 70%;">
+                <!-- Our markup, the important part here! -->
+                <div id="image_uploader" data-folder="properties/" class="dm-uploader p-5">
+                    <h3 class="mb-5 mt-5 text-muted">Arrastra tus imagenes aqui</h3>
+
+                    <div class="btn btn-primary btn-block mb-5">
+                        <span>Abrir buscador de imagenes</span>
+                        <input type="file" multiple/>
+                    </div>
+                </div><!-- /uploader -->
+                <div class="col-lg-12">
+                    <div class="card h-100">
+                        <div class="card-header" style="text-align: center;">
+                            Lista de imagenes
+                        </div>
+
+                        <ul class="list-unstyled p-2 d-flex flex-column col image_listing" id="files">
+                            <li class="text-muted text-center empty">Aun no hay imagenes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
             <button class="btn btn-primary submit_button _save_button" type="submit">Crear</button>
             <a class="btn btn-primary clear_button" onclick="general_scripts.cleanAddTab('propiedades');">Resetear campos</a>
@@ -51,3 +81,5 @@
         general_scripts.getEntitiesOnScrollDown('propiedades','prop_id','propiedad','prop_prop');
     });
 </script>
+
+<?= $this->load->view('picture_uploader_script_tag'); ?>

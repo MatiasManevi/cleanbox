@@ -160,6 +160,9 @@ proprietary.initComponents = function () {
     proprietary.com_mes = $('#com_mes');
     proprietary.com_ano = $('#com_ano');
     proprietary.com_id = $('#com_id');
+    proprietary.pictures = $('._pictures');
+    proprietary.image_listing = $('.image_listing');
+    proprietary.to_timeline = $('.to_timeline');
 };
 
 contracts.addPeriodHtml = function (period){   
@@ -406,6 +409,21 @@ proprietary.loadFormData = function (entity){
     var in_contract = entity.prop_contrato_vigente != '' ? entity.prop_contrato_vigente : 'Libre';
     
     proprietary.prop_contrato_vigente.val(in_contract);
+
+    proprietary.to_timeline.css('display', 'block');
+    proprietary.to_timeline.html('<p> Podes ver la linea de tiempo de esta propiedad <a href="'+BASE_URL+'timeline/property/'+entity.prop_id+'" target="_blank">ACA</a></p>');
+    // pictures
+    var pics = '';
+    for (var i = entity.pictures.length - 1; i >= 0; i--) {
+        if(entity.pictures[i].url.length){
+            pics = pics + entity.pictures[i].url+',';
+        }
+    }
+    
+    if(pics.length){
+        proprietary.pictures.val(pics);
+        capturePics();
+    }
 };
 
 proprietary.loadFormDataComments = function (entity){  

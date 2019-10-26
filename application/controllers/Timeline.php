@@ -18,7 +18,7 @@ class Timeline extends CI_Controller {
     	$this->data['particular_head'] = $this->load->view('particular_heads/timeline', '', TRUE);
 
         $this->data['timeline'] = TimelineService::get();
-        
+    
         $this->data['content'] = $this->load->view('timeline/timeline', $this->data, TRUE);
 
         $this->load->view('layout', $this->data);
@@ -27,7 +27,9 @@ class Timeline extends CI_Controller {
     public function property($property_id){
     	$this->data['particular_head'] = $this->load->view('particular_heads/timeline', '', TRUE);
     	
-    	$this->data['timeline'] = TimelineService::get($property_id);
+        $this->data['timeline'] = TimelineService::get($property_id);
+    	
+        $this->data['property'] = $this->basic->get_where('propiedades', array('prop_id' => $property_id))->row_array();
     	
     	$this->data['content'] = $this->load->view('timeline/timeline', $this->data, TRUE);
 

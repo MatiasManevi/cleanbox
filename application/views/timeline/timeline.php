@@ -13,21 +13,41 @@
 
 	<section class="timeline__section">
 		<div class="wrapper">
-			<? foreach ($timeline as $year => $events) { ?>
-				<? foreach ($events as $event) { ?>
-					<?php echo $this->load->view('timeline/event', ['event' => $event], TRUE); ?>
+			<h2 class="timeline_title"><?php echo isset($property) ? 'Timeline de la propiedad ' . $property['prop_dom'] : 'Timeline general' ?></h2>
+			<input type="text" id="timeline_filter" class="form-control" placeholder="Busca aqui escribiendo algo sobre el contenido, titulo o fecha del evento que quieras ver ...">
+			<div class="events">
+				<? foreach ($timeline as $year => $events) { ?>
+					<? foreach ($events as $event) { ?>
+						<?php echo $this->load->view('timeline/event', ['event' => $event], TRUE); ?>
+					<? } ?>
 				<? } ?>
-			<? } ?>
+			</div>
 		</div>
 	</section>
 </article>
 
 <script type="text/javascript">
+	
+	$(document).ready(function() {
+
+	    $("#timeline_filter").on("keyup", function() {
+
+	        var value = $(this).val().toLowerCase();
+
+	        $(".timeline__section .event").filter(function() {
+              $(this).toggle($(this).find('.data').text().toLowerCase().indexOf(value) > -1)
+            });
+	    });
+
+	});
+
 	$("[data-fancybox]").fancybox({
 		padding : 0,
 		loop: true
 	});
+	
 	var owl = $('.gallery');
+
 	owl.owlCarousel({
 	    autoplay: false,
 	 	items: 1,

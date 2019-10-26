@@ -545,7 +545,7 @@ class Contract {
                         'timeline_id' => $property['timeline_id'],
                         'name' => 'Vencimiento automatico de contrato',
                         'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> finaliza contrato de <strong>'.$contract['con_tipo'].'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'
-                    ]);
+                    ], [], $property['prop_id']);
 
                     $property['prop_contrato_vigente'] = 'Libre';
                     $contract['con_enabled'] = 0;

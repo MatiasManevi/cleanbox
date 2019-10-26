@@ -25,9 +25,9 @@
 
                 <input style="clear: none;width: 49%" required title="Domicilio" name="address" id="address" type="text" class="form-control ui-autocomplete-input section_input" placeholder="Domicilio Inmueble" autocomplete="off" role="textbox">
 
-                <input style="clear: none;width: 49%" required title="Inquilino" name="renter" id="renter" type="text" class="form-control ui-autocomplete-input _general_letters_input_control section_input" placeholder="Inquilino" autocomplete="off" role="textbox">  
+                <input style="clear: none;width: 49%" title="Inquilino" name="renter" id="renter" type="text" class="form-control ui-autocomplete-input _general_letters_input_control section_input" placeholder="Inquilino" autocomplete="off" role="textbox">  
 
-                <select style="clear: none;width: 49%" title="Momento de inspección" placeholder="Momento" class="form-control ui-autocomplete-input section_input" id="momentum" name="momentum">
+                <select required style="clear: none;width: 49%" title="Momento de inspección" placeholder="Momento" class="form-control ui-autocomplete-input section_input" id="momentum" name="momentum">
                     <option></option>
                     <option value="1">Previo contrato</option>
                     <option value="2">Durante contrato</option>

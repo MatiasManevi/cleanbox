@@ -764,6 +764,10 @@ class Manager extends CI_Controller {
         return $this->basic->get_where('inspection_pictures', array('inspection_id' => $id), 'id')->result_array();
     }
 
+    public function searchManteinmentPictures($id) {
+        return $this->basic->get_where('manteinment_pictures', array('manteinment_id' => $id), 'id')->result_array();
+    }
+
     public function searchPropertyPictures($id) {
         return $this->basic->get_where('property_pictures', array('property_id' => $id), 'id')->result_array();
     }

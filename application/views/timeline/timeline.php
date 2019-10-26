@@ -22,6 +22,9 @@
 					<? } ?>
 				<? } ?>
 			</div>
+			<div class="no_records" style="<?php echo empty($timeline) ? 'display:none' : 'display:block' ?>">
+				No se encontraron eventos
+			</div>
 		</div>
 	</section>
 </article>
@@ -37,6 +40,12 @@
 	        $(".timeline__section .event").filter(function() {
               $(this).toggle($(this).find('.data').text().toLowerCase().indexOf(value) > -1)
             });
+
+            if ($('.event:visible').length < 1) {
+            	$('.no_records').fadeIn('slow');
+            }else{
+            	$('.no_records').fadeOut('fast');
+            }
 	    });
 
 	});

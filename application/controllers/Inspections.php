@@ -68,9 +68,9 @@ class Inspections extends CI_Controller {
 
                 TimelineService::createEvent([
                     'timeline_id' => $property['timeline_id'],
-                    'name' => $name,
+                    'name' => $name.' ('.$property['prop_prop'].')',
                     'description' => 'La inspección de la propiedad se realiza '.$momentum.'. Solicitada por el inquilino '. $inspection['renter']. ', para revisar lo siguiente: '.$inspection['description']
-                ], $pictures);
+                ], $pictures, $property['prop_id']);
 
                 $response['status'] = true;
                 $response['entity'] = General::parseEntityForList($inspection, 'inspections');

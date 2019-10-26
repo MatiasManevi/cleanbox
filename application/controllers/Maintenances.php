@@ -67,9 +67,9 @@ class Maintenances extends CI_Controller {
 
                 TimelineService::createEvent([
                     'timeline_id' => $property['timeline_id'],
-                    'name' => $name,
+                    'name' => $name.' ('.$maintenance['mant_prop'].')',
                     'description' => 'La tarea a realizar en la propiedad es: '.$maintenance['mant_desc']. '. Solicitada por el inquilino '. $maintenance['mant_inq']
-                ], $pictures);
+                ], $pictures, $property['prop_id']);
             
                 $response['status'] = true;
                 $response['entity'] = General::parseEntityForList($maintenance, 'mantenimientos');

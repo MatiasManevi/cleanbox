@@ -91,7 +91,7 @@ class Contracts extends CI_Controller {
                             'con_enabled' => $this->input->post('con_enabled')
                         );
 
-                         $property = $this->basic->get_where('propiedades',array('prop_id' => $contract['prop_id']))->row_array();
+                        $property = $this->basic->get_where('propiedades',array('prop_id' => $contract['prop_id']))->row_array();
 
                         if($this->input->post('con_id')){
                             $contract['con_id'] = $this->input->post('con_id');
@@ -101,7 +101,7 @@ class Contracts extends CI_Controller {
                                 'timeline_id' => $property['timeline_id'],
                                 'name' => 'Propiedad entra en contrato',
                                 'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> entra en contrato de <strong>'.$this->input->post('con_tipo').'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'. '. Vence el dia '. $contract['con_venc']
-                            ]);
+                            ], [], $property['prop_id']);
                         }
 
                         $contract = $this->createContractParts($contract);
@@ -112,7 +112,7 @@ class Contracts extends CI_Controller {
                                 'timeline_id' => $property['timeline_id'],
                                 'name' => 'Se rescinde o vence el contrato de la propiedad',
                                 'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> no esta más en contrato de <strong>'.$contract['con_tipo'].'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'
-                            ]);
+                            ], [], $property['prop_id']);
 
                             $contract['con_enabled'] = 0;
                             $contract['con_date_declined'] = date('d-m-Y');
@@ -121,7 +121,7 @@ class Contracts extends CI_Controller {
                                 'timeline_id' => $property['timeline_id'],
                                 'name' => 'Propiedad en prorroga de contrato',
                                 'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> prorroga el contrato de <strong>'.$contract['con_tipo'].'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'. ' hasta el dia '. $contract['con_venc']
-                            ]);
+                            ], [], $property['prop_id']);
 
                             $contract['con_enabled'] = 1;
                             $contract['con_date_renovated'] = date('d-m-Y');

@@ -35,14 +35,24 @@ class Comentaries extends CI_Controller {
 
             if ($this->form_validation->run()) {
                 $comentary = array_map("strtoupper", $this->input->post());
+                $property = $this->basic->get_where('propiedades', ['prop_id' => $comentary['prop_id']])->row_array();
 
                 if (!$this->input->post('com_id')) {
                     $comentary['com_date'] = Date('d-m-Y');
                     $comentary['com_mes'] = Date('m');
                     $comentary['com_ano'] = Date('Y');
+                    $name = 'Se crea comentario en '.$property['prop_dom'];
+                } else {
+                    $name = 'Se actualiza comentario en '.$property['prop_dom'];
                 }
 
                 $comentary['com_id'] = $this->basic->save('comentarios', 'com_id', $comentary);
+
+                TimelineService::createEvent([
+                    'timeline_id' => $property['timeline_id'],
+                    'name' => $name.' ('.$comentary['com_prop'].')',
+                    'description' => 'Comentario: ' .$this->input->post('com_com')
+                ], [], $property['prop_id']);
 
                 $response['status'] = true;
                 $response['entity'] = General::parseEntityForList($comentary, 'comentarios');

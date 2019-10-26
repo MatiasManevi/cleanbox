@@ -22,7 +22,7 @@
 					<? } ?>
 				<? } ?>
 			</div>
-			<div class="no_records" style="<?php echo empty($timeline) ? 'display:none' : 'display:block' ?>">
+			<div class="no_records" style="<?php echo !empty($timeline) ? 'display:none' : 'display:block' ?>">
 				No se encontraron eventos
 			</div>
 		</div>

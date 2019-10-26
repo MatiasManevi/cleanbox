@@ -1,7 +1,7 @@
 <div <?php echo isset($event['year']) ? 'class="year" id="year_'.$event['year'].'"' : '' ?>>
 	<div class='container event'>
 		<? if (count($event['pictures']) > 0) { ?>
-			<div style="margin-left: -18px; margin-right: 15px;" class="col-lg-6">
+			<div style="margin-left: -18px;" class="col-lg-6">
 				<div class="gallery owl-carousel">
 					<? foreach ($event['pictures'] as $picture) { ?>
 						<?
@@ -11,7 +11,7 @@
 							$url = img_url() . $picture['url'];
 						}
 						?>
-						<a href="<?php echo $url ?>" data-fancybox="gallery_<?= $event['id'] ?>">
+						<a chref="<?php echo $url ?>" data-fancybox="gallery_<?= $event['id'] ?>">
 							<img onerror="this.onerror=null;this.src='<?php echo img_url() . "/no-image.png" ?>';" class="picture" src="<?php echo $url ?>" alt="" />
 						</a>
 					<? } ?>

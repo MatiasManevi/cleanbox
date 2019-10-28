@@ -585,7 +585,7 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
             name: "credit[iva_calculado][]",
             type: "text",
             readonly: true,
-            autocomplete: "off",
+            // autocomplete: "off",
             value: amount != '' ? amount * iva_percentaje : '',
             title: 'Iva calculado sobre el monto de '+concept+' '+date,
             style : "margin-right: 5px;width: 5%;float: left;margin-right: 68px;",
@@ -623,7 +623,7 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
             name: "credit[dias_mora][]",
             type: "text",
             title: defined_default ? 'Para modificar los dias de mora haz click aqui' : '',
-            autocomplete: "off",
+            // autocomplete: "off",
             style : "cursor:pointer !important;margin-right: 5px;width: 11.5%;float: left;",
             "class": "form-control ui-autocomplete-input _dias_mora",
             placeholder: "Dias de mora"                 
@@ -632,7 +632,7 @@ credit.addCredit = function (concept, contract, concept_perceive_iva, concept_pe
         $("<input/>", {
             name: "credit[interes_calculado][]",
             type: "text",
-            autocomplete: "off",
+            // autocomplete: "off",
             title:'Interes calculado sobre el monto de '+concept+' '+date+' segun los dias de mora y el % punitorio',
             readonly: true,
             value: intereses,  

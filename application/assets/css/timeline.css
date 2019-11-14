@@ -75,11 +75,12 @@
 		color: grey;
 		position: absolute;
 		right: -3px;
-		bottom: 12px;
+		bottom: 6px;
 		float: right;
 	}
 	.event .content .description{
 		font-size: 1.6rem;
+		width: 88%;
 	}
 	.event .content .description a{
 		color:black;

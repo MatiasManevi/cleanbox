@@ -91,6 +91,8 @@ class Contracts extends CI_Controller {
                             'con_enabled' => $this->input->post('con_enabled')
                         );
 
+                        $contract = $this->createContractParts($contract);
+
                         $property = $this->basic->get_where('propiedades',array('prop_id' => $contract['prop_id']))->row_array();
 
                         if($this->input->post('con_id')){
@@ -98,18 +100,16 @@ class Contracts extends CI_Controller {
                         }else{
                             $contract['con_date_created'] = date('d-m-Y');
                             TimelineService::createEvent([
-                                'timeline_id' => $property['timeline_id'],
+                                'timeline_id' => isset($property['timeline_id']) ? $property['timeline_id'] : false,
                                 'name' => 'Propiedad entra en contrato',
                                 'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> entra en contrato de <strong>'.$this->input->post('con_tipo').'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'. '. Vence el dia '. $contract['con_venc']
                             ], [], $property['prop_id']);
                         }
 
-                        $contract = $this->createContractParts($contract);
-
                         if ($contract['con_motivo'] == 'Rescindido' || $contract['con_motivo'] == 'Vencido') {
 
                             TimelineService::createEvent([
-                                'timeline_id' => $property['timeline_id'],
+                                'timeline_id' => isset($property['timeline_id']) ? $property['timeline_id'] : false,
                                 'name' => 'Se rescinde o vence el contrato de la propiedad',
                                 'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> no esta más en contrato de <strong>'.$contract['con_tipo'].'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'
                             ], [], $property['prop_id']);
@@ -118,7 +118,7 @@ class Contracts extends CI_Controller {
                             $contract['con_date_declined'] = date('d-m-Y');
                         } elseif ($contract['con_motivo'] == 'Prorrogado') {
                             TimelineService::createEvent([
-                                'timeline_id' => $property['timeline_id'],
+                                'timeline_id' => isset($property['timeline_id']) ? $property['timeline_id'] : false,
                                 'name' => 'Propiedad en prorroga de contrato',
                                 'description' => 'La propiedad <strong>'.$property['prop_dom'].'</strong> prorroga el contrato de <strong>'.$contract['con_tipo'].'</strong> con el cliente <strong>' . $contract['con_inq'].'</strong>'. ' hasta el dia '. $contract['con_venc']
                             ], [], $property['prop_id']);

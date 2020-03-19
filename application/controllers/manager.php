@@ -1069,18 +1069,30 @@ class Manager extends CI_Controller {
         echo json_encode($response);
     }
 
+    function getRandomString($n = 10) { 
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+        $randomString = ''; 
+    
+        for ($i = 0; $i < $n; $i++) { 
+            $index = rand(0, strlen($characters) - 1); 
+            $randomString .= $characters[$index]; 
+        } 
+    
+        return $randomString; 
+} 
+  
     public function uploadImageFromFile() {
         $response = array();
 
         try {
             if($this->input->post('folder') == 'inspections/'){
-                $file_name = 'inspection_'.bin2hex(random_bytes(50));
+                $file_name = 'inspection_'.$this->getRandomString(35);
             }
             if($this->input->post('folder') == 'properties/'){
-                $file_name = 'property_'.bin2hex(random_bytes(50));
+                $file_name = 'property_'.$this->getRandomString(25);
             }
             if($this->input->post('folder') == 'manteinments/'){
-                $file_name = 'manteinment_'.bin2hex(random_bytes(50));
+                $file_name = 'manteinment_'.$this->getRandomString(40);
             }
 
             $config['file_name']            = $file_name;

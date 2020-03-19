@@ -501,6 +501,8 @@ general_scripts.cleanAddTab = function (table){
         case 'inspections':
             arr_pictures = [];
             inspection.pictures.val('');
+            inspection.address.attr('readonly', false);
+            inspection.renter.attr('readonly', false);
             inspection.image_listing.find('.media').remove();
             break;
         case 'mantenimientos':

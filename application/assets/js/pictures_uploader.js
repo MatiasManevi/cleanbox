@@ -134,7 +134,7 @@ function capturePics() {
     for (var i = arr_pictures.length - 1; i >= 0; i--) {
 
       var file = arr_pictures[i];
-      if(arr_pictures[i] && arr_pictures[i].length && !added.includes(file)){
+      if(arr_pictures[i] && arr_pictures[i].length > 0 && !added.includes(file)){
         aux.push(arr_pictures[i]);
         var picture = img_url + arr_pictures[i];
 

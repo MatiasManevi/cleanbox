@@ -5,15 +5,19 @@
 				<div class="gallery owl-carousel">
 					<? foreach ($event['pictures'] as $picture) { ?>
 						<?
-						if(strpos($picture['url'], 'http')!==false){
+						if(strpos($picture['url'], 'http') !== false){
 							$url = $picture['url'];
 						}else{
-							$url = img_url() . $picture['url'];
+							if($picture['url']){
+								$url = img_url() . $picture['url'];
+							}
 						}
-						?>
-						<a chref="<?php echo $url ?>" data-fancybox="gallery_<?= $event['id'] ?>">
-							<img onerror="this.onerror=null;this.src='<?php echo img_url() . "/no-image.png" ?>';" class="picture" src="<?php echo $url ?>" alt="" />
+						
+						if($url){?>
+						<a href="<?php echo $url ?>" data-fancybox="gallery_<?= $event['id'] ?>">
+							<img class="picture" src="<?php echo $url ?>" />
 						</a>
+						<? } ?>
 					<? } ?>
 				</div>
 			</div>

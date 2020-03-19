@@ -1,0 +1,1 @@
+ALTER TABLE `inspections` ADD `event_id` INT NULL COMMENT 'Id de evento para actualizar cuando actualizamos la inspeccion' AFTER `id`;

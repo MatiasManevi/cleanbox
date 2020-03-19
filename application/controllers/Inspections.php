@@ -29,14 +29,15 @@ class Inspections extends CI_Controller {
 
         try {
             $this->form_validation->set_rules('property_id', 'Domicilio', "required|trim");
-            $this->form_validation->set_rules('renter_id', 'Inquilino', "required");
             $this->form_validation->set_rules('description', 'Descripcion detallada', "required");
             $this->form_validation->set_rules('date', 'Fecha', "required");
             $this->form_validation->set_rules('momentum', 'Momento de inspección', "required");
 
             if ($this->form_validation->run()) {
                 $inspection = $this->input->post();
-                                
+                if(!$inspection['renter_id']){
+                    unset($inspection['renter_id']);
+                }                                
                 switch ($inspection['momentum']) {
                     case '1':
                         $momentum = '<strong>previo a contrato</strong>';
@@ -56,21 +57,24 @@ class Inspections extends CI_Controller {
 
                 $property = $this->basic->get_where('propiedades', ['prop_id' => $inspection['property_id']])->row_array();
 
-                if(!$this->input->post('id')){
-                    $name = 'Se crea inspección en '.$inspection['address'];
-                }else{
-                    $name = 'Se actualiza inspección en '.$inspection['address'];
-                }
-                
                 if(!empty($pictures)){
                     General::savePictures($inspection, 'inspection_pictures', 'inspection_id', 'id', $pictures);
                 }
 
-                TimelineService::createEvent([
+                $renter = isset($inspection['renter_id']) ? '. Inquilino: '. $inspection['renter'] : '';
+                $event_data = [
                     'timeline_id' => $property['timeline_id'],
-                    'name' => $name.' ('.$property['prop_prop'].')',
-                    'description' => 'La inspección de la propiedad se realiza '.$momentum.'. Solicitada por el inquilino '. $inspection['renter']. ', para revisar lo siguiente: '.$inspection['description']
-                ], $pictures, $property['prop_id']);
+                    'name' => 'Inspección en '.$inspection['address'].' ('.$property['prop_prop'].')',
+                    'description' => 'La inspección de la propiedad se realiza '.$momentum.'' . $renter. ', para revisar lo siguiente: '.$inspection['description']
+                ];
+
+                if(!$this->input->post('id')){
+                    $inspection['event_id'] = TimelineService::createEvent($event_data, $pictures, $property['prop_id']);
+                    $this->basic->save('inspections', 'id', $inspection);
+                }else{
+                    $inspection = $this->basic->get_where('inspections', ['id' => $inspection['id']])->row_array();
+                    TimelineService::updateEvent($event_data, $inspection['event_id'], $pictures);
+                }
 
                 $response['status'] = true;
                 $response['entity'] = General::parseEntityForList($inspection, 'inspections');

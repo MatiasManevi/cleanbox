@@ -189,9 +189,13 @@ maintenance.loadFormData = function (entity){
 
     // pictures
     var pics = '';
-    for (var i = entity.pictures.length - 1; i >= 0; i--) {
-        if(entity.pictures[i].url.length){
-            pics = pics + entity.pictures[i].url+',';
+    if(entity.pictures.length === 1){
+        pics = entity.pictures[0].url;
+    }else{
+        for (var i = entity.pictures.length - 1; i >= 0; i--) {
+            if(entity.pictures[i].url.length){
+                pics = pics + entity.pictures[i].url+',';
+            }
         }
     }
     

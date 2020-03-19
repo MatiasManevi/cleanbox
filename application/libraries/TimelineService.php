@@ -21,6 +21,11 @@ class TimelineService {
         ]);
     } 
 
+    public static function updateEvent($data, $event_id, $pictures = []){
+        $data['id'] = $event_id;
+        self::createEvent($data, $pictures);
+    }
+
     public static function createEvent($data, $pictures = [], $property_id = false){
         $instance = &get_instance();
 
@@ -31,17 +36,21 @@ class TimelineService {
             if(!empty($pictures)){
                 // Create event pictures
                 foreach ($pictures as $picture) {
-                   $instance->basic->save('event_pictures', 'id', [
-                       'event_id' => $event_id,
-                       'url' => $picture,
-                   ]); 
+                    if ($picture && strlen($picture) && !empty($picture)) {
+                        $instance->basic->save('event_pictures', 'id', [
+                            'event_id' => $event_id,
+                            'url' => $picture,
+                        ]); 
+                    }
                 }
             }
         } else {
             // Si la propiedad aun no tiene timeline se crea
             $data['timeline_id'] = self::createTimeline($property_id);
-            self::createEvent($data, $pictures);
+            $event_id = self::createEvent($data, $pictures);
         }
+
+        return $event_id;
     }
 
     public static function get($property_id = false) {

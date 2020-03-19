@@ -19,9 +19,9 @@
 
             <div class="form-group col-lg-12">
 
-                <input type="hidden" id="id" name="id"/>
+                <input type="hidden" id="id" name="id" value=""/>
                 <input type="hidden" id="property_id" name="property_id">
-                <input type="hidden" id="renter_id" name="renter_id">
+                <input type="hidden" id="renter_id" name="renter_id" value="">
 
                 <input style="clear: none;width: 49%" required title="Domicilio" name="address" id="address" type="text" class="form-control ui-autocomplete-input section_input" placeholder="Domicilio Inmueble" autocomplete="off" role="textbox">
 

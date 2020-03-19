@@ -18,7 +18,7 @@ class General {
         $instance = &get_instance();
         $pics = [];
         foreach ($pictures as $picture) {
-            if ($picture && strlen($picture)) {
+            if ($picture && strlen($picture) && !empty($picture)) {
                 array_push($pics, $picture);
             }
         }

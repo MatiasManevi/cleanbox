@@ -1,0 +1,19 @@
+version: '3'
+networks:
+ global_proxy:
+  driver: bridge
+ docker_davinia:
+  external: true
+
+services:
+ global_proxy:
+  build: .
+  ports:
+   - 80:80
+  volumes:
+   - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+   - ./nginx/conf.d:/etc/nginx/conf.d
+   - ./logs/nginx:/var/log/nginx
+  networks:
+   - docker_davinia
+   - global_proxy

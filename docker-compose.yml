@@ -1,0 +1,29 @@
+version: '3'
+networks:
+ davinia:
+  driver: bridge
+
+services:
+ davinia:
+  build: ./
+  working_dir: /var/www/html/
+  volumes:
+   - .:/var/www/html/cleanbox
+   - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+   - ./logs/supervisor:/var/log/supervisor
+   - ./logs/nginx:/var/log/nginx
+
+  #    - ./nginx/nginx-copetran.conf:/etc/nginx/sites-enabled/copetran
+  #   - ./nginx/certs/:/etc/nginx/ssl/
+  #    - ../copetran/:/var/www/html/copetran
+  #   - ./dot_env_coomotor:/var/www/html/coomotor/.env
+  #    - ./logs/supervisor.log:/var/log/supervisor/supervisor.log
+  #    - ./logs/php-fpm.www.log:/var/log/fpm-php.www.log
+  #    - ./logs/copetran-pinbus-whitelabel.pinbus.com.error.log:/var/log/nginx/copetran-pinbus-whitelabel.pinbus.com.error.log
+  #    - ./logs/gomezhernandez-pinbus-whitelabel.pinbus.com.error.log:/var/log/nginx/gomezhernandez-pinbus-whitelabel.pinbus.com.error.log
+  networks:
+   - davinia
+  #   ports:
+  #    - 80:80
+  #    - 443:443
+  restart: always
